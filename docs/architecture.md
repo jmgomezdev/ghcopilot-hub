@@ -128,6 +128,9 @@ Política:
 - `onConflict: fail`: bloquea `update` y `remove` si hay drift
 - `onConflict: overwrite` o `--force`: sobrescribe o elimina aunque exista drift
 
+Si una ejecución encuentra conflictos en algunas rutas managed pero también tiene operaciones no conflictivas en otras,
+el CLI aplica esas operaciones seguras y devuelve exit code `2` para dejar el conflicto pendiente visible.
+
 ## Overrides locales
 
 `.github/local-overrides/` queda fuera del alcance del sync. El archivo base de instrucciones referencia este

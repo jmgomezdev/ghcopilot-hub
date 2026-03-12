@@ -132,3 +132,47 @@ test("init sin pack instala la skill por defecto del hub", async () => {
   assert.deepEqual(manifest.packs, []);
   assert.deepEqual(manifest.skills, []);
 });
+
+test("add pack aplica archivos no conflictivos aunque exista settings.json local", async () => {
+  const projectDir = await createTempProject();
+
+  await fs.mkdir(path.join(projectDir, ".vscode"), { recursive: true });
+  await fs.writeFile(
+    path.join(projectDir, ".vscode", "settings.json"),
+    '{\n  "editor.tabSize": 2\n}\n',
+    "utf8"
+  );
+
+  const initResult = await runCliCapture([
+    "init",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  assert.equal(initResult.exitCode, 2);
+  assert.equal(await fileExists(projectDir, ".github/agents/planificador.agent.md"), true);
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
+    true
+  );
+  assert.match(initResult.stdout, /Sync applied with conflicts/);
+  assert.match(initResult.stdout, /\.vscode\/settings\.json/);
+
+  const addResult = await runCliCapture([
+    "add",
+    "pack",
+    "base-web",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  assert.equal(addResult.exitCode, 2);
+  assert.equal(await fileExists(projectDir, ".github/skills/typescript/SKILL.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/skills/testing/SKILL.md"), true);
+  assert.match(addResult.stdout, /Sync applied with conflicts/);
+  assert.match(addResult.stdout, /\.vscode\/settings\.json/);
+});

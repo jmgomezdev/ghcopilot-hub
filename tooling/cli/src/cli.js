@@ -183,20 +183,32 @@ async function runMutatingManifestCommand({ action, parsed, context, projectDir,
 
 async function syncFromManifest({ context, projectDir, catalog, manifest, force, json }) {
   const report = await buildProjectReport({ projectDir, catalog, manifest, force });
+  const applicablePlan = getApplicablePlan(report.plan);
 
-  if (report.plan.conflicts.length > 0) {
+  if (report.plan.conflicts.length > 0 && !hasPendingOperations(applicablePlan)) {
     writeJsonOrText(context.stdout, json, report, formatSyncPlan("Sync blocked", report.plan));
     return 2;
   }
 
-  await applyProjectSync({
-    projectDir,
-    desiredFiles: report.desiredFiles,
-    plan: report.plan,
-    preserveLocalOverrides: manifest.settings.preserveLocalOverrides,
-  });
-  writeJsonOrText(context.stdout, json, report, formatSyncPlan("Sync applied", report.plan));
-  return 0;
+  if (hasPendingOperations(applicablePlan)) {
+    await applyProjectSync({
+      projectDir,
+      desiredFiles: report.desiredFiles,
+      plan: applicablePlan,
+      preserveLocalOverrides: manifest.settings.preserveLocalOverrides,
+    });
+  }
+
+  writeJsonOrText(
+    context.stdout,
+    json,
+    report,
+    formatSyncPlan(
+      report.plan.conflicts.length > 0 ? "Sync applied with conflicts" : "Sync applied",
+      report.plan
+    )
+  );
+  return report.plan.conflicts.length > 0 ? 2 : 0;
 }
 
 async function buildProjectReport({ projectDir, catalog, manifest, force }) {
@@ -391,6 +403,23 @@ function appendList(buffer, title, values) {
 
 function mergeUnique(currentValues, nextValues) {
   return [...new Set([...currentValues, ...nextValues])].sort();
+}
+
+function getApplicablePlan(plan) {
+  const conflictedPaths = new Set(plan.conflicts.map((conflict) => conflict.targetRelativePath));
+  const filterOperation = (operation) => !conflictedPaths.has(operation.targetRelativePath);
+
+  return {
+    ...plan,
+    create: plan.create.filter(filterOperation),
+    update: plan.update.filter(filterOperation),
+    remove: plan.remove.filter(filterOperation),
+    conflicts: [],
+  };
+}
+
+function hasPendingOperations(plan) {
+  return plan.create.length > 0 || plan.update.length > 0 || plan.remove.length > 0;
 }
 
 function writeUsage(stream) {

@@ -121,6 +121,9 @@ ghcopilot-hub doctor --hub-only
 - `--force`: cambia `onConflict` a `overwrite` para esa ejecución
 - `--json`: emite salida estructurada
 
+Si hay conflictos sólo en algunas rutas managed, `init`, `update`, `add` y `remove` aplican igualmente los cambios no
+conflictivos y terminan con exit code `2` para señalar que quedan conflictos por resolver.
+
 ## Exit codes
 
 - `0`: operación correcta o sin issues
