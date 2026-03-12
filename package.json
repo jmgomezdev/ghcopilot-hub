@@ -45,7 +45,7 @@
         "lint:fix": "eslint . --fix",
         "pack:check": "npm pack --dry-run",
         "prepublishOnly": "npm run validate:hub && npm test && npm run pack:check",
-        "test": "node --test tooling/cli/test/**/*.test.js",
+        "test": "node --test tooling/cli/test/integration.test.js tooling/cli/test/unit.test.js",
         "validate:hub": "node ./tooling/cli/src/bin.js doctor --hub-only"
     },
     "devDependencies": {
