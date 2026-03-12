@@ -11,7 +11,10 @@ export function parseFrontmatter(sourceText, sourcePath) {
     throw new CliError(`Missing frontmatter in ${sourcePath}`);
   }
 
-  const endIndex = normalized.indexOf(`\n${FRONTMATTER_DELIMITER}\n`, FRONTMATTER_DELIMITER.length + 1);
+  const endIndex = normalized.indexOf(
+    `\n${FRONTMATTER_DELIMITER}\n`,
+    FRONTMATTER_DELIMITER.length + 1
+  );
   if (endIndex === -1) {
     throw new CliError(`Unterminated frontmatter in ${sourcePath}`);
   }

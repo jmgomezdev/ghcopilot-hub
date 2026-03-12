@@ -1,7 +1,7 @@
 ---
 name: Implementador
-description: 'Implements from a plan'
-agents: ['Explore', 'test-sentinel', 'plan-guardian', 'archiver']
+description: "Implements from a plan"
+agents: ["Explore", "test-sentinel", "plan-guardian", "archiver"]
 tools:
   [
     execute,

@@ -38,7 +38,7 @@ Comprehensive guide to TanStack Query v5 caching, invalidation, and data synchro
 ```typescript
 // Real-time data (stock prices, notifications)
 useQuery({
-  queryKey: ['stock', symbol],
+  queryKey: ["stock", symbol],
   queryFn: () => fetchStock(symbol),
   staleTime: 0, // Always refetch
   refetchInterval: 5000, // Poll every 5s
@@ -46,21 +46,21 @@ useQuery({
 
 // User profile (changes occasionally)
 useQuery({
-  queryKey: ['user', userId],
+  queryKey: ["user", userId],
   queryFn: () => fetchUser(userId),
   staleTime: 5 * 60 * 1000, // Fresh for 5 minutes
 });
 
 // Static configuration (rarely changes)
 useQuery({
-  queryKey: ['config'],
+  queryKey: ["config"],
   queryFn: fetchConfig,
   staleTime: 60 * 60 * 1000, // Fresh for 1 hour
 });
 
 // Truly static data (never changes)
 useQuery({
-  queryKey: ['countries'],
+  queryKey: ["countries"],
   queryFn: fetchCountries,
   staleTime: Infinity, // Never refetch
 });
@@ -71,21 +71,21 @@ useQuery({
 ```typescript
 // Frequently revisited pages (keep in memory longer)
 useQuery({
-  queryKey: ['dashboard'],
+  queryKey: ["dashboard"],
   queryFn: fetchDashboard,
   gcTime: 30 * 60 * 1000, // Keep 30 minutes after unmount
 });
 
 // Large data that shouldn't linger
 useQuery({
-  queryKey: ['reports', year],
+  queryKey: ["reports", year],
   queryFn: () => fetchReports(year),
   gcTime: 60 * 1000, // Clear 1 minute after unmount
 });
 
 // Critical data (keep indefinitely)
 useQuery({
-  queryKey: ['currentUser'],
+  queryKey: ["currentUser"],
   queryFn: fetchCurrentUser,
   gcTime: Infinity, // Never garbage collect
 });
@@ -105,19 +105,19 @@ Query keys form a hierarchy. Invalidating a parent invalidates all children.
 //   └── ['todos', 'detail', '2']
 
 // Invalidate ALL todo queries (list + all details)
-queryClient.invalidateQueries({ queryKey: ['todos'] });
+queryClient.invalidateQueries({ queryKey: ["todos"] });
 
 // Invalidate only list queries (not details)
-queryClient.invalidateQueries({ queryKey: ['todos', 'list'] });
+queryClient.invalidateQueries({ queryKey: ["todos", "list"] });
 
 // Invalidate specific filter
 queryClient.invalidateQueries({
-  queryKey: ['todos', 'list', { filter: 'active' }],
+  queryKey: ["todos", "list", { filter: "active" }],
 });
 
 // Invalidate exact key only (not children)
 queryClient.invalidateQueries({
-  queryKey: ['todos', 'list'],
+  queryKey: ["todos", "list"],
   exact: true,
 });
 ```
@@ -132,7 +132,7 @@ const createTodo = useMutation({
   mutationFn: api.createTodo,
   onSuccess: () => {
     // Invalidate list to include new item
-    queryClient.invalidateQueries({ queryKey: ['todos', 'list'] });
+    queryClient.invalidateQueries({ queryKey: ["todos", "list"] });
   },
 });
 
@@ -141,9 +141,9 @@ const updateTodo = useMutation({
   onSuccess: (data, variables) => {
     // Invalidate specific item + list
     queryClient.invalidateQueries({
-      queryKey: ['todos', 'detail', variables.id],
+      queryKey: ["todos", "detail", variables.id],
     });
-    queryClient.invalidateQueries({ queryKey: ['todos', 'list'] });
+    queryClient.invalidateQueries({ queryKey: ["todos", "list"] });
   },
 });
 
@@ -151,9 +151,9 @@ const deleteTodo = useMutation({
   mutationFn: api.deleteTodo,
   onSuccess: (_, id) => {
     // Remove from cache entirely
-    queryClient.removeQueries({ queryKey: ['todos', 'detail', id] });
+    queryClient.removeQueries({ queryKey: ["todos", "detail", id] });
     // Invalidate list
-    queryClient.invalidateQueries({ queryKey: ['todos', 'list'] });
+    queryClient.invalidateQueries({ queryKey: ["todos", "list"] });
   },
 });
 ```
@@ -166,19 +166,19 @@ const updateTodo = useMutation({
 
   // Step 1: Cancel any outgoing refetches
   onMutate: async ({ id, ...updates }) => {
-    await queryClient.cancelQueries({ queryKey: ['todos', 'detail', id] });
-    await queryClient.cancelQueries({ queryKey: ['todos', 'list'] });
+    await queryClient.cancelQueries({ queryKey: ["todos", "detail", id] });
+    await queryClient.cancelQueries({ queryKey: ["todos", "list"] });
 
     // Step 2: Snapshot current state
-    const previousTodo = queryClient.getQueryData(['todos', 'detail', id]);
-    const previousList = queryClient.getQueryData(['todos', 'list']);
+    const previousTodo = queryClient.getQueryData(["todos", "detail", id]);
+    const previousList = queryClient.getQueryData(["todos", "list"]);
 
     // Step 3: Optimistically update both caches
-    queryClient.setQueryData(['todos', 'detail', id], (old) =>
+    queryClient.setQueryData(["todos", "detail", id], (old) =>
       old ? { ...old, ...updates } : undefined
     );
 
-    queryClient.setQueryData(['todos', 'list'], (old) =>
+    queryClient.setQueryData(["todos", "list"], (old) =>
       old?.map((todo) => (todo.id === id ? { ...todo, ...updates } : todo))
     );
 
@@ -189,18 +189,15 @@ const updateTodo = useMutation({
   // Step 5: Rollback on error
   onError: (err, variables, context) => {
     if (context) {
-      queryClient.setQueryData(
-        ['todos', 'detail', context.id],
-        context.previousTodo
-      );
-      queryClient.setQueryData(['todos', 'list'], context.previousList);
+      queryClient.setQueryData(["todos", "detail", context.id], context.previousTodo);
+      queryClient.setQueryData(["todos", "list"], context.previousList);
     }
   },
 
   // Step 6: Always reconcile with server
   onSettled: (data, error, { id }) => {
-    queryClient.invalidateQueries({ queryKey: ['todos', 'detail', id] });
-    queryClient.invalidateQueries({ queryKey: ['todos', 'list'] });
+    queryClient.invalidateQueries({ queryKey: ["todos", "detail", id] });
+    queryClient.invalidateQueries({ queryKey: ["todos", "list"] });
   },
 });
 ```
@@ -213,9 +210,9 @@ queryClient.invalidateQueries({
   predicate: (query) => {
     const key = query.queryKey;
     return (
-      key[0] === 'todos' &&
-      key[1] === 'list' &&
-      (key[2] as { filter?: string })?.filter === 'completed'
+      key[0] === "todos" &&
+      key[1] === "list" &&
+      (key[2] as { filter?: string })?.filter === "completed"
     );
   },
 });
@@ -230,7 +227,7 @@ queryClient.invalidateQueries({
 
 // Invalidate queries with errors
 queryClient.invalidateQueries({
-  predicate: (query) => query.state.status === 'error',
+  predicate: (query) => query.state.status === "error",
 });
 ```
 
@@ -238,26 +235,26 @@ queryClient.invalidateQueries({
 
 ```typescript
 // Invalidate only active queries (currently rendered)
-queryClient.invalidateQueries({ refetchType: 'active' });
+queryClient.invalidateQueries({ refetchType: "active" });
 
 // Invalidate inactive queries (not rendered but in cache)
-queryClient.invalidateQueries({ refetchType: 'inactive' });
+queryClient.invalidateQueries({ refetchType: "inactive" });
 
 // Invalidate all queries
-queryClient.invalidateQueries({ refetchType: 'all' });
+queryClient.invalidateQueries({ refetchType: "all" });
 ```
 
 ### 5. Refetch vs Invalidate
 
 ```typescript
 // invalidateQueries: Mark as stale, refetch if active
-queryClient.invalidateQueries({ queryKey: ['todos'] });
+queryClient.invalidateQueries({ queryKey: ["todos"] });
 // - Marks all matching queries as stale
 // - Active queries refetch immediately
 // - Inactive queries refetch on next mount
 
 // refetchQueries: Force immediate refetch
-queryClient.refetchQueries({ queryKey: ['todos'], type: 'active' });
+queryClient.refetchQueries({ queryKey: ["todos"], type: "active" });
 // - Forces refetch regardless of stale state
 // - Only refetches specified type
 
@@ -272,57 +269,51 @@ queryClient.refetchQueries({ queryKey: ['todos'], type: 'active' });
 
 ```typescript
 // Update single item
-queryClient.setQueryData(['user', userId], (old) =>
-  old ? { ...old, name: 'New Name' } : undefined
+queryClient.setQueryData(["user", userId], (old) =>
+  old ? { ...old, name: "New Name" } : undefined
 );
 
 // Add item to list
-queryClient.setQueryData(['todos', 'list'], (old) =>
-  old ? [...old, newTodo] : [newTodo]
-);
+queryClient.setQueryData(["todos", "list"], (old) => (old ? [...old, newTodo] : [newTodo]));
 
 // Update item in list
-queryClient.setQueryData(['todos', 'list'], (old) =>
+queryClient.setQueryData(["todos", "list"], (old) =>
   old?.map((todo) => (todo.id === updatedTodo.id ? updatedTodo : todo))
 );
 
 // Remove item from list
-queryClient.setQueryData(['todos', 'list'], (old) =>
-  old?.filter((todo) => todo.id !== deletedId)
-);
+queryClient.setQueryData(["todos", "list"], (old) => old?.filter((todo) => todo.id !== deletedId));
 
 // ⚠️ IMPORTANT: Always return new reference
 // ❌ BAD: Mutating existing data
-queryClient.setQueryData(['todos'], (old) => {
+queryClient.setQueryData(["todos"], (old) => {
   old?.push(newTodo); // Mutation!
   return old;
 });
 
 // ✅ GOOD: Return new array
-queryClient.setQueryData(['todos'], (old) =>
-  old ? [...old, newTodo] : [newTodo]
-);
+queryClient.setQueryData(["todos"], (old) => (old ? [...old, newTodo] : [newTodo]));
 ```
 
 ### getQueryData & getQueriesData
 
 ```typescript
 // Get single query data
-const user = queryClient.getQueryData<User>(['user', userId]);
+const user = queryClient.getQueryData<User>(["user", userId]);
 
 // Get all matching queries
 const allTodoQueries = queryClient.getQueriesData<Todo[]>({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
 });
 // Returns: Array<[queryKey, data]>
 
 // Check if data exists
-const hasUser = queryClient.getQueryData(['user', userId]) !== undefined;
+const hasUser = queryClient.getQueryData(["user", userId]) !== undefined;
 
 // Get query state (includes status, error, etc.)
-const state = queryClient.getQueryState(['user', userId]);
-if (state?.status === 'error') {
-  console.log('Query failed:', state.error);
+const state = queryClient.getQueryState(["user", userId]);
+if (state?.status === "error") {
+  console.log("Query failed:", state.error);
 }
 ```
 
@@ -330,13 +321,13 @@ if (state?.status === 'error') {
 
 ```typescript
 // Remove specific query
-queryClient.removeQueries({ queryKey: ['todos', 'detail', deletedId] });
+queryClient.removeQueries({ queryKey: ["todos", "detail", deletedId] });
 
 // Remove all queries matching prefix
-queryClient.removeQueries({ queryKey: ['todos'] });
+queryClient.removeQueries({ queryKey: ["todos"] });
 
 // Remove inactive queries only
-queryClient.removeQueries({ queryKey: ['todos'], type: 'inactive' });
+queryClient.removeQueries({ queryKey: ["todos"], type: "inactive" });
 ```
 
 ## Cache Persistence
@@ -385,8 +376,8 @@ function App() {
 ### Async Persistence (IndexedDB)
 
 ```typescript
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister';
-import { del, get, set } from 'idb-keyval';
+import { createAsyncStoragePersister } from "@tanstack/query-async-storage-persister";
+import { del, get, set } from "idb-keyval";
 
 const persister = createAsyncStoragePersister({
   storage: {
@@ -394,7 +385,7 @@ const persister = createAsyncStoragePersister({
     setItem: async (key, value) => await set(key, value),
     removeItem: async (key) => await del(key),
   },
-  key: 'REACT_QUERY_CACHE',
+  key: "REACT_QUERY_CACHE",
 });
 ```
 
@@ -404,7 +395,7 @@ const persister = createAsyncStoragePersister({
 
 ```typescript
 useQuery({
-  queryKey: ['notifications'],
+  queryKey: ["notifications"],
   queryFn: fetchNotifications,
   refetchInterval: 30000, // Poll every 30s
   refetchIntervalInBackground: false, // Pause when tab hidden
@@ -416,16 +407,16 @@ useQuery({
 ```typescript
 // Subscribe to WebSocket updates
 useEffect(() => {
-  const ws = new WebSocket('wss://api.example.com/ws');
+  const ws = new WebSocket("wss://api.example.com/ws");
 
   ws.onmessage = (event) => {
     const data = JSON.parse(event.data);
 
-    if (data.type === 'TODO_UPDATED') {
+    if (data.type === "TODO_UPDATED") {
       // Update cache directly
-      queryClient.setQueryData(['todos', data.todo.id], data.todo);
+      queryClient.setQueryData(["todos", data.todo.id], data.todo);
       // Invalidate list to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['todos', 'list'] });
+      queryClient.invalidateQueries({ queryKey: ["todos", "list"] });
     }
   };
 
@@ -437,9 +428,9 @@ useEffect(() => {
 
 ```typescript
 useEffect(() => {
-  const eventSource = new EventSource('/api/events');
+  const eventSource = new EventSource("/api/events");
 
-  eventSource.addEventListener('cache-invalidation', (event) => {
+  eventSource.addEventListener("cache-invalidation", (event) => {
     const { queryKey } = JSON.parse(event.data);
     queryClient.invalidateQueries({ queryKey });
   });
@@ -463,9 +454,9 @@ useEffect(() => {
 
 ```typescript
 // Log all query activity in development
-if (process.env.NODE_ENV === 'development') {
+if (process.env.NODE_ENV === "development") {
   queryClient.getQueryCache().subscribe((event) => {
-    console.log('Query event:', event.type, event.query.queryKey);
+    console.log("Query event:", event.type, event.query.queryKey);
   });
 }
 

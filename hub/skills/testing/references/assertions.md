@@ -6,23 +6,23 @@ Increase test signal-to-noise ratio using assertions that prove behavior contrac
 
 ## Assertion Depth Model
 
-| Depth | What It Proves | Example |
-| --- | --- | --- |
-| Presence | Something exists | `toBeInTheDocument()` |
-| Contract | Data/business output is correct | `toEqual(expectedDomainEntity)` |
-| Side effect | Integration behavior happened | `toHaveBeenCalledWith(expectedRequest)` |
+| Depth       | What It Proves                  | Example                                 |
+| ----------- | ------------------------------- | --------------------------------------- |
+| Presence    | Something exists                | `toBeInTheDocument()`                   |
+| Contract    | Data/business output is correct | `toEqual(expectedDomainEntity)`         |
+| Side effect | Integration behavior happened   | `toHaveBeenCalledWith(expectedRequest)` |
 
 Prefer the deepest assertion needed for risk coverage.
 
 ## Matcher Selection Guide
 
-| Intent | Preferred Matcher | Avoid |
-| --- | --- | --- |
-| Exact object contract | `toEqual` | `toBe` for object literals |
-| Partial object contract | `toMatchObject` | Asserting every irrelevant field |
-| Collection size | `toHaveLength` | Manual `length === n` with generic boolean |
-| Error path | `toThrow`, `rejects.toThrow` | Generic truthy checks |
-| Call contract | `toHaveBeenCalledWith` | Only checking call count |
+| Intent                  | Preferred Matcher            | Avoid                                      |
+| ----------------------- | ---------------------------- | ------------------------------------------ |
+| Exact object contract   | `toEqual`                    | `toBe` for object literals                 |
+| Partial object contract | `toMatchObject`              | Asserting every irrelevant field           |
+| Collection size         | `toHaveLength`               | Manual `length === n` with generic boolean |
+| Error path              | `toThrow`, `rejects.toThrow` | Generic truthy checks                      |
+| Call contract           | `toHaveBeenCalledWith`       | Only checking call count                   |
 
 ## AAA Discipline for Readability
 
@@ -40,7 +40,7 @@ Use `it.each` only when arrange/act shape is identical across rows.
 it.each([
   { qty: 1, expected: 10 },
   { qty: 2, expected: 20 },
-])('calculates total for qty=$qty', ({ qty, expected }) => {
+])("calculates total for qty=$qty", ({ qty, expected }) => {
   expect(calculateTotal(qty)).toBe(expected);
 });
 ```

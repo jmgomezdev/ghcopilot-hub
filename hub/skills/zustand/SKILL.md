@@ -63,8 +63,8 @@ const useSettingsStore = create<SettingsStore>()(
     }),
     {
       name: "settings-storage", // localStorage key
-    },
-  ),
+    }
+  )
 );
 ```
 
@@ -187,7 +187,7 @@ const useTodoStore = create<TodoStore>()(
         const todo = state.todos.find((t) => t.id === id);
         if (todo) todo.done = !todo.done;
       }),
-  })),
+  }))
 );
 ```
 
@@ -202,8 +202,8 @@ const useStore = create<Store>()(
     (set) => ({
       // store definition
     }),
-    { name: "MyStore" }, // Name in Redux DevTools
-  ),
+    { name: "MyStore" } // Name in Redux DevTools
+  )
 );
 ```
 
@@ -215,7 +215,9 @@ const { count, increment } = useCounterStore.getState();
 increment();
 
 // Subscribe to changes
-const unsubscribe = useCounterStore.subscribe((state) => console.log("Count changed:", state.count));
+const unsubscribe = useCounterStore.subscribe((state) =>
+  console.log("Count changed:", state.count)
+);
 ```
 
 ## TanStack Integration (Route Loader)

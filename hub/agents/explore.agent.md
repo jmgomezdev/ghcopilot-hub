@@ -1,6 +1,6 @@
 ---
 name: Explore
-description: 'Quick repository exploration: routes, patterns, and entry points.'
+description: "Quick repository exploration: routes, patterns, and entry points."
 tools: [read/readFile, search]
 model: Grok Code Fast 1 (copilot)
 ---

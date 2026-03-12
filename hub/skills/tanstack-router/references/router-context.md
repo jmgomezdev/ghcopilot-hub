@@ -10,12 +10,8 @@
 ## Minimal example
 
 ```tsx
-import type { QueryClient } from '@tanstack/react-query';
-import {
-  createRootRouteWithContext,
-  createRoute,
-  createRouter,
-} from '@tanstack/react-router';
+import type { QueryClient } from "@tanstack/react-query";
+import { createRootRouteWithContext, createRoute, createRouter } from "@tanstack/react-router";
 
 type RouterContext = { queryClient: QueryClient };
 
@@ -25,7 +21,7 @@ export const rootRoute = createRootRouteWithContext<RouterContext>()({
 
 export const listRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/',
+  path: "/",
   loader: async ({ context: { queryClient } }) => {
     await queryClient.ensureQueryData(productQueries.list());
   },

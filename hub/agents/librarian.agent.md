@@ -1,7 +1,7 @@
 ---
 name: Librarian
-description: 'Finds implementation examples, docs, OSS patterns, and technical summaries. Feeds the planner with TS signatures, gotchas, and anti-patterns.'
-tools: [read/readFile, search, 'context7/*', web]
+description: "Finds implementation examples, docs, OSS patterns, and technical summaries. Feeds the planner with TS signatures, gotchas, and anti-patterns."
+tools: [read/readFile, search, "context7/*", web]
 model: Claude Sonnet 4.6 (copilot)
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: Momus
-description: 'Reviews plans: clarity, verifiability, completeness, risks, strict TDD, and zero ambiguity.'
+description: "Reviews plans: clarity, verifiability, completeness, risks, strict TDD, and zero ambiguity."
 tools: [read/readFile, search]
 model: Gemini 3.1 Pro (Preview) (copilot)
 ---

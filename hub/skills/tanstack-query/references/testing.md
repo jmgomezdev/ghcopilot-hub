@@ -9,8 +9,8 @@
 ## Test Utils
 
 ```tsx
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render } from "@testing-library/react";
 
 export function createTestQueryClient() {
   return new QueryClient({
@@ -30,9 +30,7 @@ export function createTestQueryClient() {
 
 export function renderWithClient(ui: React.ReactElement) {
   const testQueryClient = createTestQueryClient();
-  return render(
-    <QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>
-  );
+  return render(<QueryClientProvider client={testQueryClient}>{ui}</QueryClientProvider>);
 }
 ```
 
@@ -41,15 +39,13 @@ export function renderWithClient(ui: React.ReactElement) {
 ## Testing Queries
 
 ```tsx
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor } from "@testing-library/react";
 
-describe('useTodos', () => {
-  it('fetches todos successfully', async () => {
+describe("useTodos", () => {
+  it("fetches todos successfully", async () => {
     const { result } = renderHook(() => useTodos(), {
       wrapper: ({ children }) => (
-        <QueryClientProvider client={createTestQueryClient()}>
-          {children}
-        </QueryClientProvider>
+        <QueryClientProvider client={createTestQueryClient()}>{children}</QueryClientProvider>
       ),
     });
 
@@ -64,12 +60,12 @@ describe('useTodos', () => {
 ## Testing with MSW
 
 ```tsx
-import { HttpResponse, http } from 'msw';
-import { setupServer } from 'msw/node';
+import { HttpResponse, http } from "msw";
+import { setupServer } from "msw/node";
 
 const server = setupServer(
-  http.get('/api/todos', () => {
-    return HttpResponse.json([{ id: 1, title: 'Test todo', completed: false }]);
+  http.get("/api/todos", () => {
+    return HttpResponse.json([{ id: 1, title: "Test todo", completed: false }]);
   })
 );
 ```
@@ -79,11 +75,11 @@ const server = setupServer(
 ## Testing Mutations
 
 ```tsx
-test('adds todo successfully', async () => {
+test("adds todo successfully", async () => {
   const { result } = renderHook(() => useAddTodo());
 
   act(() => {
-    result.current.mutate({ title: 'New todo' });
+    result.current.mutate({ title: "New todo" });
   });
 
   await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -95,7 +91,7 @@ test('adds todo successfully', async () => {
 ## Testing Components with Suspense
 
 ```tsx
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 render(
   <QueryClientProvider client={createTestQueryClient()}>

@@ -6,14 +6,14 @@ Choose the smallest test that validates the right boundary without violating Cle
 
 ## Boundary-First Decision Table
 
-| Change Type | Primary Layer to Test | Test Type | Allowed Mocks | Primary Confidence Signal |
-| --- | --- | --- | --- | --- |
-| Business rule or schema update | `src/domain` | Unit | None | Input-output contract and thrown errors |
-| Query key factory or app hook orchestration | `src/application` | Unit | Repositories, client state stores | Stable query key, hook outcome, called dependency contract |
-| DTO mapping or repository behavior | `src/infrastructure` | Integration | HTTP boundary only (MSW) | Correct endpoint + mapped domain entity shape |
-| Loader/search param wiring | `src/interface` | Integration | Application boundary only | URL input transformed to correct query options |
-| Component interaction and accessibility | `src/presentation` | Component integration | Application hooks/stores | User-visible behavior through roles/labels |
-| Full user journey across routes | E2E scope | Cypress E2E | External dependencies only when unstable | Journey succeeds through real browser flow |
+| Change Type                                 | Primary Layer to Test | Test Type             | Allowed Mocks                            | Primary Confidence Signal                                  |
+| ------------------------------------------- | --------------------- | --------------------- | ---------------------------------------- | ---------------------------------------------------------- |
+| Business rule or schema update              | `src/domain`          | Unit                  | None                                     | Input-output contract and thrown errors                    |
+| Query key factory or app hook orchestration | `src/application`     | Unit                  | Repositories, client state stores        | Stable query key, hook outcome, called dependency contract |
+| DTO mapping or repository behavior          | `src/infrastructure`  | Integration           | HTTP boundary only (MSW)                 | Correct endpoint + mapped domain entity shape              |
+| Loader/search param wiring                  | `src/interface`       | Integration           | Application boundary only                | URL input transformed to correct query options             |
+| Component interaction and accessibility     | `src/presentation`    | Component integration | Application hooks/stores                 | User-visible behavior through roles/labels                 |
+| Full user journey across routes             | E2E scope             | Cypress E2E           | External dependencies only when unstable | Journey succeeds through real browser flow                 |
 
 ## Layer Ownership Rules
 
@@ -33,14 +33,14 @@ Choose the smallest test that validates the right boundary without violating Cle
 
 ## Placement Heuristics
 
-| Source File Pattern | Preferred Test Location | Why |
-| --- | --- | --- |
-| `src/domain/**/{Entity}.schema.ts` | same folder `*.test.ts` | Fast feedback for invariant changes |
-| `src/application/**/**.queries.ts` | same folder `*.test.ts` | Query key drift detected early |
-| `src/infrastructure/**/**.repository.ts` | same folder `*.test.ts` | Endpoint/mapping contract coverage |
-| `src/interface/router/routes/**/*.route.tsx` | same folder `*.test.ts` | Loader and param adapter correctness |
-| `src/presentation/**/*.tsx` | same folder `*.test.tsx` | User-facing behavior preserved |
-| `cypress/e2e/**/*.cy.ts` | feature-aligned spec file | Journey-level confidence |
+| Source File Pattern                          | Preferred Test Location   | Why                                  |
+| -------------------------------------------- | ------------------------- | ------------------------------------ |
+| `src/domain/**/{Entity}.schema.ts`           | same folder `*.test.ts`   | Fast feedback for invariant changes  |
+| `src/application/**/**.queries.ts`           | same folder `*.test.ts`   | Query key drift detected early       |
+| `src/infrastructure/**/**.repository.ts`     | same folder `*.test.ts`   | Endpoint/mapping contract coverage   |
+| `src/interface/router/routes/**/*.route.tsx` | same folder `*.test.ts`   | Loader and param adapter correctness |
+| `src/presentation/**/*.tsx`                  | same folder `*.test.tsx`  | User-facing behavior preserved       |
+| `cypress/e2e/**/*.cy.ts`                     | feature-aligned spec file | Journey-level confidence             |
 
 ## Fast Selection Checklist
 
@@ -51,11 +51,11 @@ Choose the smallest test that validates the right boundary without violating Cle
 
 ## Typical Misclassification and Fix
 
-| Smell | Why It Is Wrong | Correct Move |
-| --- | --- | --- |
-| Testing loader logic in component tests | Adapter behavior hidden behind UI noise | Add interface loader integration test |
-| Testing mapper shape in domain tests | Domain does not know DTO contracts | Move to infrastructure integration test |
-| Asserting store selectors in E2E | E2E should observe user outcomes | Assert visible state and URL, not internals |
+| Smell                                   | Why It Is Wrong                         | Correct Move                                |
+| --------------------------------------- | --------------------------------------- | ------------------------------------------- |
+| Testing loader logic in component tests | Adapter behavior hidden behind UI noise | Add interface loader integration test       |
+| Testing mapper shape in domain tests    | Domain does not know DTO contracts      | Move to infrastructure integration test     |
+| Asserting store selectors in E2E        | E2E should observe user outcomes        | Assert visible state and URL, not internals |
 
 ## Exit Criteria by Layer
 

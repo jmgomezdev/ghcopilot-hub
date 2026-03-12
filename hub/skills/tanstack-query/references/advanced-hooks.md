@@ -7,11 +7,11 @@
 Access mutation state from any component without prop drilling:
 
 ```tsx
-import { useMutationState } from '@tanstack/react-query';
+import { useMutationState } from "@tanstack/react-query";
 
 function GlobalLoadingIndicator() {
   const pendingMutations = useMutationState({
-    filters: { status: 'pending' },
+    filters: { status: "pending" },
     select: (mutation) => mutation.state.variables,
   });
 
@@ -21,7 +21,7 @@ function GlobalLoadingIndicator() {
 
 // Filter by mutationKey
 const todoMutations = useMutationState({
-  filters: { mutationKey: ['addTodo'] },
+  filters: { mutationKey: ["addTodo"] },
 });
 ```
 
@@ -37,15 +37,15 @@ Control behavior when offline:
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      networkMode: 'offlineFirst',
+      networkMode: "offlineFirst",
     },
   },
 });
 
 useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
-  networkMode: 'always',
+  networkMode: "always",
 });
 ```
 
@@ -94,10 +94,10 @@ import {
   infiniteQueryOptions,
   prefetchInfiniteQuery,
   useInfiniteQuery,
-} from '@tanstack/react-query';
+} from "@tanstack/react-query";
 
 const todosInfiniteOptions = infiniteQueryOptions({
-  queryKey: ['todos', 'infinite'],
+  queryKey: ["todos", "infinite"],
   queryFn: ({ pageParam }) => fetchTodosPage(pageParam),
   initialPageParam: 0,
   getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -114,7 +114,7 @@ Limit cached pages for infinite queries:
 
 ```tsx
 useInfiniteQuery({
-  queryKey: ['posts'],
+  queryKey: ["posts"],
   queryFn: ({ pageParam }) => fetchPosts(pageParam),
   initialPageParam: 0,
   getNextPageParam: (lastPage) => lastPage.nextCursor,

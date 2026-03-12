@@ -5,12 +5,12 @@ Use these examples when implementing routes in `src/interface/router/routes/**`.
 ## A. List Route with Search Validation and Preload
 
 ```typescript
-import { createFileRoute, redirect } from '@tanstack/react-router';
-import { z } from 'zod';
+import { createFileRoute, redirect } from "@tanstack/react-router";
+import { z } from "zod";
 
-import { productQueries } from '@/application/product/product.queries';
-import { usePreferencesStore } from '@/application/product/store/preferences.store';
-import { ProductListPage } from '@/presentation/product/ProductList.page';
+import { productQueries } from "@/application/product/product.queries";
+import { usePreferencesStore } from "@/application/product/store/preferences.store";
+import { ProductListPage } from "@/presentation/product/ProductList.page";
 
 const listSearchSchema = z.object({
   q: z.string().optional(),
@@ -19,14 +19,14 @@ const listSearchSchema = z.object({
   pageSize: z.number().catch(20),
 });
 
-export const Route = createFileRoute('/products/')({
+export const Route = createFileRoute("/products/")({
   validateSearch: (search) => listSearchSchema.parse(search),
   loaderDeps: ({ search }) => ({ search }),
   loader: async ({ context: { queryClient }, deps: { search } }) => {
     const storeId = usePreferencesStore.getState().storeId;
 
     if (!storeId) {
-      throw redirect({ to: '/select-store' });
+      throw redirect({ to: "/select-store" });
     }
 
     await queryClient.ensureQueryData(productQueries.list(storeId, search));
@@ -38,12 +38,12 @@ export const Route = createFileRoute('/products/')({
 ## B. Detail Route with Param Mapping
 
 ```typescript
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute } from "@tanstack/react-router";
 
-import { productQueries } from '@/application/product/product.queries';
-import { ProductDetailPage } from '@/presentation/product/ProductDetail.page';
+import { productQueries } from "@/application/product/product.queries";
+import { ProductDetailPage } from "@/presentation/product/ProductDetail.page";
 
-export const Route = createFileRoute('/products/$productId')({
+export const Route = createFileRoute("/products/$productId")({
   loader: async ({ context: { queryClient }, params }) => {
     await queryClient.ensureQueryData(productQueries.detail(params.productId));
   },
@@ -63,7 +63,7 @@ export const Route = createFileRoute('/products/$productId')({
 Use this pattern when loader reads can fail with recoverable UX:
 
 ```typescript
-export const Route = createFileRoute('/products')({
+export const Route = createFileRoute("/products")({
   loader: async ({ context: { queryClient }, params }) => {
     await queryClient.ensureQueryData(productQueries.detail(params.productId));
   },

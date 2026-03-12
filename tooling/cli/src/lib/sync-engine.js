@@ -13,7 +13,7 @@ import {
 } from "./fs-utils.js";
 import { hashContent, parseManagedFile, renderManagedFile } from "./managed-header.js";
 
-export async function createDesiredFiles({ hubDir, resolvedState, revision }) {
+export async function createDesiredFiles({ resolvedState, revision }) {
   const desiredFiles = [];
 
   for (const baseFile of resolvedState.baseFiles) {
@@ -30,7 +30,9 @@ export async function createDesiredFiles({ hubDir, resolvedState, revision }) {
     }
   }
 
-  return desiredFiles.sort((left, right) => left.targetRelativePath.localeCompare(right.targetRelativePath));
+  return desiredFiles.sort((left, right) =>
+    left.targetRelativePath.localeCompare(right.targetRelativePath)
+  );
 }
 
 export async function planProjectSync({ projectDir, desiredFiles, onConflict }) {
@@ -77,7 +79,10 @@ export async function planProjectSync({ projectDir, desiredFiles, onConflict }) 
     }
 
     if (parsedManaged.body === desiredFile.body) {
-      update.push({ targetRelativePath: desiredFile.targetRelativePath, reason: "revision metadata changed" });
+      update.push({
+        targetRelativePath: desiredFile.targetRelativePath,
+        reason: "revision metadata changed",
+      });
       continue;
     }
 
@@ -119,7 +124,10 @@ export async function planProjectSync({ projectDir, desiredFiles, onConflict }) 
         continue;
       }
 
-      remove.push({ targetRelativePath: entry.targetRelativePath, reason: "orphaned managed file" });
+      remove.push({
+        targetRelativePath: entry.targetRelativePath,
+        reason: "orphaned managed file",
+      });
       continue;
     }
 

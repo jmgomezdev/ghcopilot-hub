@@ -5,9 +5,9 @@ Use these examples when creating or refactoring `src/application/{feature}/{enti
 ## A. Key Factories with Deterministic Identity
 
 ```typescript
-import { queryOptions } from '@tanstack/react-query';
+import { queryOptions } from "@tanstack/react-query";
 
-import { ProductRepository } from '@/infrastructure/product/product.repository';
+import { ProductRepository } from "@/infrastructure/product/product.repository";
 
 export type ProductListSearch = {
   q?: string;
@@ -24,11 +24,11 @@ const normalizeSearch = (search: ProductListSearch): ProductListSearch => ({
 });
 
 export const productKeys = {
-  all: ['products'] as const,
-  lists: () => [...productKeys.all, 'list'] as const,
+  all: ["products"] as const,
+  lists: () => [...productKeys.all, "list"] as const,
   list: (storeId: string, search: ProductListSearch) =>
     [...productKeys.lists(), storeId, normalizeSearch(search)] as const,
-  details: () => [...productKeys.all, 'detail'] as const,
+  details: () => [...productKeys.all, "detail"] as const,
   detail: (id: string) => [...productKeys.details(), id] as const,
 };
 
@@ -36,8 +36,7 @@ export const productQueries = {
   list: (storeId: string, search: ProductListSearch) =>
     queryOptions({
       queryKey: productKeys.list(storeId, search),
-      queryFn: () =>
-        ProductRepository.getListByStore(storeId, normalizeSearch(search)),
+      queryFn: () => ProductRepository.getListByStore(storeId, normalizeSearch(search)),
       staleTime: 1000 * 60,
       gcTime: 1000 * 60 * 10,
     }),
@@ -53,11 +52,11 @@ export const productQueries = {
 ## B. Invalidation After Mutations
 
 ```typescript
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { ProductRepository } from '@/infrastructure/product/product.repository';
+import { ProductRepository } from "@/infrastructure/product/product.repository";
 
-import { productKeys } from './product.queries';
+import { productKeys } from "./product.queries";
 
 export const useUpdateProduct = () => {
   const queryClient = useQueryClient();
@@ -88,15 +87,13 @@ export const useUpdateProduct = () => {
 Use callback injection to keep feedback UI outside Application internals.
 
 ```typescript
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { ProductRepository } from '@/infrastructure/product/product.repository';
+import { ProductRepository } from "@/infrastructure/product/product.repository";
 
-import { productKeys } from './product.queries';
+import { productKeys } from "./product.queries";
 
-export const useUpdateProduct = (
-  onErrorFeedback: (message: string) => void
-) => {
+export const useUpdateProduct = (onErrorFeedback: (message: string) => void) => {
   const queryClient = useQueryClient();
 
   return useMutation({
@@ -107,7 +104,7 @@ export const useUpdateProduct = (
       });
     },
     onError: () => {
-      onErrorFeedback('Failed to update product. Please retry.');
+      onErrorFeedback("Failed to update product. Please retry.");
     },
   });
 };

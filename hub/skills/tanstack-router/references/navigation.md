@@ -9,24 +9,16 @@
 ## Minimal example
 
 ```tsx
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useNavigate } from "@tanstack/react-router";
 
-<Link
-  to="/products/$productId"
-  params={{ productId: product.id }}
-  preload="intent"
->
+<Link to="/products/$productId" params={{ productId: product.id }} preload="intent">
   View
 </Link>;
 
 const navigate = useNavigate();
-navigate({ to: '/products' });
+navigate({ to: "/products" });
 
-<Link
-  to="/products/$productId"
-  params={{ productId: product.id }}
-  mask={{ to: '/products' }}
->
+<Link to="/products/$productId" params={{ productId: product.id }} mask={{ to: "/products" }}>
   Quick view
 </Link>;
 ```

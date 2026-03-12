@@ -25,7 +25,9 @@ export const REQUIRED_DIRS = [
 ];
 
 export function getRequiredDirs(preserveLocalOverrides) {
-  return preserveLocalOverrides ? [...REQUIRED_DIRS, ".github/local-overrides"] : [...REQUIRED_DIRS];
+  return preserveLocalOverrides
+    ? [...REQUIRED_DIRS, ".github/local-overrides"]
+    : [...REQUIRED_DIRS];
 }
 
 export function getDefaultHubDir() {

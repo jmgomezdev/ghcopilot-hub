@@ -5,20 +5,20 @@ Use these examples in `src/application/{feature}/hooks` and `src/presentation/{f
 ## A. Application Hook for Route Search Data
 
 ```typescript
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { getRouteApi } from '@tanstack/react-router';
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { getRouteApi } from "@tanstack/react-router";
 
-import { productQueries } from '@/application/product/product.queries';
-import { usePreferencesStore } from '@/application/product/store/preferences.store';
+import { productQueries } from "@/application/product/product.queries";
+import { usePreferencesStore } from "@/application/product/store/preferences.store";
 
-const productsRouteApi = getRouteApi('/products/');
+const productsRouteApi = getRouteApi("/products/");
 
 export const useProductsFromRoute = () => {
   const search = productsRouteApi.useSearch();
   const storeId = usePreferencesStore((state) => state.storeId);
 
   if (!storeId) {
-    throw new Error('storeId is required to fetch products');
+    throw new Error("storeId is required to fetch products");
   }
 
   return useSuspenseQuery(productQueries.list(storeId, search));
@@ -28,7 +28,7 @@ export const useProductsFromRoute = () => {
 ## B. Presentation Page Consuming Application Hook
 
 ```tsx
-import { useProductsFromRoute } from '@/application/product/hooks/useProductsFromRoute';
+import { useProductsFromRoute } from "@/application/product/hooks/useProductsFromRoute";
 
 export const ProductListPage = () => {
   const { data } = useProductsFromRoute();
@@ -63,10 +63,10 @@ When the page has route-critical data and local UI interactions:
 ## E. Route Entry Fallback Composition
 
 ```tsx
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ProductListPage } from '@/presentation/product/ProductList.page';
-import { ProductListSkeleton } from '@/presentation/product/components/ProductListSkeleton';
+import { ProductListPage } from "@/presentation/product/ProductList.page";
+import { ProductListSkeleton } from "@/presentation/product/components/ProductListSkeleton";
 
 export const ProductListRouteView = () => (
   <Suspense fallback={<ProductListSkeleton />}>

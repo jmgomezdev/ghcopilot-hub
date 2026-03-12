@@ -11,7 +11,7 @@
 **Fix**:
 
 ```tsx
-useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+useQuery({ queryKey: ["todos"], queryFn: fetchTodos });
 ```
 
 ---
@@ -23,7 +23,7 @@ useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
 **Fix**:
 
 ```tsx
-const { data } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+const { data } = useQuery({ queryKey: ["todos"], queryFn: fetchTodos });
 useEffect(() => {
   if (data) console.log(data);
 }, [data]);
@@ -38,7 +38,7 @@ useEffect(() => {
 **Fix**:
 
 ```tsx
-const { isPending } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+const { isPending } = useQuery({ queryKey: ["todos"], queryFn: fetchTodos });
 ```
 
 ---
@@ -77,7 +77,7 @@ gcTime: 1000 * 60 * 60;
 
 ```tsx
 useInfiniteQuery({
-  queryKey: ['projects'],
+  queryKey: ["projects"],
   queryFn: ({ pageParam }) => fetchProjects(pageParam),
   initialPageParam: 0,
   getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -93,10 +93,10 @@ useInfiniteQuery({
 **Fix**:
 
 ```tsx
-import { keepPreviousData } from '@tanstack/react-query';
+import { keepPreviousData } from "@tanstack/react-query";
 
 useQuery({
-  queryKey: ['todos', page],
+  queryKey: ["todos", page],
   queryFn: () => fetchTodos(page),
   placeholderData: keepPreviousData,
 });
@@ -112,9 +112,9 @@ useQuery({
 
 ```tsx
 const { error } = useQuery<DataType, string>({
-  queryKey: ['data'],
+  queryKey: ["data"],
   queryFn: async () => {
-    if (fail) throw 'custom error';
+    if (fail) throw "custom error";
     return data;
   },
 });
@@ -130,8 +130,8 @@ const { error } = useQuery<DataType, string>({
 
 ```tsx
 queryClient.invalidateQueries({
-  queryKey: ['todos'],
-  refetchType: 'all',
+  queryKey: ["todos"],
+  refetchType: "all",
 });
 ```
 

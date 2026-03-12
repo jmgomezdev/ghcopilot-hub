@@ -17,7 +17,7 @@ These invariants protect RHF's internal item identity.
 const { control, register } = useOrderForm();
 const { fields, append, remove, move } = useFieldArray({
   control,
-  name: 'items',
+  name: "items",
 });
 
 return (
@@ -25,10 +25,7 @@ return (
     {fields.map((field, index) => (
       <div key={field.id}>
         <input {...register(`items.${index}.sku`)} />
-        <input
-          type="number"
-          {...register(`items.${index}.qty`, { valueAsNumber: true })}
-        />
+        <input type="number" {...register(`items.${index}.qty`, { valueAsNumber: true })} />
         <button type="button" onClick={() => remove(index)}>
           Remove
         </button>

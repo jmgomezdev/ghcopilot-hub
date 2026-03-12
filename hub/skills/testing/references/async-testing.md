@@ -6,13 +6,13 @@ Eliminate race conditions and flaky waits by matching each async source with the
 
 ## Async Source Matrix
 
-| Async Source | Correct Wait Strategy | Deterministic Signal | Common Failure |
-| --- | --- | --- | --- |
-| Promise-returning function | `await expect(...).resolves/rejects` | resolved value or thrown error | Missing `await` leading to false positives |
-| UI async render | `await screen.findBy*` | role/text visible | Asserting with `getBy*` too early |
-| User interaction cascade | `await user.click/type` + `findBy*` | post-action UI state | Mixing sync and async user-event APIs |
-| Timer-based behavior | fake timers + controlled advance | callback/result after time advance | Real timers in CI produce random delays |
-| Query refetch/invalidation | await final UI/data state | stable post-mutation output | Asserting intermediate fetching states |
+| Async Source               | Correct Wait Strategy                | Deterministic Signal               | Common Failure                             |
+| -------------------------- | ------------------------------------ | ---------------------------------- | ------------------------------------------ |
+| Promise-returning function | `await expect(...).resolves/rejects` | resolved value or thrown error     | Missing `await` leading to false positives |
+| UI async render            | `await screen.findBy*`               | role/text visible                  | Asserting with `getBy*` too early          |
+| User interaction cascade   | `await user.click/type` + `findBy*`  | post-action UI state               | Mixing sync and async user-event APIs      |
+| Timer-based behavior       | fake timers + controlled advance     | callback/result after time advance | Real timers in CI produce random delays    |
+| Query refetch/invalidation | await final UI/data state            | stable post-mutation output        | Asserting intermediate fetching states     |
 
 ## Completion Signals by Layer
 
@@ -32,7 +32,7 @@ Eliminate race conditions and flaky waits by matching each async source with the
 ## Rejection Testing Pattern
 
 ```ts
-await expect(runUseCase(input)).rejects.toThrow('Invalid state');
+await expect(runUseCase(input)).rejects.toThrow("Invalid state");
 ```
 
 Avoid wrapping async call in `expect(() => ...)` for rejected promises.
@@ -40,7 +40,7 @@ Avoid wrapping async call in `expect(() => ...)` for rejected promises.
 ## Timer Control Pattern
 
 ```ts
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 vi.useFakeTimers();
 startCountdown();
@@ -53,11 +53,11 @@ Always restore timers to avoid cross-test leakage.
 
 ## Flake Triage (Async)
 
-| Symptom | Likely Cause | Fix |
-| --- | --- | --- |
-| Passes locally, fails in CI | Hidden timing dependency | Replace sleeps with signal-based waits |
-| Intermittent missing element | Query before render completion | Switch `getBy*` to `findBy*` |
-| Random extra calls | Retries enabled | Disable retries for tests |
+| Symptom                      | Likely Cause                   | Fix                                    |
+| ---------------------------- | ------------------------------ | -------------------------------------- |
+| Passes locally, fails in CI  | Hidden timing dependency       | Replace sleeps with signal-based waits |
+| Intermittent missing element | Query before render completion | Switch `getBy*` to `findBy*`           |
+| Random extra calls           | Retries enabled                | Disable retries for tests              |
 
 ## Never Do
 

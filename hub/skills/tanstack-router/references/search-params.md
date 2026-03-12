@@ -8,7 +8,7 @@
 ## Minimal example
 
 ```tsx
-import { z } from 'zod';
+import { z } from "zod";
 
 const searchSchema = z.object({
   page: z.number().min(1).catch(1),
@@ -17,7 +17,7 @@ const searchSchema = z.object({
 
 export const listRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/products',
+  path: "/products",
   validateSearch: (search) => searchSchema.parse(search),
   component: ProductListPage,
 });

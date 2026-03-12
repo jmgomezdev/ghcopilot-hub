@@ -66,7 +66,11 @@ export async function readManifest(projectDir, options = {}) {
 export async function writeManifest(projectDir, manifest) {
   const manifestPath = fromRoot(projectDir, MANIFEST_PATH);
   await ensureDir(path.dirname(manifestPath));
-  await fs.writeFile(manifestPath, `${JSON.stringify(normalizeManifest(manifest), null, 2)}\n`, "utf8");
+  await fs.writeFile(
+    manifestPath,
+    `${JSON.stringify(normalizeManifest(manifest), null, 2)}\n`,
+    "utf8"
+  );
 }
 
 export async function ensureManifest(projectDir) {
@@ -95,7 +99,7 @@ function normalizeStringArray(value, fieldName) {
         }
 
         return item.trim();
-      }),
+      })
     ),
   ].sort();
 }

@@ -42,7 +42,7 @@ useEffect(() => {
 ```tsx
 // ❌ BUG: messages in dependencies causes reconnection on every message
 useEffect(() => {
-  connection.on('message', (msg) => {
+  connection.on("message", (msg) => {
     setMessages([...messages, msg]);
   });
   // ...
@@ -50,7 +50,7 @@ useEffect(() => {
 
 // ✅ FIX: Updater function removes dependency
 useEffect(() => {
-  connection.on('message', (msg) => {
+  connection.on("message", (msg) => {
     setMessages((msgs) => [...msgs, msg]);
   });
   // ...
@@ -104,8 +104,8 @@ function ChatRoom({ roomId, theme }: ChatRoomProps) {
 
   useEffect(() => {
     const connection = createConnection(serverUrl, roomId);
-    connection.on('connected', () => {
-      showNotification('Connected!', themeRef.current);
+    connection.on("connected", () => {
+      showNotification("Connected!", themeRef.current);
     });
     connection.connect();
     return () => connection.disconnect();
@@ -120,8 +120,8 @@ When you need to read a value without it being a dependency:
 function ChatRoom({ roomId, theme }: ChatRoomProps) {
   useEffect(() => {
     const connection = createConnection(serverUrl, roomId);
-    connection.on('connected', () => {
-      showNotification('Connected!', theme);
+    connection.on("connected", () => {
+      showNotification("Connected!", theme);
     });
     connection.connect();
     return () => connection.disconnect();
@@ -131,12 +131,12 @@ function ChatRoom({ roomId, theme }: ChatRoomProps) {
 // ✅ FIX: useEffectEvent for non-reactive logic
 function ChatRoom({ roomId, theme }: ChatRoomProps) {
   const onConnected = useEffectEvent(() => {
-    showNotification('Connected!', theme);
+    showNotification("Connected!", theme);
   });
 
   useEffect(() => {
     const connection = createConnection(serverUrl, roomId);
-    connection.on('connected', () => {
+    connection.on("connected", () => {
       onConnected();
     });
     connection.connect();
@@ -151,7 +151,7 @@ function ChatRoom({ roomId, theme }: ChatRoomProps) {
 // ❌ PROBLEM: Callback prop in dependencies
 function ChatRoom({ roomId, onReceiveMessage }: ChatRoomProps) {
   useEffect(() => {
-    connection.on('message', onReceiveMessage);
+    connection.on("message", onReceiveMessage);
     // ...
   }, [roomId, onReceiveMessage]); // Reconnects if parent re-renders
 }
@@ -161,7 +161,7 @@ function ChatRoom({ roomId, onReceiveMessage }: ChatRoomProps) {
   const onMessage = useEffectEvent(onReceiveMessage);
 
   useEffect(() => {
-    connection.on('message', onMessage);
+    connection.on("message", onMessage);
     // ...
   }, [roomId]); // Stable dependency list
 }
@@ -186,8 +186,8 @@ useEffect(() => {
   function handleScroll(e: Event) {
     console.log(window.scrollY);
   }
-  window.addEventListener('scroll', handleScroll);
-  return () => window.removeEventListener('scroll', handleScroll); // REQUIRED
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll); // REQUIRED
 }, []);
 
 // Interval
@@ -272,13 +272,7 @@ function Toggle({ onChange }: { onChange: (isOn: boolean) => void }) {
 }
 
 // ✅ BEST: Fully controlled component
-function Toggle({
-  isOn,
-  onChange,
-}: {
-  isOn: boolean;
-  onChange: (isOn: boolean) => void;
-}) {
+function Toggle({ isOn, onChange }: { isOn: boolean; onChange: (isOn: boolean) => void }) {
   function handleClick() {
     onChange(!isOn);
   }
@@ -361,26 +355,24 @@ const itemsRef = useRef(new Map<string, HTMLLIElement>());
 Limit what parent can access:
 
 ```tsx
-import { forwardRef, useImperativeHandle, useRef } from 'react';
+import { forwardRef, useImperativeHandle, useRef } from "react";
 
 type MyInputHandle = {
   focus: () => void;
 };
 
-const MyInput = forwardRef<MyInputHandle, InputProps>(
-  function MyInput(props, ref) {
-    const realInputRef = useRef<HTMLInputElement>(null);
+const MyInput = forwardRef<MyInputHandle, InputProps>(function MyInput(props, ref) {
+  const realInputRef = useRef<HTMLInputElement>(null);
 
-    useImperativeHandle(ref, () => ({
-      focus() {
-        realInputRef.current?.focus();
-      },
-      // Parent can ONLY call focus(), not access full DOM node
-    }));
+  useImperativeHandle(ref, () => ({
+    focus() {
+      realInputRef.current?.focus();
+    },
+    // Parent can ONLY call focus(), not access full DOM node
+  }));
 
-    return <input ref={realInputRef} {...props} />;
-  }
-);
+  return <input ref={realInputRef} {...props} />;
+});
 ```
 
 ---
@@ -390,7 +382,7 @@ const MyInput = forwardRef<MyInputHandle, InputProps>(
 When you need to read DOM immediately after state update:
 
 ```tsx
-import { flushSync } from 'react-dom';
+import { flushSync } from "react-dom";
 
 function handleAdd() {
   flushSync(() => {

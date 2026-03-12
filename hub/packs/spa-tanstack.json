@@ -1,10 +1,4 @@
 {
-    "name": "spa-tanstack",
-    "skills": [
-        "typescript",
-        "react",
-        "tanstack-query",
-        "tanstack-router",
-        "testing"
-    ]
+  "name": "spa-tanstack",
+  "skills": ["typescript", "react", "tanstack-query", "tanstack-router", "testing"]
 }

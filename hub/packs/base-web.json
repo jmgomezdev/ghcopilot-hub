@@ -1,7 +1,4 @@
 {
-    "name": "base-web",
-    "skills": [
-        "typescript",
-        "testing"
-    ]
+  "name": "base-web",
+  "skills": ["typescript", "testing"]
 }

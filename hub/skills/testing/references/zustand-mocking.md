@@ -11,7 +11,7 @@ If production code calls `useStore(selector)`, the mock must execute the selecto
 ## Selector-Aware Mock Factory
 
 ```ts
-import { vi } from 'vitest';
+import { vi } from "vitest";
 
 type SearchState = {
   input: string;
@@ -24,15 +24,15 @@ export const mockUseSearchStore = vi.fn();
 
 export const setupSearchStoreMock = (overrides: Partial<SearchState> = {}) => {
   const state: SearchState = {
-    input: '',
-    submitted: '',
+    input: "",
+    submitted: "",
     setInput: vi.fn(),
     reset: vi.fn(),
     ...overrides,
   };
 
   mockUseSearchStore.mockImplementation((selector?: (s: SearchState) => unknown) =>
-    selector ? selector(state) : state,
+    selector ? selector(state) : state
   );
 
   return state;
@@ -42,10 +42,10 @@ export const setupSearchStoreMock = (overrides: Partial<SearchState> = {}) => {
 ## Module Boundary Mocking Pattern
 
 ```ts
-import { vi } from 'vitest';
-import { mockUseSearchStore } from '../test/mocks/search-store.mock';
+import { vi } from "vitest";
+import { mockUseSearchStore } from "../test/mocks/search-store.mock";
 
-vi.mock('@/application/product/store/search.store', () => ({
+vi.mock("@/application/product/store/search.store", () => ({
   useSearchStore: mockUseSearchStore,
 }));
 ```
@@ -60,7 +60,7 @@ When a hook calls the same store multiple times with different selectors:
 ## Reset Discipline
 
 ```ts
-import { afterEach, vi } from 'vitest';
+import { afterEach, vi } from "vitest";
 
 afterEach(() => {
   vi.clearAllMocks();
@@ -71,11 +71,11 @@ If a test mutates mocked state, recreate it per test to avoid bleed-through.
 
 ## Common Failures and Fixes
 
-| Symptom | Cause | Fix |
-| --- | --- | --- |
-| Selector returns `undefined` | Mock returned plain value, not selector output | Use selector-aware mock implementation |
-| Assertions depend on call order | Multiple selectors mocked with fragile sequencing | Use single coherent mock state |
-| Random cross-test failures | Reused mutated state | Recreate state in each test |
+| Symptom                         | Cause                                             | Fix                                    |
+| ------------------------------- | ------------------------------------------------- | -------------------------------------- |
+| Selector returns `undefined`    | Mock returned plain value, not selector output    | Use selector-aware mock implementation |
+| Assertions depend on call order | Multiple selectors mocked with fragile sequencing | Use single coherent mock state         |
+| Random cross-test failures      | Reused mutated state                              | Recreate state in each test            |
 
 ## Never Do
 

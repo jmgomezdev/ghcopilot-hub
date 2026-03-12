@@ -53,7 +53,7 @@ For single-field checks:
 
 ```tsx
 const { getFieldState } = useFormContext<MyForm>();
-const emailState = getFieldState('email');
+const emailState = getFieldState("email");
 ```
 
 ## `shouldUnregister` Decision

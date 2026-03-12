@@ -20,12 +20,7 @@ Using a number on the left side of `&&` can render "0" instead of nothing.
 ```tsx
 // ❌ BUG: Renders "0" when array is empty
 function UserList({ users }: { users: User[] }) {
-  return (
-    <div>
-      {users.length &&
-        users.map((user) => <UserCard key={user.id} user={user} />)}
-    </div>
-  );
+  return <div>{users.length && users.map((user) => <UserCard key={user.id} user={user} />)}</div>;
 }
 // When users.length is 0, React renders the number 0
 ```
@@ -34,10 +29,7 @@ function UserList({ users }: { users: User[] }) {
 // ✅ FIX: Use explicit comparison
 function UserList({ users }: { users: User[] }) {
   return (
-    <div>
-      {users.length > 0 &&
-        users.map((user) => <UserCard key={user.id} user={user} />)}
-    </div>
+    <div>{users.length > 0 && users.map((user) => <UserCard key={user.id} user={user} />)}</div>
   );
 }
 ```
@@ -156,27 +148,27 @@ function SearchInput() {
 }
 
 // ✅ FIX: Single status source of truth
-type InputStatus = 'empty' | 'typing' | 'submitted';
+type InputStatus = "empty" | "typing" | "submitted";
 
 function SearchInput() {
-  const [status, setStatus] = useState<InputStatus>('empty');
+  const [status, setStatus] = useState<InputStatus>("empty");
 
-  const isEmpty = status === 'empty';
-  const isTyping = status === 'typing';
+  const isEmpty = status === "empty";
+  const isTyping = status === "typing";
 }
 ```
 
 Same strategy applies to async flows:
 
 ```tsx
-type FetchStatus = 'idle' | 'pending' | 'success' | 'error';
+type FetchStatus = "idle" | "pending" | "success" | "error";
 
 function useAsyncData() {
-  const [status, setStatus] = useState<FetchStatus>('idle');
+  const [status, setStatus] = useState<FetchStatus>("idle");
 
-  const isLoading = status === 'idle' || status === 'pending';
-  const isSuccess = status === 'success';
-  const isError = status === 'error';
+  const isLoading = status === "idle" || status === "pending";
+  const isSuccess = status === "success";
+  const isError = status === "error";
 }
 ```
 
@@ -199,9 +191,9 @@ const [position, setPosition] = useState({ x: 0, y: 0 });
 
 ```tsx
 // ❌ BUG: Derived value duplicated in state
-const [firstName, setFirstName] = useState('');
-const [lastName, setLastName] = useState('');
-const [fullName, setFullName] = useState('');
+const [firstName, setFirstName] = useState("");
+const [lastName, setLastName] = useState("");
+const [fullName, setFullName] = useState("");
 
 // ✅ FIX: Derive during render
 const fullName = `${firstName} ${lastName}`;
@@ -223,7 +215,7 @@ function App() {
 ```tsx
 // ❌ BUG: State too high, unrelated subtree re-renders
 function App() {
-  const [firstName, setFirstName] = useState('');
+  const [firstName, setFirstName] = useState("");
   return (
     <>
       <input value={firstName} onChange={(e) => setFirstName(e.target.value)} />
@@ -271,9 +263,7 @@ function TodoList() {
   };
 
   const updateTodo = (id: string, updates: Partial<Todo>) => {
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, ...updates } : todo))
-    );
+    setTodos((prev) => prev.map((todo) => (todo.id === id ? { ...todo, ...updates } : todo)));
   };
 
   const removeTodo = (id: string) => {
@@ -379,18 +369,18 @@ Don't use Effects to compute values that can be calculated during render.
 
 ```tsx
 // ❌ BUG: Effect for derived state
-const [firstName, setFirstName] = useState('Taylor');
-const [lastName, setLastName] = useState('Swift');
-const [fullName, setFullName] = useState('');
+const [firstName, setFirstName] = useState("Taylor");
+const [lastName, setLastName] = useState("Swift");
+const [fullName, setFullName] = useState("");
 
 useEffect(() => {
-  setFullName(firstName + ' ' + lastName);
+  setFullName(firstName + " " + lastName);
 }, [firstName, lastName]);
 
 // ✅ FIX: Calculate during render
-const [firstName, setFirstName] = useState('Taylor');
-const [lastName, setLastName] = useState('Swift');
-const fullName = firstName + ' ' + lastName;
+const [firstName, setFirstName] = useState("Taylor");
+const [lastName, setLastName] = useState("Swift");
+const fullName = firstName + " " + lastName;
 ```
 
 ---
@@ -402,10 +392,10 @@ Don't use Effects to reset state when props change. Use the `key` prop.
 ```tsx
 // ❌ BUG: Effect to reset state
 function ProfilePage({ userId }: { userId: string }) {
-  const [comment, setComment] = useState('');
+  const [comment, setComment] = useState("");
 
   useEffect(() => {
-    setComment('');
+    setComment("");
   }, [userId]);
   // ...
 }
@@ -416,7 +406,7 @@ function ProfilePage({ userId }: { userId: string }) {
 }
 
 function Profile({ userId }: { userId: string }) {
-  const [comment, setComment] = useState(''); // Resets automatically
+  const [comment, setComment] = useState(""); // Resets automatically
   // ...
 }
 ```
@@ -452,7 +442,7 @@ function ProductList() {
 export const productQueries = {
   list: () =>
     queryOptions({
-      queryKey: ['products'],
+      queryKey: ["products"],
       queryFn: () => productRepository.getAll(),
     }),
 };
@@ -460,7 +450,7 @@ export const productQueries = {
 // 2. Load in router loader
 // interface/router/routes/product/productList.route.tsx
 export const productListRoute = createRoute({
-  path: '/products',
+  path: "/products",
   loader: () => queryClient.ensureQueryData(productQueries.list()),
   component: ProductListPage,
 });

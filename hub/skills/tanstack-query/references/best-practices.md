@@ -15,18 +15,18 @@
 ```tsx
 function BadUserProfile({ userId }) {
   const { data: user } = useQuery({
-    queryKey: ['users', userId],
+    queryKey: ["users", userId],
     queryFn: () => fetchUser(userId),
   });
 
   const { data: posts } = useQuery({
-    queryKey: ['posts', user?.id],
+    queryKey: ["posts", user?.id],
     queryFn: () => fetchPosts(user!.id),
     enabled: !!user,
   });
 
   const { data: comments } = useQuery({
-    queryKey: ['comments', posts?.[0]?.id],
+    queryKey: ["comments", posts?.[0]?.id],
     queryFn: () => fetchComments(posts![0].id),
     enabled: !!posts && posts.length > 0,
   });
@@ -38,17 +38,17 @@ function BadUserProfile({ userId }) {
 ```tsx
 function GoodUserProfile({ userId }) {
   const { data: user } = useQuery({
-    queryKey: ['users', userId],
+    queryKey: ["users", userId],
     queryFn: () => fetchUser(userId),
   });
 
   const { data: posts } = useQuery({
-    queryKey: ['posts', userId],
+    queryKey: ["posts", userId],
     queryFn: () => fetchPosts(userId),
   });
 
   const { data: comments } = useQuery({
-    queryKey: ['comments', userId],
+    queryKey: ["comments", userId],
     queryFn: () => fetchUserComments(userId),
   });
 }
@@ -63,26 +63,26 @@ function GoodUserProfile({ userId }) {
 ### Hierarchical Structure
 
 ```tsx
-['todos'][('todos', { status: 'done' })][('todos', 123)];
+["todos"][("todos", { status: "done" })][("todos", 123)];
 
-queryClient.invalidateQueries({ queryKey: ['todos'] });
-queryClient.invalidateQueries({ queryKey: ['todos', { status: 'done' }] });
+queryClient.invalidateQueries({ queryKey: ["todos"] });
+queryClient.invalidateQueries({ queryKey: ["todos", { status: "done" }] });
 ```
 
 ### Best Practices
 
 ```tsx
 // ✅ Good: Stable, serializable keys
-['users', userId, { sort: 'name', filter: 'active' }][
+["users", userId, { sort: "name", filter: "active" }][
   // ❌ Bad: Functions in keys (not serializable)
-  ('users', () => userId)
+  ("users", () => userId)
 ][
   // ❌ Bad: Changing order
-  ('users', { filter: 'active', sort: 'name' })
+  ("users", { filter: "active", sort: "name" })
 ];
 
 // ✅ Good: Consistent ordering
-const userFilters = { filter: 'active', sort: 'name' };
+const userFilters = { filter: "active", sort: "name" };
 ```
 
 ---
@@ -116,7 +116,7 @@ const queryClient = new QueryClient({
 });
 
 useQuery({
-  queryKey: ['stock-price'],
+  queryKey: ["stock-price"],
   queryFn: fetchStockPrice,
   staleTime: 0,
   refetchInterval: 1000 * 30,
@@ -129,7 +129,7 @@ useQuery({
 
 ```tsx
 export const todosQueryOptions = queryOptions({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
   staleTime: 1000 * 60,
 });
@@ -146,7 +146,7 @@ queryClient.prefetchQuery(todosQueryOptions);
 ```tsx
 function TodoCount() {
   const { data: count } = useQuery({
-    queryKey: ['todos'],
+    queryKey: ["todos"],
     queryFn: fetchTodos,
     select: (data) => data.length,
   });
@@ -160,7 +160,7 @@ function TodoCount() {
 ```tsx
 const prefetch = (id: number) => {
   queryClient.prefetchQuery({
-    queryKey: ['todos', id],
+    queryKey: ["todos", id],
     queryFn: () => fetchTodo(id),
     staleTime: 1000 * 60 * 5,
   });
@@ -177,16 +177,16 @@ const prefetch = (id: number) => {
 useMutation({
   mutationFn: updateTodo,
   onMutate: async (newTodo) => {
-    await queryClient.cancelQueries({ queryKey: ['todos'] });
-    const previous = queryClient.getQueryData(['todos']);
-    queryClient.setQueryData(['todos'], (old) => [...(old ?? []), newTodo]);
+    await queryClient.cancelQueries({ queryKey: ["todos"] });
+    const previous = queryClient.getQueryData(["todos"]);
+    queryClient.setQueryData(["todos"], (old) => [...(old ?? []), newTodo]);
     return { previous };
   },
   onError: (err, newTodo, context) => {
-    queryClient.setQueryData(['todos'], context?.previous);
+    queryClient.setQueryData(["todos"], context?.previous);
   },
   onSettled: () => {
-    queryClient.invalidateQueries({ queryKey: ['todos'] });
+    queryClient.invalidateQueries({ queryKey: ["todos"] });
   },
 });
 ```
@@ -197,13 +197,13 @@ useMutation({
 
 ```tsx
 useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
   throwOnError: true,
 });
 
 useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
   throwOnError: (error) => error.status >= 500,
 });
@@ -215,7 +215,7 @@ useQuery({
 
 ```tsx
 // ✅ Server state
-const { data: todos } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+const { data: todos } = useQuery({ queryKey: ["todos"], queryFn: fetchTodos });
 
 // ✅ Client state
 const [isModalOpen, setIsModalOpen] = useState(false);

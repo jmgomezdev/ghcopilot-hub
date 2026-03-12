@@ -58,10 +58,7 @@ function ProductCard({ product, onAddToCart }: ProductCardProps) {
 
 // Compiler automatically transforms to something like:
 function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const formattedPrice = useMemo(
-    () => formatPrice(product.price),
-    [product.price]
-  );
+  const formattedPrice = useMemo(() => formatPrice(product.price), [product.price]);
 
   const handleClick = useCallback(() => {
     onAddToCart(product.id);
@@ -87,10 +84,7 @@ With React Compiler, these patterns are **unnecessary**:
 
 ```tsx
 // ❌ UNNECESSARY: Manual useMemo
-const sortedItems = useMemo(
-  () => items.toSorted((a, b) => a.name.localeCompare(b.name)),
-  [items]
-);
+const sortedItems = useMemo(() => items.toSorted((a, b) => a.name.localeCompare(b.name)), [items]);
 
 // ✅ JUST WRITE: Compiler handles it
 const sortedItems = items.toSorted((a, b) => a.name.localeCompare(b.name));
@@ -98,9 +92,12 @@ const sortedItems = items.toSorted((a, b) => a.name.localeCompare(b.name));
 
 ```tsx
 // ❌ UNNECESSARY: Manual useCallback
-const handleSubmit = useCallback((data: FormData) => {
-  submitForm(data);
-}, [submitForm]);
+const handleSubmit = useCallback(
+  (data: FormData) => {
+    submitForm(data);
+  },
+  [submitForm]
+);
 
 // ✅ JUST WRITE: Compiler handles it
 const handleSubmit = (data: FormData) => {
@@ -225,15 +222,12 @@ function Form({ onSubmit }: { onSubmit: () => void }) {
 If computation involves external libraries the compiler can't analyze:
 
 ```tsx
-import { expensiveExternalComputation } from 'some-library';
+import { expensiveExternalComputation } from "some-library";
 
 function Chart({ data }: { data: DataPoint[] }) {
   // Compiler may not optimize external library calls correctly
   // In rare cases, manual useMemo might help
-  const processedData = useMemo(
-    () => expensiveExternalComputation(data),
-    [data]
-  );
+  const processedData = useMemo(() => expensiveExternalComputation(data), [data]);
 
   return <ChartRenderer data={processedData} />;
 }

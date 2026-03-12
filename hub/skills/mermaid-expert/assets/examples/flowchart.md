@@ -3,6 +3,7 @@
 Flowcharts are composed of nodes (geometric shapes) and edges (arrows or lines). The Mermaid code defines how nodes are created and creating links between the nodes.
 
 ## 1. Directions
+
 - `TB` - Top to bottom
 - `TD` - Top-down/ same as top to bottom
 - `BT` - Bottom to top
@@ -12,6 +13,7 @@ Flowcharts are composed of nodes (geometric shapes) and edges (arrows or lines).
 ## 2. Shapes (Nodes)
 
 ### Standard Shapes
+
 ```mermaid
 flowchart TD
     id1(Round Edges)
@@ -25,6 +27,7 @@ flowchart TD
 ```
 
 ### New / Semantic Shapes
+
 ```mermaid
 flowchart LR
     A[/Parallelogram/]
@@ -37,6 +40,7 @@ flowchart LR
 ## 3. Links (Edges)
 
 ### Types of Links
+
 ```mermaid
 flowchart LR
     A-->B     ::: Link with Arrow Head
@@ -48,6 +52,7 @@ flowchart LR
 ```
 
 ### Chaining
+
 ```mermaid
 flowchart LR
    A -- text --> B -- text2 --> C
@@ -55,6 +60,7 @@ flowchart LR
 ```
 
 ## 4. Subgraphs
+
 Group related nodes together.
 
 ```mermaid
@@ -74,6 +80,7 @@ flowchart TB
 ## 5. EXPERT: Styling & Classes
 
 ### Inline Styling
+
 ```mermaid
 flowchart LR
     id1(Start)-->id2(Stop)
@@ -82,6 +89,7 @@ flowchart LR
 ```
 
 ### CSS Classes
+
 Define a class and apply it to multiple nodes.
 
 ```mermaid
@@ -91,7 +99,9 @@ flowchart LR
 ```
 
 ### FontAwesome Icons
+
 (Requires FontAwesome to be loaded in the renderer)
+
 ```mermaid
 flowchart TD
     B["fa:fa-twitter for peace"]
@@ -101,6 +111,7 @@ flowchart TD
 ```
 
 ## 6. Configuration (Directives)
+
 Customize the curve and look directly in the diagram.
 
 ```mermaid

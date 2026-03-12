@@ -1,6 +1,7 @@
 # Mermaid Templates & Examples
 
 ## Flowchart (Procesos)
+
 ```mermaid
 graph TD
     Start([Inicio]) --> Action[Acción Principal]
@@ -11,6 +12,7 @@ graph TD
 ```
 
 ## Sequence Diagram (API Calls)
+
 ```mermaid
 sequenceDiagram
     participant User
@@ -27,6 +29,7 @@ sequenceDiagram
 ```
 
 ## C4 Context (Arquitectura)
+
 ```mermaid
 C4Context
   title System Context Diagram for Inventory System
@@ -40,6 +43,7 @@ C4Context
 ```
 
 ## Gantt (Planificación)
+
 ```mermaid
 gantt
     title Roadmap Q1

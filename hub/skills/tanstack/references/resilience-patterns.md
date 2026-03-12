@@ -7,10 +7,10 @@ Load this file when implementing async UX behavior, route-level error handling, 
 Use this when route data is preloaded with `ensureQueryData`.
 
 ```tsx
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
-import { ProductListPage } from '@/presentation/product/ProductList.page';
-import { ProductListSkeleton } from '@/presentation/product/components/ProductListSkeleton';
+import { ProductListPage } from "@/presentation/product/ProductList.page";
+import { ProductListSkeleton } from "@/presentation/product/components/ProductListSkeleton";
 
 export const ProductListWithFallback = () => {
   return (
@@ -31,14 +31,13 @@ Guidelines:
 Use this for routes that fetch remote data in `loader`.
 
 ```tsx
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 
-import { productQueries } from '@/application/product/product.queries';
-import { NotFoundPage } from '@/presentation/shared/components/NotFoundPage';
-import { RouteErrorPage } from '@/presentation/shared/components/RouteErrorPage';
+import { productQueries } from "@/application/product/product.queries";
+import { NotFoundPage } from "@/presentation/shared/components/NotFoundPage";
+import { RouteErrorPage } from "@/presentation/shared/components/RouteErrorPage";
 
-const isNotFoundError = (error: unknown) =>
-  error instanceof Error && error.message.includes('404');
+const isNotFoundError = (error: unknown) => error instanceof Error && error.message.includes("404");
 
 function ProductsErrorBoundary({ error }: { error: unknown }) {
   const router = useRouter();
@@ -47,15 +46,10 @@ function ProductsErrorBoundary({ error }: { error: unknown }) {
     return <NotFoundPage />;
   }
 
-  return (
-    <RouteErrorPage
-      title="Unable to load products"
-      onRetry={() => router.invalidate()}
-    />
-  );
+  return <RouteErrorPage title="Unable to load products" onRetry={() => router.invalidate()} />;
 }
 
-export const Route = createFileRoute('/products')({
+export const Route = createFileRoute("/products")({
   loader: async ({ context: { queryClient }, params }) => {
     await queryClient.ensureQueryData(productQueries.detail(params.productId));
   },
@@ -75,10 +69,10 @@ Guidelines:
 Use this for write operations (forms, toggles, destructive actions).
 
 ```typescript
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { productKeys } from '@/application/product/product.queries';
-import { ProductRepository } from '@/infrastructure/product/product.repository';
+import { productKeys } from "@/application/product/product.queries";
+import { ProductRepository } from "@/infrastructure/product/product.repository";
 
 export const useUpdateProduct = (
   onSuccessFeedback: (message: string) => void,
@@ -92,10 +86,10 @@ export const useUpdateProduct = (
       await queryClient.invalidateQueries({
         queryKey: productKeys.detail(updated.id),
       });
-      onSuccessFeedback('Product updated');
+      onSuccessFeedback("Product updated");
     },
     onError: () => {
-      onErrorFeedback('Failed to update product. Please retry.');
+      onErrorFeedback("Failed to update product. Please retry.");
     },
   });
 };

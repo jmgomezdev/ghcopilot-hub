@@ -15,18 +15,18 @@ Use this reference for robust mutation flows, rollback behavior, and user-facing
 useMutation({
   mutationFn: updateTodo,
   onMutate: async (nextTodo) => {
-    await queryClient.cancelQueries({ queryKey: ['todos'] });
-    const previous = queryClient.getQueryData(['todos']);
-    queryClient.setQueryData(['todos'], (old: Todo[] = []) =>
+    await queryClient.cancelQueries({ queryKey: ["todos"] });
+    const previous = queryClient.getQueryData(["todos"]);
+    queryClient.setQueryData(["todos"], (old: Todo[] = []) =>
       old.map((todo) => (todo.id === nextTodo.id ? nextTodo : todo))
     );
     return { previous };
   },
   onError: (_error, _vars, context) => {
-    queryClient.setQueryData(['todos'], context?.previous);
+    queryClient.setQueryData(["todos"], context?.previous);
   },
   onSettled: () => {
-    queryClient.invalidateQueries({ queryKey: ['todos'] });
+    queryClient.invalidateQueries({ queryKey: ["todos"] });
   },
 });
 ```
@@ -34,13 +34,11 @@ useMutation({
 ## Pattern B: layer-safe feedback bridge
 
 ```typescript
-export const useUpdateProduct = (
-  onErrorFeedback: (message: string) => void
-) => {
+export const useUpdateProduct = (onErrorFeedback: (message: string) => void) => {
   return useMutation({
     mutationFn: ProductRepository.update,
     onError: () => {
-      onErrorFeedback('Failed to update product. Please retry.');
+      onErrorFeedback("Failed to update product. Please retry.");
     },
   });
 };
@@ -50,7 +48,7 @@ export const useUpdateProduct = (
 
 ```tsx
 useQuery({
-  queryKey: ['products'],
+  queryKey: ["products"],
   queryFn: fetchProducts,
   throwOnError: (error) => error.status >= 500,
 });

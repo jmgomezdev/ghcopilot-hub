@@ -40,13 +40,7 @@ function Composer({
       ) : isThread ? (
         <AlsoSendToChannelField id={channelId} />
       ) : null}
-      {isEditing ? (
-        <EditActions />
-      ) : isForwarding ? (
-        <ForwardActions />
-      ) : (
-        <DefaultActions />
-      )}
+      {isEditing ? <EditActions /> : isForwarding ? <ForwardActions /> : <DefaultActions />}
       <Footer onSubmit={onSubmit} />
     </form>
   );
@@ -96,7 +90,7 @@ Each variant is explicit about what provider/state it uses, what UI elements it 
 Structure complex components as compound components with a shared context. Each subcomponent accesses shared state via context, not props.
 
 ```tsx
-import { ReactNode, createContext, use, useState } from 'react';
+import { ReactNode, createContext, use, useState } from "react";
 
 // Define context interface with state, actions, meta
 interface ComposerState {
@@ -125,9 +119,7 @@ const ComposerContext = createContext<ComposerContextValue | null>(null);
 function useComposer() {
   const context = use(ComposerContext);
   if (!context) {
-    throw new Error(
-      'Composer components must be used within <Composer.Provider>'
-    );
+    throw new Error("Composer components must be used within <Composer.Provider>");
   }
   return context;
 }
@@ -147,9 +139,7 @@ function ComposerProvider({
   meta: ComposerMeta;
 }) {
   return (
-    <ComposerContext.Provider value={{ state, actions, meta }}>
-      {children}
-    </ComposerContext.Provider>
+    <ComposerContext.Provider value={{ state, actions, meta }}>{children}</ComposerContext.Provider>
   );
 }
 
@@ -223,33 +213,19 @@ function ForwardMessageProvider({ children }: { children: ReactNode }) {
   const submit = useForwardMessage();
 
   return (
-    <Composer.Provider
-      state={state}
-      actions={{ update: setState, submit }}
-      meta={{ inputRef }}
-    >
+    <Composer.Provider state={state} actions={{ update: setState, submit }} meta={{ inputRef }}>
       {children}
     </Composer.Provider>
   );
 }
 
 // Provider B: Global synced state (Zustand) for channels
-function ChannelProvider({
-  channelId,
-  children,
-}: {
-  channelId: string;
-  children: ReactNode;
-}) {
+function ChannelProvider({ channelId, children }: { channelId: string; children: ReactNode }) {
   const { state, update, submit } = useChannelStore(channelId);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   return (
-    <Composer.Provider
-      state={state}
-      actions={{ update, submit }}
-      meta={{ inputRef }}
-    >
+    <Composer.Provider state={state} actions={{ update, submit }} meta={{ inputRef }}>
       {children}
     </Composer.Provider>
   );
@@ -348,23 +324,13 @@ function ChannelComposer({ channelId }: { channelId: string }) {
 
 ```tsx
 // ✅ ALWAYS: State management isolated in provider
-function ChannelProvider({
-  channelId,
-  children,
-}: {
-  channelId: string;
-  children: ReactNode;
-}) {
+function ChannelProvider({ channelId, children }: { channelId: string; children: ReactNode }) {
   // Provider handles all state management details
   const { state, update, submit } = useGlobalChannel(channelId);
   const inputRef = useRef(null);
 
   return (
-    <Composer.Provider
-      state={state}
-      actions={{ update, submit }}
-      meta={{ inputRef }}
-    >
+    <Composer.Provider state={state} actions={{ update, submit }} meta={{ inputRef }}>
       {children}
     </Composer.Provider>
   );
@@ -399,27 +365,27 @@ function Channel({ channelId }: { channelId: string }) {
 Create variants by extending a base component. Follows Open/Closed principle.
 
 ```tsx
-import { ComponentProps, ElementType } from 'react';
+import { ComponentProps, ElementType } from "react";
 
-import { cn } from '@/presentation/shared/lib/utils';
+import { cn } from "@/presentation/shared/lib/utils";
 
-type ButtonBaseProps<T extends ElementType = 'button'> = {
+type ButtonBaseProps<T extends ElementType = "button"> = {
   as?: T;
   className?: string;
 } & ComponentProps<T>;
 
-function ButtonBase<T extends ElementType = 'button'>({
+function ButtonBase<T extends ElementType = "button">({
   as,
   className,
   ...props
 }: ButtonBaseProps<T>) {
-  const Element = as ?? 'button';
+  const Element = as ?? "button";
   return (
     <Element
       className={cn(
-        'inline-flex items-center justify-center rounded-md font-medium transition-colors',
-        'focus-visible:ring-2 focus-visible:outline-none',
-        'disabled:pointer-events-none disabled:opacity-50',
+        "inline-flex items-center justify-center rounded-md font-medium transition-colors",
+        "focus-visible:ring-2 focus-visible:outline-none",
+        "disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
@@ -431,26 +397,17 @@ function ButtonBase<T extends ElementType = 'button'>({
 ```tsx
 // Solid variant - open for extension
 const solidVariants = {
-  primary: 'bg-blue-600 text-white hover:bg-blue-700',
-  secondary: 'bg-gray-600 text-white hover:bg-gray-700',
-  danger: 'bg-red-600 text-white hover:bg-red-700',
+  primary: "bg-blue-600 text-white hover:bg-blue-700",
+  secondary: "bg-gray-600 text-white hover:bg-gray-700",
+  danger: "bg-red-600 text-white hover:bg-red-700",
 } as const;
 
 type ButtonSolidProps = ButtonBaseProps & {
   variant?: keyof typeof solidVariants;
 };
 
-function ButtonSolid({
-  variant = 'primary',
-  className,
-  ...props
-}: ButtonSolidProps) {
-  return (
-    <ButtonBase
-      className={cn('px-4 py-2', solidVariants[variant], className)}
-      {...props}
-    />
-  );
+function ButtonSolid({ variant = "primary", className, ...props }: ButtonSolidProps) {
+  return <ButtonBase className={cn("px-4 py-2", solidVariants[variant], className)} {...props} />;
 }
 ```
 
@@ -519,10 +476,7 @@ function ComposerFooter({ children }: { children: ReactNode }) {
 
 ```tsx
 // Render props work for data-passing scenarios
-<List
-  data={items}
-  renderItem={({ item, index }) => <Item item={item} index={index} />}
-/>
+<List data={items} renderItem={({ item, index }) => <Item item={item} index={index} />} />
 ```
 
 ---

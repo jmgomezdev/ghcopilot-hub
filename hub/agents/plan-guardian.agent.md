@@ -1,6 +1,6 @@
 ---
 name: plan-guardian
-description: 'Code and Architecture auditor: validates that production implementation matches the plan 100% (exact files and guardrails).'
+description: "Code and Architecture auditor: validates that production implementation matches the plan 100% (exact files and guardrails)."
 tools: [read/readFile, search, todo, vscode/memory]
 model: Gemini 3.1 Pro (Preview) (copilot)
 user-invocable: false

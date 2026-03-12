@@ -149,7 +149,9 @@ async function loadPacks(hubDir, hubContentDir) {
       !Array.isArray(rawPack.skills) ||
       rawPack.skills.some((skill) => typeof skill !== "string" || skill.trim() === "")
     ) {
-      throw new CliError(`Pack file ${relativePackPath} must contain a "skills" array of non-empty strings.`);
+      throw new CliError(
+        `Pack file ${relativePackPath} must contain a "skills" array of non-empty strings.`
+      );
     }
 
     packs.push({

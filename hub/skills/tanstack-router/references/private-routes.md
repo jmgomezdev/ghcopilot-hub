@@ -22,11 +22,8 @@ This reference describes how to implement private routes with TanStack Router wh
 Create a typed router context that includes `queryClient` and `auth`. Set `auth: undefined!` in router creation and pass the real value in the provider.
 
 ```tsx
-import { QueryClient } from '@tanstack/react-query';
-import {
-  createRootRouteWithContext,
-  createRouter,
-} from '@tanstack/react-router';
+import { QueryClient } from "@tanstack/react-query";
+import { createRootRouteWithContext, createRouter } from "@tanstack/react-router";
 
 type RouterContext = {
   queryClient: QueryClient;
@@ -42,16 +39,16 @@ const queryClient = new QueryClient();
 export const router = createRouter({
   routeTree,
   context: { queryClient, auth: undefined! },
-  defaultPreload: 'intent',
+  defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
 });
 ```
 
 ```tsx
-import { RouterProvider } from '@tanstack/react-router';
+import { RouterProvider } from "@tanstack/react-router";
 
-import { useAuth } from '@/application/auth/hooks/useAuth';
-import { router } from '@/interface/router';
+import { useAuth } from "@/application/auth/hooks/useAuth";
+import { router } from "@/interface/router";
 
 export function AuthedRouterProvider() {
   const auth = useAuth();
@@ -82,12 +79,12 @@ routes/
 ### Protected group
 
 ```tsx
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/_authenticated')({
+export const Route = createFileRoute("/_authenticated")({
   beforeLoad: ({ context: { auth } }) => {
     if (!auth?.user) {
-      throw redirect({ to: '/login' });
+      throw redirect({ to: "/login" });
     }
   },
   component: RouteComponent,
@@ -101,12 +98,12 @@ function RouteComponent() {
 ### Public-only group
 
 ```tsx
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/_unauthenticated')({
+export const Route = createFileRoute("/_unauthenticated")({
   beforeLoad: ({ context: { auth } }) => {
     if (auth?.user) {
-      throw redirect({ to: '/admin' });
+      throw redirect({ to: "/admin" });
     }
   },
   component: RouteComponent,
@@ -122,19 +119,19 @@ function RouteComponent() {
 Index route decides where to land based on auth and role.
 
 ```tsx
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   beforeLoad: ({ context: { auth } }) => {
     if (!auth?.user) {
-      throw redirect({ to: '/login' });
+      throw redirect({ to: "/login" });
     }
 
-    if (auth.user.role === 'admin') {
-      throw redirect({ to: '/admin' });
+    if (auth.user.role === "admin") {
+      throw redirect({ to: "/admin" });
     }
 
-    throw redirect({ to: '/products' });
+    throw redirect({ to: "/products" });
   },
   component: PageLoader,
 });
@@ -145,12 +142,12 @@ export const Route = createFileRoute('/')({
 Use a layout route to wrap all admin pages and redirect bare `/admin` to a default child.
 
 ```tsx
-import { createFileRoute, redirect } from '@tanstack/react-router';
+import { createFileRoute, redirect } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/_authenticated/admin')({
+export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: ({ location }) => {
-    if (location.pathname === '/admin') {
-      throw redirect({ to: '/admin/profile' });
+    if (location.pathname === "/admin") {
+      throw redirect({ to: "/admin/profile" });
     }
   },
   component: AdminDashboardLayout,
@@ -162,7 +159,7 @@ export const Route = createFileRoute('/_authenticated/admin')({
 Invalidate the router when auth changes so `beforeLoad` runs again. Also invalidate the auth query when login/logout happens.
 
 ```tsx
-queryClient.invalidateQueries({ queryKey: ['auth'] });
+queryClient.invalidateQueries({ queryKey: ["auth"] });
 ```
 
 ## Common Pitfalls

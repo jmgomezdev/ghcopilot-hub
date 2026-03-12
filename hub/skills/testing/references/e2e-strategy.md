@@ -21,11 +21,11 @@ Do not use E2E for:
 
 ## Journey Matrix
 
-| Journey Type | Must Assert | Optional Assert | Avoid |
-| --- | --- | --- | --- |
-| Product discovery | URL/search state + result list visibility | Sort/filter persistence | Internal query cache state |
-| Cart flow | Add/remove item visible outcome + totals | Drawer open/close URL contract | Store implementation details |
-| Error recovery | User-visible retry path | Telemetry hooks (if exposed) | Direct network library internals |
+| Journey Type      | Must Assert                               | Optional Assert                | Avoid                            |
+| ----------------- | ----------------------------------------- | ------------------------------ | -------------------------------- |
+| Product discovery | URL/search state + result list visibility | Sort/filter persistence        | Internal query cache state       |
+| Cart flow         | Add/remove item visible outcome + totals  | Drawer open/close URL contract | Store implementation details     |
+| Error recovery    | User-visible retry path                   | Telemetry hooks (if exposed)   | Direct network library internals |
 
 ## Selector Policy
 

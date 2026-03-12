@@ -3,6 +3,7 @@
 Combine themes, looks, and variables for unique visual styles.
 
 ## 1. HandDrawn Sketch (Neutral)
+
 Imitates a rough sketch on sticky notes. Great for brainstorming.
 
 ![HandDrawn Style](img/neutral_sketch.png)
@@ -22,6 +23,7 @@ graph TD
 ```
 
 ## 2. Neo / Cyberpunk (Dark)
+
 High contrast, neon colors.
 
 ![Neo Style](img/dark_neo.png)
@@ -40,6 +42,7 @@ flowchart LR
 ```
 
 ## 3. Corporate Clean (Forest)
+
 Professional, clean lines, standard colors.
 
 ![Corporate Style](img/forest_corp.png)
@@ -57,6 +60,7 @@ graph TB
 ```
 
 ## 4. Minimalist (Base)
+
 Very simple, high contrast black and white.
 
 ![Minimal Style](img/base_minimal.png)
@@ -65,7 +69,7 @@ Very simple, high contrast black and white.
 %%{
   init: {
     'theme': 'base',
-    'themeVariables': { 'primaryColor': '#ffffff', 'lineColor': '#333' } 
+    'themeVariables': { 'primaryColor': '#ffffff', 'lineColor': '#333' }
   }
 }%%
 classDiagram
@@ -76,6 +80,7 @@ classDiagram
 ```
 
 ## 5. Modern Sequence (Default + Neo)
+
 A modern twist on standard sequence diagrams.
 
 ![Neo Sequence](img/default_neo.png)

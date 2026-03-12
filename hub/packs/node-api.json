@@ -1,8 +1,4 @@
 {
-    "name": "node-api",
-    "skills": [
-        "typescript",
-        "testing",
-        "zod"
-    ]
+  "name": "node-api",
+  "skills": ["typescript", "testing", "zod"]
 }

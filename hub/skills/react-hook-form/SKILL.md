@@ -105,7 +105,13 @@ function ShippingPreview({ control }: { control: Control<OrderFormData> }) {
 Wrap each controlled input in a leaf component so one input update does not re-render large parents.
 
 ```tsx
-function ControlledCurrencyInput({ control, name }: { control: Control<InvoiceForm>; name: "amount" }) {
+function ControlledCurrencyInput({
+  control,
+  name,
+}: {
+  control: Control<InvoiceForm>;
+  name: "amount";
+}) {
   const { field, fieldState } = useController({ control, name });
 
   return (

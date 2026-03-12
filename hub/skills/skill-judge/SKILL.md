@@ -285,7 +285,7 @@ Analysis:
 **Poor description** (missing elements):
 
 ```yaml
-description: '处理文档相关功能'
+description: "处理文档相关功能"
 ```
 
 Problems:
@@ -297,7 +297,7 @@ Problems:
 **Another poor example**:
 
 ```yaml
-description: 'A helpful skill for various tasks'
+description: "A helpful skill for various tasks"
 ```
 
 This is useless — Agent has no idea when to activate it.

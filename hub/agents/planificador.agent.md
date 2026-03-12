@@ -1,15 +1,14 @@
 ---
 name: Planificador
-description: 'Unique planning agent in VS Code: investigates, asks, creates an executable plan, reviews it with Momus, and keeps it updated in memory. DOES NOT IMPLEMENT, ONLY PLANS'
-tools:
-  [read, agent, search, web, todo, agent, vscode/memory, vscode/askQuestions]
-agents: ['Explore', 'Librarian', 'Oracle', 'Momus']
+description: "Unique planning agent in VS Code: investigates, asks, creates an executable plan, reviews it with Momus, and keeps it updated in memory. DOES NOT IMPLEMENT, ONLY PLANS"
+tools: [read, agent, search, web, todo, agent, vscode/memory, vscode/askQuestions]
+agents: ["Explore", "Librarian", "Oracle", "Momus"]
 user-invocable: true
 model: GPT-5.4 (copilot)
 handoffs:
   - label: Save plan
-    agent: 'agent'
-    prompt: '#createFile the plan as is into a file (`.planning/plans/plan-YYYYMMDD-HHMM-${camelCaseName}.md` without frontmatter)'
+    agent: "agent"
+    prompt: "#createFile the plan as is into a file (`.planning/plans/plan-YYYYMMDD-HHMM-${camelCaseName}.md` without frontmatter)"
     send: false
     model: GPT-5.4 (copilot)
 ---

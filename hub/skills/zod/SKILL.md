@@ -113,7 +113,10 @@ const numberFromString = z.coerce.number(); // "42" → 42
 const dateFromString = z.coerce.date(); // "2024-01-01" → Date
 
 // Preprocessing
-const trimmedString = z.preprocess((val) => (typeof val === "string" ? val.trim() : val), z.string());
+const trimmedString = z.preprocess(
+  (val) => (typeof val === "string" ? val.trim() : val),
+  z.string()
+);
 ```
 
 ## Refinements

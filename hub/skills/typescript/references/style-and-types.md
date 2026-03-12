@@ -29,7 +29,7 @@ Use a single, consistent casing strategy by context. Avoid mixing styles in the 
 
 ```ts
 // camelCase
-const userId = '123';
+const userId = "123";
 function getUserById(id: string) {}
 
 // PascalCase
@@ -71,19 +71,19 @@ interface Theme {
 
 // ✅ Validate shape + keep exact keys
 const theme = {
-  colors: { primary: '#3b82f6', secondary: '#10b981' },
+  colors: { primary: "#3b82f6", secondary: "#10b981" },
   spacing: { sm: 8, md: 16, lg: 24 },
 } satisfies Theme;
 
 // ✅ Immutable + validated
 const themeConst = {
-  colors: { primary: '#3b82f6', secondary: '#10b981' },
+  colors: { primary: "#3b82f6", secondary: "#10b981" },
   spacing: { sm: 8, md: 16, lg: 24 },
 } as const satisfies Theme;
 
 // ⚠️ `as const` only (no validation)
 const themeOnlyConst = {
-  colors: { primary_typo: '#3b82f6' },
+  colors: { primary_typo: "#3b82f6" },
   spacing: { sm: 8 },
 } as const;
 ```
@@ -108,9 +108,9 @@ Avoid `const x: Type = ...` for config objects because the type annotation widen
 
 ```ts
 const ROLE = {
-  ADMIN: 'ADMIN',
-  USER: 'USER',
-  GUEST: 'GUEST',
+  ADMIN: "ADMIN",
+  USER: "USER",
+  GUEST: "GUEST",
 } as const;
 
 type Role = (typeof ROLE)[keyof typeof ROLE];
@@ -118,22 +118,22 @@ type Role = (typeof ROLE)[keyof typeof ROLE];
 function setRole(role: Role) {}
 
 setRole(ROLE.ADMIN);
-setRole('ADMIN');
+setRole("ADMIN");
 ```
 
 #### 2) Literal union (small sets)
 
 ```ts
-type Size = 'sm' | 'md' | 'lg';
+type Size = "sm" | "md" | "lg";
 ```
 
 ### Avoid
 
 ```ts
 enum RoleEnum {
-  ADMIN = 'ADMIN',
-  USER = 'USER',
-  GUEST = 'GUEST',
+  ADMIN = "ADMIN",
+  USER = "USER",
+  GUEST = "GUEST",
 }
 ```
 
@@ -142,14 +142,14 @@ enum RoleEnum {
 ## Utility Types
 
 ```ts
-Pick<User, 'id' | 'name'>; // Select fields
-Omit<User, 'id'>; // Exclude fields
+Pick<User, "id" | "name">; // Select fields
+Omit<User, "id">; // Exclude fields
 Partial<User>; // All optional
 Required<User>; // All required
 Readonly<User>; // All readonly
 Record<string, User>; // Object type
-Extract<Union, 'a' | 'b'>; // Extract from union
-Exclude<Union, 'a'>; // Exclude from union
+Extract<Union, "a" | "b">; // Extract from union
+Exclude<Union, "a">; // Exclude from union
 NonNullable<T | null>; // Remove null/undefined
 ReturnType<typeof fn>; // Function return type
 Parameters<typeof fn>; // Function params tuple
@@ -159,18 +159,13 @@ Parameters<typeof fn>; // Function params tuple
 
 ```ts
 function isUser(value: unknown): value is User {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    'id' in value &&
-    'name' in value
-  );
+  return typeof value === "object" && value !== null && "id" in value && "name" in value;
 }
 ```
 
 ## Import Types
 
 ```ts
-import type { User } from './types';
-import { type Config, createUser } from './utils';
+import type { User } from "./types";
+import { type Config, createUser } from "./utils";
 ```

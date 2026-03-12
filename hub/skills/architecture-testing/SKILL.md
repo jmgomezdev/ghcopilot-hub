@@ -57,7 +57,11 @@ describe("Architecture Rules", () => {
     ];
 
     for (const folder of forbidden) {
-      const rule = projectFiles().inFolder("src/domain/**").shouldNot().dependOnFiles().inFolder(folder);
+      const rule = projectFiles()
+        .inFolder("src/domain/**")
+        .shouldNot()
+        .dependOnFiles()
+        .inFolder(folder);
 
       await expect(rule).toPassAsync();
     }
@@ -81,7 +85,10 @@ describe("Architecture Rules", () => {
   });
 
   it("repositories should follow naming", async () => {
-    const rule = projectFiles().inFolder("src/infrastructure/**").should().matchFilename("*.repository.ts");
+    const rule = projectFiles()
+      .inFolder("src/infrastructure/**")
+      .should()
+      .matchFilename("*.repository.ts");
 
     await expect(rule).toPassAsync();
   });

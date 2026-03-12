@@ -14,7 +14,7 @@ When loader data is required for first render, pair loader prefetch with route `
 ```tsx
 export const detailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/products/$productId',
+  path: "/products/$productId",
   loader: async ({ context: { queryClient }, params }) => {
     await queryClient.ensureQueryData(productQueries.detail(params.productId));
   },
@@ -30,7 +30,7 @@ Retry should invalidate router/query state (for example `router.invalidate()`), 
 ```tsx
 export const detailRoute = createRoute({
   getParentRoute: () => rootRoute,
-  path: '/products/$productId',
+  path: "/products/$productId",
   loader: async ({ context: { queryClient }, params }) => {
     await Promise.all([
       queryClient.ensureQueryData(productQueries.detail(params.productId)),
@@ -45,7 +45,7 @@ export const detailRoute = createRoute({
 export const router = createRouter({
   routeTree,
   context: { queryClient },
-  defaultPreload: 'intent',
+  defaultPreload: "intent",
   defaultPreloadStaleTime: 0,
 });
 ```

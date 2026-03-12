@@ -41,10 +41,7 @@ const result = arr.filter(predicate).map(mapper);
 **✅ Correct: single iteration**
 
 ```ts
-const result = arr.reduce(
-  (acc, curr) => (predicate(curr) ? [...acc, mapper(curr)] : acc),
-  []
-);
+const result = arr.reduce((acc, curr) => (predicate(curr) ? [...acc, mapper(curr)] : acc), []);
 ```
 
 ### Linear Search to O(1) Lookup

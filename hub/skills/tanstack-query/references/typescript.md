@@ -16,9 +16,9 @@ type Todo = {
 };
 
 const { data } = useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: async (): Promise<Todo[]> => {
-    const response = await fetch('/api/todos');
+    const response = await fetch("/api/todos");
     return response.json();
   },
 });
@@ -46,9 +46,9 @@ function useEntity<T>(endpoint: string, id: number) {
 
 ```tsx
 export const todosQueryOptions = queryOptions({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: async (): Promise<Todo[]> => {
-    const response = await fetch('/api/todos');
+    const response = await fetch("/api/todos");
     return response.json();
   },
   staleTime: 1000 * 60,
@@ -68,15 +68,10 @@ type CreateTodoInput = { title: string };
 
 type CreateTodoResponse = Todo;
 
-const { mutate } = useMutation<
-  CreateTodoResponse,
-  Error,
-  CreateTodoInput,
-  { previous?: Todo[] }
->({
+const { mutate } = useMutation<CreateTodoResponse, Error, CreateTodoInput, { previous?: Todo[] }>({
   mutationFn: async (input) => {
-    const response = await fetch('/api/todos', {
-      method: 'POST',
+    const response = await fetch("/api/todos", {
+      method: "POST",
       body: JSON.stringify(input),
     });
     return response.json();
@@ -100,11 +95,11 @@ class ApiError extends Error {
 }
 
 const { error } = useQuery<Todo[], ApiError>({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: async () => {
-    const response = await fetch('/api/todos');
+    const response = await fetch("/api/todos");
     if (!response.ok) {
-      throw new ApiError('Failed to fetch', response.status, 'FETCH_ERROR');
+      throw new ApiError("Failed to fetch", response.status, "FETCH_ERROR");
     }
     return response.json();
   },
@@ -116,7 +111,7 @@ const { error } = useQuery<Todo[], ApiError>({
 ## 6. Zod Schema Validation
 
 ```tsx
-import { z } from 'zod';
+import { z } from "zod";
 
 const TodoSchema = z.object({
   id: z.number(),
@@ -127,9 +122,9 @@ const TodoSchema = z.object({
 type Todo = z.infer<typeof TodoSchema>;
 
 const { data } = useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: async () => {
-    const response = await fetch('/api/todos');
+    const response = await fetch("/api/todos");
     const json = await response.json();
     return TodoSchema.array().parse(json);
   },
@@ -143,11 +138,10 @@ const { data } = useQuery({
 ```tsx
 const queryKeys = {
   todos: {
-    all: ['todos'] as const,
-    lists: () => [...queryKeys.todos.all, 'list'] as const,
-    list: (filters: TodoFilters) =>
-      [...queryKeys.todos.lists(), filters] as const,
-    details: () => [...queryKeys.todos.all, 'detail'] as const,
+    all: ["todos"] as const,
+    lists: () => [...queryKeys.todos.all, "list"] as const,
+    list: (filters: TodoFilters) => [...queryKeys.todos.lists(), filters] as const,
+    details: () => [...queryKeys.todos.all, "detail"] as const,
     detail: (id: number) => [...queryKeys.todos.details(), id] as const,
   },
 };
@@ -164,11 +158,11 @@ useQuery({
 
 ```tsx
 const { data } = useQuery({
-  queryKey: ['todo', id],
+  queryKey: ["todo", id],
   queryFn: () => fetchTodo(id),
 });
 
-const title = data?.title ?? 'No title';
+const title = data?.title ?? "No title";
 ```
 
 ---

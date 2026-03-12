@@ -152,6 +152,8 @@ documentación, workflows y metadata del paquete.
 ## Desarrollo
 
 ```bash
+npm run lint
+npm run format:check
 npm test
 npm run validate:hub
 npm run pack:check

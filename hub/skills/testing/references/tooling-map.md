@@ -6,14 +6,14 @@ Pick the minimal toolchain that proves behavior at the target boundary.
 
 ## Tool Selection Matrix
 
-| Objective | Primary Tooling | Optional Add-on | Avoid |
-| --- | --- | --- | --- |
-| Pure logic and schemas | Vitest (`node`) | table-driven tests | `jsdom`, network mocks |
-| Hook orchestration | Vitest + `renderHook` (`jsdom`) | fake timers | Full page rendering when not needed |
-| Repository transport contract | Vitest + MSW | fixture builders | Live API calls in CI |
-| Loader and route adapters | Vitest + Router utilities + QueryClient | MSW for API responses | Browser E2E for adapter-only changes |
-| UI interactions | RTL + `user-event` | accessibility assertions | CSS selector assertions |
-| Cross-route journey | Cypress | selective API interception | Hook-level assertions |
+| Objective                     | Primary Tooling                         | Optional Add-on            | Avoid                                |
+| ----------------------------- | --------------------------------------- | -------------------------- | ------------------------------------ |
+| Pure logic and schemas        | Vitest (`node`)                         | table-driven tests         | `jsdom`, network mocks               |
+| Hook orchestration            | Vitest + `renderHook` (`jsdom`)         | fake timers                | Full page rendering when not needed  |
+| Repository transport contract | Vitest + MSW                            | fixture builders           | Live API calls in CI                 |
+| Loader and route adapters     | Vitest + Router utilities + QueryClient | MSW for API responses      | Browser E2E for adapter-only changes |
+| UI interactions               | RTL + `user-event`                      | accessibility assertions   | CSS selector assertions              |
+| Cross-route journey           | Cypress                                 | selective API interception | Hook-level assertions                |
 
 ## Environment Decision Rule
 
@@ -48,10 +48,10 @@ renderHook(() => useFeatureHook(), { wrapper: createWrapper() });
 ## MSW Lifecycle Discipline
 
 ```ts
-import { afterAll, afterEach, beforeAll } from 'vitest';
-import { server } from '@/core/test/msw/server';
+import { afterAll, afterEach, beforeAll } from "vitest";
+import { server } from "@/core/test/msw/server";
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+beforeAll(() => server.listen({ onUnhandledRequest: "error" }));
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 ```

@@ -1,15 +1,7 @@
 ---
 name: archiver
-description: 'Creates or updates changelog.md and, when needed, the project README.md from orchestrator-provided context plus Delta Specs.'
-tools:
-  [
-    execute,
-    read/readFile,
-    search,
-    edit/createFile,
-    edit/editFiles,
-    vscode/memory,
-  ]
+description: "Creates or updates changelog.md and, when needed, the project README.md from orchestrator-provided context plus Delta Specs."
+tools: [execute, read/readFile, search, edit/createFile, edit/editFiles, vscode/memory]
 model: GPT-5.4 (copilot)
 user-invocable: false
 ---

@@ -33,11 +33,11 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
 
   assert.deepEqual(
     state.agents.map((agent) => agent.id),
-    ["planificador"],
+    ["planificador"]
   );
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
-    ["ghcopilot-hub-consumer", "mermaid-expert", "react", "typescript"],
+    ["ghcopilot-hub-consumer", "mermaid-expert", "react", "typescript"]
   );
   assert.equal(state.baseFiles.length, 1);
 });
@@ -62,7 +62,7 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
 
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
-    ["typescript"],
+    ["typescript"]
   );
 });
 

@@ -5,7 +5,12 @@ import { getDefaultHubDir } from "./lib/constants.js";
 import { CliError } from "./lib/errors.js";
 import { ensureManifest, readManifest, writeManifest } from "./lib/manifest.js";
 import { resolveProjectState } from "./lib/resolver.js";
-import { applyProjectSync, createDesiredFiles, summarizePlan, validateManagedProject } from "./lib/sync-engine.js";
+import {
+  applyProjectSync,
+  createDesiredFiles,
+  summarizePlan,
+  validateManagedProject,
+} from "./lib/sync-engine.js";
 
 export async function runCli(argv, context) {
   try {
@@ -25,7 +30,7 @@ export async function runCli(argv, context) {
           packs: catalog.packs.length,
           baseFiles: catalog.baseFiles.length,
         },
-        formatHubDoctor(catalog, hubDir),
+        formatHubDoctor(catalog, hubDir)
       );
       return 0;
     }
@@ -50,7 +55,13 @@ export async function runCli(argv, context) {
       case "add":
         return runMutatingManifestCommand({ action: "add", parsed, context, projectDir, catalog });
       case "remove":
-        return runMutatingManifestCommand({ action: "remove", parsed, context, projectDir, catalog });
+        return runMutatingManifestCommand({
+          action: "remove",
+          parsed,
+          context,
+          projectDir,
+          catalog,
+        });
       default:
         throw new CliError(`Unknown command "${parsed.command}".`);
     }
@@ -66,7 +77,9 @@ async function runInit({ parsed, context, projectDir, catalog }) {
 
   manifest.packs = mergeUnique(manifest.packs, parsed.options.packs ?? []);
   manifest.skills = mergeUnique(manifest.skills, parsed.options.skills ?? []);
-  manifest.excludeSkills = manifest.excludeSkills.filter((skillId) => !manifest.skills.includes(skillId));
+  manifest.excludeSkills = manifest.excludeSkills.filter(
+    (skillId) => !manifest.skills.includes(skillId)
+  );
 
   await writeManifest(projectDir, manifest);
   return syncFromManifest({
@@ -93,7 +106,12 @@ async function runUpdate({ parsed, context, projectDir, catalog }) {
 
 async function runDiff({ parsed, context, projectDir, catalog }) {
   const manifest = await readManifest(projectDir);
-  const report = await buildProjectReport({ projectDir, catalog, manifest, force: parsed.options.force });
+  const report = await buildProjectReport({
+    projectDir,
+    catalog,
+    manifest,
+    force: parsed.options.force,
+  });
 
   writeJsonOrText(context.stdout, parsed.options.json, report, formatSyncPlan("Diff", report.plan));
 
@@ -102,7 +120,12 @@ async function runDiff({ parsed, context, projectDir, catalog }) {
 
 async function runDoctor({ parsed, context, projectDir, catalog }) {
   const manifest = await readManifest(projectDir);
-  const report = await buildProjectReport({ projectDir, catalog, manifest, force: parsed.options.force });
+  const report = await buildProjectReport({
+    projectDir,
+    catalog,
+    manifest,
+    force: parsed.options.force,
+  });
   const hasIssues =
     report.plan.conflicts.length > 0 ||
     report.plan.diagnostics.missingManaged.length > 0 ||
@@ -117,7 +140,7 @@ async function runDoctor({ parsed, context, projectDir, catalog }) {
       ...report,
       status: hasIssues ? "issues-found" : "ok",
     },
-    formatDoctorReport(report, hasIssues),
+    formatDoctorReport(report, hasIssues)
   );
 
   return hasIssues ? 2 : 0;
@@ -184,7 +207,6 @@ async function buildProjectReport({ projectDir, catalog, manifest, force }) {
 
   const resolvedState = resolveProjectState({ catalog, manifest: effectiveManifest });
   const desiredFiles = await createDesiredFiles({
-    hubDir: catalog.hubDir,
     resolvedState,
     revision: catalog.revision,
   });
@@ -382,6 +404,6 @@ function writeUsage(stream) {
       "  ghcopilot-hub diff [--project-dir <path>] [--force] [--json]",
       "  ghcopilot-hub doctor [--project-dir <path>] [--force] [--json]",
       "  ghcopilot-hub doctor --hub-only [--json]",
-    ].join("\n"),
+    ].join("\n")
   );
 }

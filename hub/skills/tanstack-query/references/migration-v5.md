@@ -10,7 +10,7 @@
 
 ```tsx
 useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
   staleTime: 5000,
 });
@@ -19,7 +19,7 @@ useQuery({
 ### 2. Query Callbacks Removed
 
 ```tsx
-const { data } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+const { data } = useQuery({ queryKey: ["todos"], queryFn: fetchTodos });
 useEffect(() => {
   if (data) console.log(data);
 }, [data]);
@@ -28,7 +28,7 @@ useEffect(() => {
 ### 3. `isLoading` → `isPending`
 
 ```tsx
-const { isPending } = useQuery({ queryKey: ['todos'], queryFn: fetchTodos });
+const { isPending } = useQuery({ queryKey: ["todos"], queryFn: fetchTodos });
 ```
 
 ### 4. `cacheTime` → `gcTime`
@@ -41,7 +41,7 @@ gcTime: 1000 * 60 * 60;
 
 ```tsx
 useInfiniteQuery({
-  queryKey: ['projects'],
+  queryKey: ["projects"],
   queryFn: ({ pageParam }) => fetchProjects(pageParam),
   initialPageParam: 0,
   getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -51,10 +51,10 @@ useInfiniteQuery({
 ### 6. `keepPreviousData` → `placeholderData`
 
 ```tsx
-import { keepPreviousData } from '@tanstack/react-query';
+import { keepPreviousData } from "@tanstack/react-query";
 
 useQuery({
-  queryKey: ['todos', page],
+  queryKey: ["todos", page],
   queryFn: () => fetchTodos(page),
   placeholderData: keepPreviousData,
 });
@@ -64,7 +64,7 @@ useQuery({
 
 ```tsx
 useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
   throwOnError: true,
 });

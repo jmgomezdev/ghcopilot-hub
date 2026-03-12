@@ -13,6 +13,7 @@ sequenceDiagram
 ```
 
 ## 2. Participants & Actors
+
 - **Participant**: Rectangular box (default).
 - **Actor**: Stick figure.
 
@@ -24,6 +25,7 @@ sequenceDiagram
 ```
 
 ## 3. Activations
+
 Show when a participant is active/processing.
 
 ```mermaid
@@ -35,6 +37,7 @@ sequenceDiagram
 ```
 
 **Shortcut `+`/`-`**:
+
 ```mermaid
 sequenceDiagram
     Alice->>+John: Hello John, how are you?
@@ -42,6 +45,7 @@ sequenceDiagram
 ```
 
 ## 4. Notes
+
 Add notes to the diagram.
 
 ```mermaid
@@ -54,6 +58,7 @@ sequenceDiagram
 ```
 
 ## 5. Loops, Alt, Opt
+
 Logic blocks.
 
 ```mermaid
@@ -75,6 +80,7 @@ sequenceDiagram
 ## 6. EXPERT: Messages & Autonumbering
 
 ### Autonumber
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -89,6 +95,7 @@ sequenceDiagram
 ```
 
 ### Critical Region
+
 ```mermaid
 sequenceDiagram
     critical Establish a connection to the DB

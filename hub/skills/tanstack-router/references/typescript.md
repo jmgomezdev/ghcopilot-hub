@@ -10,7 +10,7 @@
 ```tsx
 export const router = createRouter({ routeTree, context: { queryClient } });
 
-declare module '@tanstack/react-router' {
+declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
@@ -18,7 +18,7 @@ declare module '@tanstack/react-router' {
 ```
 
 ```tsx
-import { useParams } from '@tanstack/react-router';
+import { useParams } from "@tanstack/react-router";
 
-const { productId } = useParams({ from: '/products/$productId' });
+const { productId } = useParams({ from: "/products/$productId" });
 ```

@@ -6,12 +6,12 @@ Keep feedback fast while preserving deterministic confidence.
 
 ## Performance Budget Heuristic
 
-| Test Type | Target Runtime | Budget Strategy |
-| --- | --- | --- |
-| Unit | < 50ms per test (typical) | No network, no heavy setup |
-| Integration | < 200ms per test (typical) | Isolated MSW handlers and fixtures |
-| Component integration | < 300ms per test (typical) | Render minimal tree |
-| E2E | Minutes per suite, not per spec | Cover critical journeys only |
+| Test Type             | Target Runtime                  | Budget Strategy                    |
+| --------------------- | ------------------------------- | ---------------------------------- |
+| Unit                  | < 50ms per test (typical)       | No network, no heavy setup         |
+| Integration           | < 200ms per test (typical)      | Isolated MSW handlers and fixtures |
+| Component integration | < 300ms per test (typical)      | Render minimal tree                |
+| E2E                   | Minutes per suite, not per spec | Cover critical journeys only       |
 
 Treat values as heuristics; regressions matter more than absolute numbers.
 

@@ -1,6 +1,6 @@
 ---
 name: test-sentinel
-description: 'Ruthless quality gate: verifies strict TDD, layer-based testing matrix, architecture tests, and E2E scenario compliance.'
+description: "Ruthless quality gate: verifies strict TDD, layer-based testing matrix, architecture tests, and E2E scenario compliance."
 tools: [vscode/memory, execute, read/readFile, search, todo]
 model: GPT-5.3-Codex (copilot)
 user-invocable: false

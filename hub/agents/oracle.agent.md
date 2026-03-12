@@ -1,6 +1,6 @@
 ---
 name: Oracle
-description: 'Architecture decisions, code review, and testing strategy (Clean Architecture & ArchUnitTS). Read-only. Feeds the planner with references, constraints, edge cases, and a test plan.'
+description: "Architecture decisions, code review, and testing strategy (Clean Architecture & ArchUnitTS). Read-only. Feeds the planner with references, constraints, edge cases, and a test plan."
 tools: [read/readFile, search, web/fetch]
 model: GPT-5.4 (copilot)
 ---

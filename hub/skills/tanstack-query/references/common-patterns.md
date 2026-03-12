@@ -13,12 +13,12 @@
 ```tsx
 function UserPosts({ userId }) {
   const { data: user } = useQuery({
-    queryKey: ['users', userId],
+    queryKey: ["users", userId],
     queryFn: () => fetchUser(userId),
   });
 
   const { data: posts } = useQuery({
-    queryKey: ['users', userId, 'posts'],
+    queryKey: ["users", userId, "posts"],
     queryFn: () => fetchUserPosts(userId),
     enabled: !!user, // Not for useSuspenseQuery
   });
@@ -33,7 +33,7 @@ function UserPosts({ userId }) {
 function TodoDetails({ ids }) {
   const results = useQueries({
     queries: ids.map((id) => ({
-      queryKey: ['todos', id],
+      queryKey: ["todos", id],
       queryFn: () => fetchTodo(id),
     })),
   });
@@ -48,13 +48,13 @@ function TodoDetails({ ids }) {
 ## Pattern 3: Paginated Queries with placeholderData
 
 ```tsx
-import { keepPreviousData } from '@tanstack/react-query';
+import { keepPreviousData } from "@tanstack/react-query";
 
 function PaginatedTodos() {
   const [page, setPage] = useState(0);
 
   const { data } = useQuery({
-    queryKey: ['todos', page],
+    queryKey: ["todos", page],
     queryFn: () => fetchTodos(page),
     placeholderData: keepPreviousData,
   });
@@ -68,7 +68,7 @@ function PaginatedTodos() {
 ```tsx
 function InfiniteList() {
   const { data, fetchNextPage, hasNextPage } = useInfiniteQuery({
-    queryKey: ['items'],
+    queryKey: ["items"],
     queryFn: ({ pageParam }) => fetchItems(pageParam),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextCursor,
@@ -103,20 +103,20 @@ function useOptimisticToggle() {
   return useMutation({
     mutationFn: updateTodo,
     onMutate: async (updated) => {
-      await queryClient.cancelQueries({ queryKey: ['todos'] });
-      const previous = queryClient.getQueryData(['todos']);
+      await queryClient.cancelQueries({ queryKey: ["todos"] });
+      const previous = queryClient.getQueryData(["todos"]);
 
-      queryClient.setQueryData(['todos'], (old) =>
+      queryClient.setQueryData(["todos"], (old) =>
         old.map((todo) => (todo.id === updated.id ? updated : todo))
       );
 
       return { previous };
     },
     onError: (err, vars, context) => {
-      queryClient.setQueryData(['todos'], context.previous);
+      queryClient.setQueryData(["todos"], context.previous);
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
 }
@@ -132,7 +132,7 @@ function TodoList() {
 
   const prefetch = (id) => {
     queryClient.prefetchQuery({
-      queryKey: ['todos', id],
+      queryKey: ["todos", id],
       queryFn: () => fetchTodo(id),
     });
   };
@@ -156,18 +156,16 @@ function TodoList() {
 ## Pattern 7: Search/Debounce
 
 ```tsx
-import { useDeferredValue, useState } from 'react';
+import { useDeferredValue, useState } from "react";
 
 function Search() {
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
   const deferredSearch = useDeferredValue(search);
 
   const { data } = useQuery({
-    queryKey: ['search', deferredSearch],
+    queryKey: ["search", deferredSearch],
     queryFn: ({ signal }) =>
-      fetch(`/api/search?q=${deferredSearch}`, { signal }).then((r) =>
-        r.json()
-      ),
+      fetch(`/api/search?q=${deferredSearch}`, { signal }).then((r) => r.json()),
     enabled: deferredSearch.length >= 2,
   });
 }
@@ -179,7 +177,7 @@ function Search() {
 
 ```tsx
 const { data } = useQuery({
-  queryKey: ['stock-price'],
+  queryKey: ["stock-price"],
   queryFn: fetchStockPrice,
   refetchInterval: 1000 * 30,
   refetchIntervalInBackground: true,
@@ -192,7 +190,7 @@ const { data } = useQuery({
 
 ```tsx
 const { data } = useQuery({
-  queryKey: ['user', userId],
+  queryKey: ["user", userId],
   queryFn: () => fetchUser(userId),
   enabled: !!userId && isAuthenticated,
 });
@@ -204,10 +202,9 @@ const { data } = useQuery({
 
 ```tsx
 const { data: todo } = useQuery({
-  queryKey: ['todos', id],
+  queryKey: ["todos", id],
   queryFn: () => fetchTodo(id),
-  initialData: () =>
-    queryClient.getQueryData(['todos'])?.find((t) => t.id === id),
+  initialData: () => queryClient.getQueryData(["todos"])?.find((t) => t.id === id),
 });
 ```
 
@@ -219,10 +216,10 @@ const { data: todo } = useQuery({
 useMutation({
   mutationFn: updateTodo,
   onSuccess: (updated) => {
-    queryClient.setQueryData(['todos', updated.id], updated);
-    queryClient.invalidateQueries({ queryKey: ['todos'] });
-    queryClient.invalidateQueries({ queryKey: ['stats'] });
-    queryClient.invalidateQueries({ queryKey: ['users', updated.userId] });
+    queryClient.setQueryData(["todos", updated.id], updated);
+    queryClient.invalidateQueries({ queryKey: ["todos"] });
+    queryClient.invalidateQueries({ queryKey: ["stats"] });
+    queryClient.invalidateQueries({ queryKey: ["users", updated.userId] });
   },
 });
 ```
@@ -233,7 +230,7 @@ useMutation({
 
 ```tsx
 useQuery({
-  queryKey: ['todos'],
+  queryKey: ["todos"],
   queryFn: fetchTodos,
   throwOnError: true,
 });

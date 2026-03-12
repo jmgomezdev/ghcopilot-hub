@@ -12,12 +12,11 @@ Use this reference when implementing route-level error behavior for loader-drive
 ## Minimal route boundary pattern
 
 ```tsx
-import { createFileRoute, useRouter } from '@tanstack/react-router';
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 
-import { productQueries } from '@/application/product/product.queries';
+import { productQueries } from "@/application/product/product.queries";
 
-const isNotFoundError = (error: unknown) =>
-  error instanceof Error && error.message.includes('404');
+const isNotFoundError = (error: unknown) => error instanceof Error && error.message.includes("404");
 
 function ProductDetailErrorBoundary({ error }: { error: unknown }) {
   const router = useRouter();
@@ -26,15 +25,10 @@ function ProductDetailErrorBoundary({ error }: { error: unknown }) {
     return <ProductNotFound />;
   }
 
-  return (
-    <RouteErrorPage
-      title="Unable to load product"
-      onRetry={() => router.invalidate()}
-    />
-  );
+  return <RouteErrorPage title="Unable to load product" onRetry={() => router.invalidate()} />;
 }
 
-export const Route = createFileRoute('/products/$productId')({
+export const Route = createFileRoute("/products/$productId")({
   loader: async ({ params, context: { queryClient } }) => {
     await queryClient.ensureQueryData(productQueries.detail(params.productId));
   },

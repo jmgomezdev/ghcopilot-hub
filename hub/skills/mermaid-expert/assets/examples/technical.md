@@ -3,6 +3,7 @@
 Technical diagrams for architecture and project management.
 
 ## 1. Class Diagram
+
 Object Oriented Modeling.
 
 ```mermaid
@@ -10,7 +11,7 @@ classDiagram
     Animal <|-- Duck
     Animal <|-- Fish
     Animal <|-- Zebra
-    
+
     class Animal{
         +int age
         +String gender
@@ -29,6 +30,7 @@ classDiagram
 ```
 
 ## 2. State Diagram (State Machine)
+
 Finite state machines.
 
 ```mermaid
@@ -43,6 +45,7 @@ stateDiagram-v2
 ```
 
 ## 3. Entity Relationship (ER) Diagram
+
 Database schema modeling.
 
 ```mermaid
@@ -50,7 +53,7 @@ erDiagram
     CUSTOMER ||--o{ ORDER : places
     ORDER ||--|{ LINE-ITEM : contains
     CUSTOMER }|..|{ DELIVERY-ADDRESS : uses
-    
+
     CUSTOMER {
         string name
         string custNumber
@@ -63,6 +66,7 @@ erDiagram
 ```
 
 ## 4. Gantt Chart
+
 Project planning.
 
 ```mermaid
@@ -78,6 +82,7 @@ gantt
 ```
 
 ## 5. GitGraph
+
 Git history visualization.
 
 ```mermaid
@@ -93,6 +98,7 @@ gitGraph
 ```
 
 ## 6. Mindmap
+
 Brainstorming and hierarchy.
 
 ```mermaid
@@ -113,6 +119,7 @@ mindmap
 ```
 
 ## 7. Pie Chart
+
 Simple data visualization.
 
 ```mermaid
