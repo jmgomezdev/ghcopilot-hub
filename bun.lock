@@ -1,0 +1,15 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 0,
+  "workspaces": {
+    "": {
+      "name": "ghcopilot-hub",
+      "dependencies": {
+        "yaml": "^2.8.1",
+      },
+    },
+  },
+  "packages": {
+    "yaml": ["yaml@2.8.2", "https://inditex.jfrog.io/artifactory/api/npm/node-public/yaml/-/yaml-2.8.2.tgz", { "bin": "bin.mjs" }, "sha512-mplynKqc1C2hTVYxd0PU2xQAc22TI1vShAYGksCCfxbn/dFwnHTNi1bvYsBTkhdUNtGIf5xNOg938rrSSYvS9A=="],
+  }
+}

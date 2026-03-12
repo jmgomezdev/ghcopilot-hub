@@ -1,0 +1,49 @@
+{
+    "bin": {
+        "ghcopilot-hub": "./tooling/cli/src/bin.js"
+    },
+    "author": {
+        "name": "Jose Manuel Gomez Perez",
+        "url": "https://github.com/jmgomezdev"
+    },
+    "bugs": {
+        "url": "https://github.com/jmgomezdev/ghcopilot-hub/issues"
+    },
+    "dependencies": {
+        "yaml": "^2.8.1"
+    },
+    "description": "Centralized GitHub Copilot hub with shared agents, skills, packs, and a sync CLI for VS Code repositories.",
+    "engines": {
+        "bun": ">=1.0.0",
+        "node": ">=20.0.0"
+    },
+    "files": [
+        "hub",
+        "tooling/cli/src",
+        "README.md"
+    ],
+    "keywords": [
+        "copilot",
+        "github-copilot",
+        "vscode",
+        "cli",
+        "bun",
+        "agents",
+        "skills"
+    ],
+    "homepage": "https://github.com/jmgomezdev/ghcopilot-hub#readme",
+    "name": "ghcopilot-hub",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/jmgomezdev/ghcopilot-hub.git"
+    },
+    "scripts": {
+        "cli": "node ./tooling/cli/src/bin.js",
+        "pack:check": "npm pack --dry-run",
+        "prepublishOnly": "npm run validate:hub && npm test && npm run pack:check",
+        "test": "node --test tooling/cli/test/**/*.test.js",
+        "validate:hub": "node ./tooling/cli/src/bin.js doctor --hub-only"
+    },
+    "type": "module",
+    "version": "1.0.0"
+}
