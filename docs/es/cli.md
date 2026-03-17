@@ -64,6 +64,20 @@ ghcopilot-hub update
 ghcopilot-hub update --force
 ```
 
+### `list`
+
+Muestra el catálogo disponible para proyectos consumidores sin modificar ningún archivo.
+
+```bash
+ghcopilot-hub list
+ghcopilot-hub list packs
+ghcopilot-hub list skills
+ghcopilot-hub list skills --json
+```
+
+`list packs` imprime cada pack con las skills que expande. `list skills` imprime cada identificador de skill y sólo
+añade el nombre visible cuando difiere del identificador.
+
 ### `add`
 
 Añade un pack o una skill al manifiesto y sincroniza.

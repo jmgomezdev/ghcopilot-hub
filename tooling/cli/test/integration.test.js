@@ -73,6 +73,30 @@ test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync
   assert.match(result.stdout, /\.github\/skills\/mermaid-expert\/SKILL\.md/);
 });
 
+test("list muestra packs y skills disponibles del hub", async () => {
+  const result = await runCliCapture(["list", "--hub-dir", HUB_DIR]);
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.match(result.stdout, /Packs:/);
+  assert.match(result.stdout, /- spa-tanstack \(/);
+  assert.match(result.stdout, /Skills:/);
+  assert.match(result.stdout, /- mermaid-expert/);
+});
+
+test("list packs --json devuelve el catálogo filtrado", async () => {
+  const result = await runCliCapture(["list", "packs", "--hub-dir", HUB_DIR, "--json"]);
+
+  assert.equal(result.exitCode, 0, result.stderr);
+
+  const payload = JSON.parse(result.stdout);
+  assert.equal(Array.isArray(payload.packs), true);
+  assert.equal(
+    payload.packs.some((pack) => pack.name === "spa-tanstack"),
+    true
+  );
+  assert.equal("skills" in payload, false);
+});
+
 test("remove skill añade exclusion y elimina archivos huérfanos", async () => {
   const projectDir = await createTempProject();
 

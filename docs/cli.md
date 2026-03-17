@@ -63,6 +63,20 @@ ghcopilot-hub update
 ghcopilot-hub update --force
 ```
 
+### `list`
+
+Shows the catalog available to consumer projects without modifying any files.
+
+```bash
+ghcopilot-hub list
+ghcopilot-hub list packs
+ghcopilot-hub list skills
+ghcopilot-hub list skills --json
+```
+
+`list packs` prints each pack with the skills it expands to. `list skills` prints each skill id and only includes the
+display name when it differs from the id.
+
 ### `add`
 
 Adds a pack or skill to the manifest and syncs.

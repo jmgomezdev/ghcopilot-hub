@@ -47,6 +47,8 @@ export async function runCli(argv, context) {
         return runInit({ parsed, context, projectDir, catalog });
       case "update":
         return runUpdate({ parsed, context, projectDir, catalog });
+      case "list":
+        return runList({ parsed, context, catalog });
       case "diff":
         return runDiff({ parsed, context, projectDir, catalog });
       case "doctor":
@@ -101,6 +103,35 @@ async function runUpdate({ parsed, context, projectDir, catalog }) {
     force: parsed.options.force,
     json: parsed.options.json,
   });
+}
+
+async function runList({ parsed, context, catalog }) {
+  const scope = normalizeListScope(parsed.subject);
+  const payload = {
+    hubDir: catalog.hubDir,
+    revision: catalog.revision,
+    counts: {
+      packs: catalog.packs.length,
+      skills: catalog.skills.length,
+    },
+  };
+
+  if (scope !== "skills") {
+    payload.packs = catalog.packs.map((pack) => ({
+      name: pack.name,
+      skills: pack.skills,
+    }));
+  }
+
+  if (scope !== "packs") {
+    payload.skills = catalog.skills.map((skill) => ({
+      id: skill.id,
+      name: skill.name,
+    }));
+  }
+
+  writeJsonOrText(context.stdout, parsed.options.json, payload, formatCatalogList(payload));
+  return 0;
 }
 
 async function runDiff({ parsed, context, projectDir, catalog }) {
@@ -301,7 +332,7 @@ function parseArgv(argv) {
 
   return {
     command,
-    subject: command === "add" || command === "remove" ? args[0] : null,
+    subject: command === "add" || command === "remove" || command === "list" ? args[0] : null,
     name: command === "add" || command === "remove" ? args[1] : null,
     options,
   };
@@ -337,6 +368,48 @@ function formatHubDoctor(catalog, hubDir) {
     `Packs: ${catalog.packs.length}`,
     `Revision: ${catalog.revision}`,
   ].join("\n");
+}
+
+function normalizeListScope(subject) {
+  if (!subject) {
+    return "all";
+  }
+
+  if (subject === "pack" || subject === "packs") {
+    return "packs";
+  }
+
+  if (subject === "skill" || subject === "skills") {
+    return "skills";
+  }
+
+  throw new CliError(`Unknown list target "${subject}". Use "packs" or "skills".`);
+}
+
+function formatCatalogList(payload) {
+  const sections = [
+    "Catalog",
+    `Hub: ${payload.hubDir}`,
+    `Revision: ${payload.revision}`,
+    `Packs: ${payload.counts.packs}`,
+    `Skills: ${payload.counts.skills}`,
+  ];
+
+  if (payload.packs) {
+    sections.push("\nPacks:");
+    for (const pack of payload.packs) {
+      sections.push(`- ${pack.name} (${pack.skills.join(", ") || "(empty)"})`);
+    }
+  }
+
+  if (payload.skills) {
+    sections.push("\nSkills:");
+    for (const skill of payload.skills) {
+      sections.push(skill.id === skill.name ? `- ${skill.id}` : `- ${skill.id}: ${skill.name}`);
+    }
+  }
+
+  return sections.join("\n");
 }
 
 function formatSyncPlan(title, plan) {
@@ -425,6 +498,7 @@ function writeUsage(stream) {
       "Usage:",
       "  ghcopilot-hub init [--pack <id>] [--skill <id>] [--project-dir <path>] [--force]",
       "  ghcopilot-hub update [--project-dir <path>] [--force]",
+      "  ghcopilot-hub list [packs|skills] [--hub-dir <path>] [--json]",
       "  ghcopilot-hub add <pack|skill> <name> [--project-dir <path>] [--force]",
       "  ghcopilot-hub remove <pack|skill> <name> [--project-dir <path>] [--force]",
       "  ghcopilot-hub diff [--project-dir <path>] [--force] [--json]",

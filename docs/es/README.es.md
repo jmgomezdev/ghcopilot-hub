@@ -110,6 +110,9 @@ bunx ghcopilot-hub@latest doctor --hub-only
 Ejemplos sobre un proyecto consumidor:
 
 ```bash
+ghcopilot-hub list
+ghcopilot-hub list packs
+ghcopilot-hub list skills
 ghcopilot-hub init --pack spa-tanstack
 ghcopilot-hub add skill mermaid-expert
 ghcopilot-hub remove skill tanstack-router
