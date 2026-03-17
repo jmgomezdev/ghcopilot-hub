@@ -1,35 +1,37 @@
 # ghcopilot-hub
 
-Hub centralizado para reutilizar agentes y skills de GitHub Copilot entre proyectos y materializarlos en cada
-repositorio con un CLI declarativo.
+[English](README.md) | [Español](README.es.md)
 
-## Objetivo de v1
+Centralized hub for reusing GitHub Copilot agents and skills across projects and materializing them into each
+repository with a declarative CLI.
 
-La v1 resuelve estos puntos:
+## v1 Goals
 
-- catálogo dinámico de agentes y skills leyendo el filesystem
-- packs declarativos de skills
-- manifiesto por proyecto consumidor en `.github/ghcopilot-hub.json`
-- sincronización de archivos gestionados hacia el repo consumidor
-- detección de drift y diff previo a aplicar cambios
-- preservación de personalizaciones locales en `.github/local-overrides/`
+Version 1 covers the following:
 
-No incluye versionado funcional por proyecto. Cada sincronización apunta al estado actual del hub y registra la
-revisión disponible en las cabeceras managed.
+- dynamic catalog of agents and skills loaded from the filesystem
+- declarative skill packs
+- per-consumer manifest in `.github/ghcopilot-hub.json`
+- synchronization of managed files into the consumer repository
+- drift detection and diff preview before applying changes
+- preservation of local customizations in `.github/local-overrides/`
 
-## Layout del hub
+It does not include functional versioning per project. Every sync targets the current hub state and records the
+available revision in managed file headers.
+
+## Hub Layout
 
 ```text
 hub/
-  agents/            agentes compartidos
-  skills/            skills compartidas con sus assets y referencias
-  packs/             composiciones declarativas de skills
-  base/              archivos base sincronizados a cada proyecto
-tooling/cli/         CLI de materialización, diff y doctor
-docs/                documentación operativa
+  agents/            shared agents
+  skills/            shared skills with their assets and references
+  packs/             declarative skill compositions
+  base/              base files synchronized into each project
+tooling/cli/         materialization, diff, and doctor CLI
+docs/                operational documentation
 ```
 
-## Layout del proyecto consumidor
+## Consumer Project Layout
 
 ```text
 .github/
@@ -44,7 +46,7 @@ docs/                documentación operativa
   settings.json
 ```
 
-## Manifiesto
+## Manifest
 
 ```json
 {
@@ -58,57 +60,57 @@ docs/                documentación operativa
 }
 ```
 
-Reglas de resolución:
+Resolution rules:
 
-- la skill `ghcopilot-hub-consumer` se instala por defecto en cualquier proyecto gestionado por el CLI
-- todos los agentes del hub se copian siempre
-- las skills finales salen de `packs + skills - excludeSkills`
-- `excludeSkills` gana incluso si una skill llega desde un pack
-- los archivos locales viven fuera de los paths gestionados
+- the `ghcopilot-hub-consumer` skill is installed by default in every project managed by the CLI
+- all hub agents are always copied
+- the final skills set is resolved as `packs + skills - excludeSkills`
+- `excludeSkills` wins even if a skill comes from a pack
+- local files live outside managed paths
 
 ## CLI
 
-Uso rápido:
+Quick start:
 
 ```bash
 npm install
 node tooling/cli/src/bin.js doctor --hub-only
 ```
 
-Uso rápido con Bun:
+Quick start with Bun:
 
 ```bash
 bun install
 bun run validate:hub
 ```
 
-Instalación como paquete distribuido:
+Install as a distributed package:
 
 ```bash
 npm install -g ghcopilot-hub
 ghcopilot-hub doctor --hub-only
 ```
 
-Instalación global con Bun:
+Global install with Bun:
 
 ```bash
 bun add -g ghcopilot-hub
 ghcopilot-hub doctor --hub-only
 ```
 
-Uso efímero sin instalación global:
+Ephemeral usage without global install:
 
 ```bash
 npx ghcopilot-hub@latest doctor --hub-only
 ```
 
-Uso efímero con Bun:
+Ephemeral usage with Bun:
 
 ```bash
 bunx ghcopilot-hub@latest doctor --hub-only
 ```
 
-Ejemplos sobre un proyecto consumidor:
+Examples for a consumer project:
 
 ```bash
 ghcopilot-hub init --pack spa-tanstack
@@ -119,9 +121,9 @@ ghcopilot-hub doctor
 ghcopilot-hub update
 ```
 
-## Reglas de sync
+## Sync Rules
 
-Paths gestionados:
+Managed paths:
 
 - `.github/agents/**`
 - `.github/skills/**`
@@ -130,26 +132,26 @@ Paths gestionados:
 - `.github/copilot-instructions.md`
 - `.vscode/settings.json`
 
-Paths locales:
+Local paths:
 
 - `.github/local-overrides/**`
 
-Cada archivo gestionado lleva una cabecera de trazabilidad con:
+Each managed file includes a traceability header with:
 
 - `managed-by`
 - `source`
 - `revision`
 - `content-hash`
 
-`content-hash` permite distinguir entre un archivo desactualizado por cambios del hub y un archivo drifted por
-edición local manual.
+`content-hash` allows the CLI to distinguish between a file that is outdated because the hub changed and a file that
+has drifted because of manual local edits.
 
-## Scaffolding del repo
+## Repository Scaffolding
 
-El catálogo sincronizable del hub vive bajo `hub/`. Así la raíz del repositorio queda reservada para tooling,
-documentación, workflows y metadata del paquete.
+The syncable catalog lives under `hub/`. This keeps the repository root available for tooling, documentation,
+workflows, and package metadata.
 
-## Desarrollo
+## Development
 
 ```bash
 npm run lint
@@ -159,7 +161,7 @@ npm run validate:hub
 npm run pack:check
 ```
 
-Con Bun:
+With Bun:
 
 ```bash
 bun run validate:hub
@@ -167,7 +169,7 @@ bun run test
 bun pm pack --quiet
 ```
 
-Documentación adicional:
+Additional documentation:
 
 - [docs/architecture.md](docs/architecture.md)
 - [docs/cli.md](docs/cli.md)
