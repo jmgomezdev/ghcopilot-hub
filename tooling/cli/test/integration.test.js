@@ -3,6 +3,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import test from "node:test";
 
+import { renderManagedFile } from "../src/lib/managed-header.js";
+
 import {
   createTempProject,
   fileExists,
@@ -11,7 +13,7 @@ import {
   runCliCapture,
 } from "./test-helpers.js";
 
-test("init materializa agentes, base y skills del pack", async () => {
+test("init materializa agentes y skills del pack", async () => {
   const projectDir = await createTempProject();
 
   const result = await runCliCapture([
@@ -34,9 +36,14 @@ test("init materializa agentes, base y skills del pack", async () => {
   assert.equal(await fileExists(projectDir, ".github/skills/react/SKILL.md"), true);
   assert.equal(
     await fileExists(projectDir, ".github/prompts/ghcopilot-hub-maintenance.prompt.md"),
-    true
+    false
   );
-  assert.equal(await fileExists(projectDir, ".vscode/settings.json"), true);
+  assert.equal(
+    await fileExists(projectDir, ".github/instructions/ghcopilot-hub.instructions.md"),
+    false
+  );
+  assert.equal(await fileExists(projectDir, ".github/copilot-instructions.md"), false);
+  assert.equal(await fileExists(projectDir, ".vscode/settings.json"), false);
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
   assert.deepEqual(manifest.packs, ["spa-tanstack"]);
@@ -108,13 +115,19 @@ test("doctor detecta drift en un archivo gestionado", async () => {
     HUB_DIR,
   ]);
 
-  const managedFilePath = path.join(projectDir, ".github", "copilot-instructions.md");
+  const managedFilePath = path.join(
+    projectDir,
+    ".github",
+    "skills",
+    "ghcopilot-hub-consumer",
+    "SKILL.md"
+  );
   await fs.appendFile(managedFilePath, "\nLOCAL CHANGE\n", "utf8");
 
   const result = await runCliCapture(["doctor", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
   assert.equal(result.exitCode, 2);
   assert.match(result.stdout, /Drifted managed files:/);
-  assert.match(result.stdout, /\.github\/copilot-instructions\.md/);
+  assert.match(result.stdout, /\.github\/skills\/ghcopilot-hub-consumer\/SKILL\.md/);
 });
 
 test("init sin pack instala la skill por defecto del hub", async () => {
@@ -133,46 +146,51 @@ test("init sin pack instala la skill por defecto del hub", async () => {
   assert.deepEqual(manifest.skills, []);
 });
 
-test("add pack aplica archivos no conflictivos aunque exista settings.json local", async () => {
+test("update elimina archivos legacy previamente gestionados desde hub/base", async () => {
   const projectDir = await createTempProject();
 
+  await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
+
+  const legacyInstruction = renderManagedFile({
+    targetRelativePath: ".github/copilot-instructions.md",
+    sourceRelativePath: "hub/base/.github/copilot-instructions.md",
+    revision: "legacy",
+    body: "# Legacy\n",
+  });
+  const legacyPrompt = renderManagedFile({
+    targetRelativePath: ".github/prompts/ghcopilot-hub-maintenance.prompt.md",
+    sourceRelativePath: "hub/base/.github/prompts/ghcopilot-hub-maintenance.prompt.md",
+    revision: "legacy",
+    body: "# Legacy prompt\n",
+  });
+  const legacySettings = renderManagedFile({
+    targetRelativePath: ".vscode/settings.json",
+    sourceRelativePath: "hub/base/.vscode/settings.json",
+    revision: "legacy",
+    body: '{\n  "legacy": true\n}\n',
+  });
+
+  await fs.mkdir(path.join(projectDir, ".github", "prompts"), { recursive: true });
   await fs.mkdir(path.join(projectDir, ".vscode"), { recursive: true });
   await fs.writeFile(
-    path.join(projectDir, ".vscode", "settings.json"),
-    '{\n  "editor.tabSize": 2\n}\n',
+    path.join(projectDir, ".github", "copilot-instructions.md"),
+    legacyInstruction,
     "utf8"
   );
-
-  const initResult = await runCliCapture([
-    "init",
-    "--project-dir",
-    projectDir,
-    "--hub-dir",
-    HUB_DIR,
-  ]);
-
-  assert.equal(initResult.exitCode, 2);
-  assert.equal(await fileExists(projectDir, ".github/agents/planificador.agent.md"), true);
-  assert.equal(
-    await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
-    true
+  await fs.writeFile(
+    path.join(projectDir, ".github", "prompts", "ghcopilot-hub-maintenance.prompt.md"),
+    legacyPrompt,
+    "utf8"
   );
-  assert.match(initResult.stdout, /Sync applied with conflicts/);
-  assert.match(initResult.stdout, /\.vscode\/settings\.json/);
+  await fs.writeFile(path.join(projectDir, ".vscode", "settings.json"), legacySettings, "utf8");
 
-  const addResult = await runCliCapture([
-    "add",
-    "pack",
-    "base-web",
-    "--project-dir",
-    projectDir,
-    "--hub-dir",
-    HUB_DIR,
-  ]);
+  const result = await runCliCapture(["update", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
 
-  assert.equal(addResult.exitCode, 2);
-  assert.equal(await fileExists(projectDir, ".github/skills/typescript/SKILL.md"), true);
-  assert.equal(await fileExists(projectDir, ".github/skills/testing/SKILL.md"), true);
-  assert.match(addResult.stdout, /Sync applied with conflicts/);
-  assert.match(addResult.stdout, /\.vscode\/settings\.json/);
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, ".github/copilot-instructions.md"), false);
+  assert.equal(
+    await fileExists(projectDir, ".github/prompts/ghcopilot-hub-maintenance.prompt.md"),
+    false
+  );
+  assert.equal(await fileExists(projectDir, ".vscode/settings.json"), false);
 });

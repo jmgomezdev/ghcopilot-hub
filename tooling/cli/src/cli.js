@@ -28,7 +28,6 @@ export async function runCli(argv, context) {
           agents: catalog.agents.length,
           skills: catalog.skills.length,
           packs: catalog.packs.length,
-          baseFiles: catalog.baseFiles.length,
         },
         formatHubDoctor(catalog, hubDir)
       );
@@ -235,7 +234,6 @@ async function buildProjectReport({ projectDir, catalog, manifest, force }) {
     resolved: {
       agents: resolvedState.agents.map((agent) => agent.id),
       skills: resolvedState.skills.map((skill) => skill.id),
-      baseFiles: resolvedState.baseFiles.map((file) => file.targetRelativePath),
     },
     desiredFiles,
     plan,
@@ -337,7 +335,6 @@ function formatHubDoctor(catalog, hubDir) {
     `Agents: ${catalog.agents.length}`,
     `Skills: ${catalog.skills.length}`,
     `Packs: ${catalog.packs.length}`,
-    `Base files: ${catalog.baseFiles.length}`,
     `Revision: ${catalog.revision}`,
   ].join("\n");
 }

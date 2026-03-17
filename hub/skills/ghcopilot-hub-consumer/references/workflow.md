@@ -6,14 +6,13 @@ Managed files are rewritten by the CLI and should not be edited by hand:
 
 - `.github/agents/**`
 - `.github/skills/**`
-- `.github/instructions/**`
-- `.github/prompts/**`
-- `.github/copilot-instructions.md`
-- `.vscode/settings.json`
 
 Local files stay under project control:
 
 - `.github/local-overrides/**`
+- `.github/ghcopilot-hub.json`
+
+Older repositories may still have legacy managed files from `hub/base/`; `ghcopilot-hub update` removes them.
 
 ## Recommended Operating Sequence
 

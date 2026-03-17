@@ -55,5 +55,5 @@
         "validate:hub": "node ./tooling/cli/src/bin.js doctor --hub-only"
     },
     "type": "module",
-    "version": "1.0.2"
+    "version": "1.0.3"
 }

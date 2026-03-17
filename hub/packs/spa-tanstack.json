@@ -1,4 +1,17 @@
 {
   "name": "spa-tanstack",
-  "skills": ["typescript", "react", "tanstack-query", "tanstack-router", "testing"]
+  "skills": [
+    "architecture-testing",
+    "mermaid-expert",
+    "react",
+    "react-hook-form",
+    "tailwind",
+    "tanstack",
+    "tanstack-query",
+    "tanstack-router",
+    "testing",
+    "typescript",
+    "zod",
+    "zustand"
+  ]
 }

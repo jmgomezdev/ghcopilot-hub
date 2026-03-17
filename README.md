@@ -26,7 +26,6 @@ hub/
   agents/            shared agents
   skills/            shared skills with their assets and references
   packs/             declarative skill compositions
-  base/              base files synchronized into each project
 tooling/cli/         materialization, diff, and doctor CLI
 docs/                operational documentation
 ```
@@ -36,15 +35,13 @@ docs/                operational documentation
 ```text
 .github/
   ghcopilot-hub.json
-  copilot-instructions.md
-  instructions/
-  prompts/
   agents/
   skills/
   local-overrides/
-.vscode/
-  settings.json
 ```
+
+The manifest file `.github/ghcopilot-hub.json` is the local control file for the consumer project. It is not treated
+as a managed synced artifact.
 
 ## Manifest
 
@@ -127,14 +124,13 @@ Managed paths:
 
 - `.github/agents/**`
 - `.github/skills/**`
-- `.github/instructions/**`
-- `.github/prompts/**`
-- `.github/copilot-instructions.md`
-- `.vscode/settings.json`
 
 Local paths:
 
 - `.github/local-overrides/**`
+- `.github/ghcopilot-hub.json`
+
+Legacy files that came from older `hub/base/` versions are removed on `ghcopilot-hub update`.
 
 Each managed file includes a traceability header with:
 

@@ -39,12 +39,6 @@
 
 `name` debe ser único y toda skill referenciada debe existir en `hub/skills/`.
 
-### Base compartida
-
-- Ubicación: `hub/base/`
-- Destino: misma ruta relativa dentro del proyecto consumidor
-- Uso: instrucciones base, prompts comunes y ajustes mínimos de VS Code
-
 ## Manifiesto del proyecto
 
 Archivo: `.github/ghcopilot-hub.json`
@@ -80,7 +74,6 @@ Fórmula:
 ```text
 agents = todos los agentes del hub
 skills = defaultSkills + packs + skills - excludeSkills
-baseFiles = todo lo que exista dentro de hub/base/
 ```
 
 El layout interno del hub agrupa estos recursos bajo `hub/`.
@@ -98,7 +91,6 @@ Mapa origen a destino:
 
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
-- `hub/base/**` -> misma ruta relativa en el proyecto
 
 Cabecera de trazabilidad:
 
@@ -110,6 +102,9 @@ Cabecera de trazabilidad:
 ```
 
 Para archivos JSONC se usa comentario `//`.
+
+Las versiones actuales del CLI ya no materializan archivos desde `hub/base/`. Si un proyecto conserva archivos
+legacy de versiones anteriores, `ghcopilot-hub update` los elimina.
 
 Estados posibles por archivo:
 

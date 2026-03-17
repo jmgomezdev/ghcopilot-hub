@@ -2,9 +2,9 @@
 name: ghcopilot-hub-consumer
 description: >
   Workflow for repositories managed by ghcopilot-hub. Trigger: Use when the repository contains
-  `.github/ghcopilot-hub.json`, managed files under `.github/agents/`, `.github/skills/`, `.github/instructions/`,
-  or `.github/prompts/`, or when the user asks to run ghcopilot-hub commands, add/remove packs or skills, inspect
-  drift, update managed files, or customize a consumer repository safely.
+  `.github/ghcopilot-hub.json`, managed files under `.github/agents/` or `.github/skills/`, or when the user asks
+  to run ghcopilot-hub commands, add/remove packs or skills, inspect drift, update managed files, or customize a
+  consumer repository safely.
 license: Apache-2.0
 metadata:
   author: jmgomezdev
@@ -30,12 +30,11 @@ Managed paths:
 
 - `.github/agents/**`
 - `.github/skills/**`
-- `.github/instructions/**`
-- `.github/prompts/**`
-- `.github/copilot-instructions.md`
-- `.vscode/settings.json`
 
 If the requested change affects managed content, change the manifest or the hub source, then run the CLI.
+
+Legacy files from older `hub/base/` versions may still exist in some repositories; `ghcopilot-hub update` removes
+them.
 
 ### Local Customization Goes to Overrides
 

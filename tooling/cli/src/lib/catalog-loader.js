@@ -12,11 +12,10 @@ const execFileAsync = promisify(execFile);
 
 export async function loadHubCatalog(hubDir) {
   const hubContentDir = getHubContentPath(hubDir);
-  const [agents, skills, packs, baseFiles, revision] = await Promise.all([
+  const [agents, skills, packs, revision] = await Promise.all([
     loadAgents(hubDir, hubContentDir),
     loadSkills(hubDir, hubContentDir),
     loadPacks(hubDir, hubContentDir),
-    loadBaseFiles(hubDir, hubContentDir),
     resolveRevision(hubDir),
   ]);
 
@@ -34,7 +33,6 @@ export async function loadHubCatalog(hubDir) {
     agents,
     skills,
     packs,
-    baseFiles,
     revision,
   };
 }
@@ -163,22 +161,6 @@ async function loadPacks(hubDir, hubContentDir) {
   }
 
   return packs.sort((left, right) => left.name.localeCompare(right.name));
-}
-
-async function loadBaseFiles(hubDir, hubContentDir) {
-  const baseDir = path.join(hubContentDir, "base");
-  if (!(await pathExists(baseDir))) {
-    return [];
-  }
-
-  const files = await walkFiles(baseDir);
-  return files
-    .map((sourcePath) => ({
-      sourcePath,
-      sourceRelativePath: relativeFrom(hubDir, sourcePath),
-      targetRelativePath: relativeFrom(baseDir, sourcePath),
-    }))
-    .sort((left, right) => left.targetRelativePath.localeCompare(right.targetRelativePath));
 }
 
 async function resolveRevision(hubDir) {

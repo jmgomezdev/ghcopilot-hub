@@ -18,7 +18,6 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
       { name: "base-web", skills: ["typescript", "testing"] },
       { name: "spa", skills: ["typescript", "react"] },
     ],
-    baseFiles: [{ targetRelativePath: ".github/copilot-instructions.md" }],
   };
 
   const state = resolveProjectState({
@@ -39,7 +38,6 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
     state.skills.map((skill) => skill.id),
     ["ghcopilot-hub-consumer", "mermaid-expert", "react", "typescript"]
   );
-  assert.equal(state.baseFiles.length, 1);
 });
 
 test("resolveProjectState permite excluir la skill por defecto", () => {
@@ -47,7 +45,6 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
     agents: [{ id: "planificador" }],
     skills: [{ id: "ghcopilot-hub-consumer" }, { id: "typescript" }],
     packs: [{ name: "base-web", skills: ["typescript"] }],
-    baseFiles: [],
   };
 
   const state = resolveProjectState({
@@ -70,7 +67,7 @@ test("managed header preserva el cuerpo y expone el hash de contenido", () => {
   const body = "# Example\n";
   const rendered = renderManagedFile({
     targetRelativePath: ".github/copilot-instructions.md",
-    sourceRelativePath: "hub/base/.github/copilot-instructions.md",
+    sourceRelativePath: "hub/skills/testing/SKILL.md",
     revision: "abc123",
     body,
   });
@@ -82,7 +79,7 @@ test("managed header preserva el cuerpo y expone el hash de contenido", () => {
 
   assert.ok(parsed);
   assert.equal(parsed.header["managed-by"], "ghcopilot-hub");
-  assert.equal(parsed.header.source, "hub/base/.github/copilot-instructions.md");
+  assert.equal(parsed.header.source, "hub/skills/testing/SKILL.md");
   assert.equal(parsed.header.revision, "abc123");
   assert.equal(parsed.header["content-hash"], hashContent(body));
   assert.equal(parsed.body, body);

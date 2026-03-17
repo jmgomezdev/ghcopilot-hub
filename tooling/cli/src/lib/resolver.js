@@ -48,6 +48,5 @@ export function resolveProjectState({ catalog, manifest }) {
   return {
     agents: catalog.agents,
     skills,
-    baseFiles: catalog.baseFiles,
   };
 }

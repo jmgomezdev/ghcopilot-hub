@@ -15,14 +15,7 @@ export const MANAGED_ROOTS = [
   ".vscode/settings.json",
 ];
 
-export const REQUIRED_DIRS = [
-  ".github",
-  ".github/agents",
-  ".github/skills",
-  ".github/instructions",
-  ".github/prompts",
-  ".vscode",
-];
+export const REQUIRED_DIRS = [".github", ".github/agents", ".github/skills"];
 
 export function getRequiredDirs(preserveLocalOverrides) {
   return preserveLocalOverrides
