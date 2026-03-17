@@ -5,32 +5,69 @@
 Centralized hub for reusing GitHub Copilot agents and skills across projects and materializing them into each
 repository with a declarative CLI.
 
-## v1 Goals
+## Why Consumer Projects Use It
 
-Version 1 covers the following:
+Use this project when you want shared Copilot setup to behave like infrastructure instead of copy-pasted files.
 
-- dynamic catalog of agents and skills loaded from the filesystem
-- declarative skill packs
-- per-consumer manifest in `.github/ghcopilot-hub.json`
-- synchronization of managed files into the consumer repository
-- drift detection and diff preview before applying changes
-- preservation of local customizations in `.github/local-overrides/`
+With `ghcopilot-hub`, a consumer repository can declare the agents and skills it needs, materialize them from a
+central hub, and keep that setup consistent over time.
 
-It does not include functional versioning per project. Every sync targets the current hub state and records the
-available revision in managed file headers.
+Typical consumer outcomes:
 
-## Hub Layout
+- Start a new repository with a predefined pack such as `spa-tanstack` or `node-api`
+- Add or remove skills over time without manually copying files across repositories
+- Inspect the available packs and skills before choosing the setup
+- Review drift before updating managed files
+- Keep project-specific files outside managed paths
 
-```text
-hub/
-  agents/            shared agents
-  skills/            shared skills with their assets and references
-  packs/             declarative skill compositions
-tooling/cli/         materialization, diff, and doctor CLI
-docs/                operational documentation
+The consumer project declares its desired state in `.github/ghcopilot-hub.json`, and the CLI syncs that state into
+`.github/agents/` and `.github/skills/`.
+
+## Quick Start From a Consumer Project
+
+You do not need to install the package globally. The normal flow is to run it with `npx`, and the same commands also
+work with `bunx` or another package runner.
+
+Inspect the catalog:
+
+```bash
+npx ghcopilot-hub@latest list
+npx ghcopilot-hub@latest list packs
+npx ghcopilot-hub@latest list skills
 ```
 
-## Consumer Project Layout
+Initialize a consumer project with a pack:
+
+```bash
+npx ghcopilot-hub@latest init --pack spa-tanstack
+```
+
+Adjust the selection later:
+
+```bash
+npx ghcopilot-hub@latest add skill mermaid-expert
+npx ghcopilot-hub@latest remove skill tanstack-router
+```
+
+Review or apply the current hub state:
+
+```bash
+npx ghcopilot-hub@latest diff
+npx ghcopilot-hub@latest doctor
+npx ghcopilot-hub@latest update
+```
+
+Help is available directly from the terminal:
+
+```bash
+npx ghcopilot-hub@latest --help
+```
+
+If you prefer, you can also install the package and run `ghcopilot-hub` directly instead of using `npx`.
+
+## Consumer Project Model
+
+Consumer project layout:
 
 ```text
 .github/
@@ -43,7 +80,7 @@ docs/                operational documentation
 The manifest file `.github/ghcopilot-hub.json` is the local control file for the consumer project. It is not treated
 as a managed synced artifact.
 
-## Manifest
+Example manifest:
 
 ```json
 {
@@ -65,63 +102,7 @@ Resolution rules:
 - `excludeSkills` wins even if a skill comes from a pack
 - local files live outside managed paths
 
-## CLI
-
-Quick start:
-
-```bash
-npm install
-node tooling/cli/src/bin.js doctor --hub-only
-```
-
-Quick start with Bun:
-
-```bash
-bun install
-bun run validate:hub
-```
-
-Install as a distributed package:
-
-```bash
-npm install -g ghcopilot-hub
-ghcopilot-hub doctor --hub-only
-```
-
-Global install with Bun:
-
-```bash
-bun add -g ghcopilot-hub
-ghcopilot-hub doctor --hub-only
-```
-
-Ephemeral usage without global install:
-
-```bash
-npx ghcopilot-hub@latest doctor --hub-only
-```
-
-Ephemeral usage with Bun:
-
-```bash
-bunx ghcopilot-hub@latest doctor --hub-only
-```
-
-Examples for a consumer project:
-
-```bash
-ghcopilot-hub list
-ghcopilot-hub list packs
-ghcopilot-hub list skills
-ghcopilot-hub init --pack spa-tanstack
-ghcopilot-hub add skill mermaid-expert
-ghcopilot-hub remove skill tanstack-router
-ghcopilot-hub diff
-ghcopilot-hub doctor
-ghcopilot-hub update
-```
-
-## Sync Rules
+## Managed vs Local Files
 
 Managed paths:
 
@@ -145,7 +126,28 @@ Each managed file includes a traceability header with:
 `content-hash` allows the CLI to distinguish between a file that is outdated because the hub changed and a file that
 has drifted because of manual local edits.
 
-## Repository Scaffolding
+## Internal Project Layout
+
+```text
+hub/
+  agents/            shared agents
+  skills/            shared skills with their assets and references
+  packs/             declarative skill compositions
+tooling/cli/         materialization, diff, and doctor CLI
+docs/                operational documentation
+```
+
+Version 1 covers the following:
+
+- dynamic catalog of agents and skills loaded from the filesystem
+- declarative skill packs
+- per-consumer manifest in `.github/ghcopilot-hub.json`
+- synchronization of managed files into the consumer repository
+- drift detection and diff preview before applying changes
+- preservation of local customizations in `.github/local-overrides/`
+
+It does not include functional versioning per project. Every sync targets the current hub state and records the
+available revision in managed file headers.
 
 The syncable catalog lives under `hub/`. This keeps the repository root available for tooling, documentation,
 workflows, and package metadata.
@@ -160,13 +162,7 @@ npm run validate:hub
 npm run pack:check
 ```
 
-With Bun:
-
-```bash
-bun run validate:hub
-bun run test
-bun pm pack --quiet
-```
+The same scripts can also be run with Bun.
 
 Additional documentation:
 

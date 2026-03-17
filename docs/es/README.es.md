@@ -5,32 +5,70 @@
 Hub centralizado para reutilizar agentes y skills de GitHub Copilot entre proyectos y materializarlos en cada
 repositorio con un CLI declarativo.
 
-## Objetivo de v1
+## Por Qué Usarlo en un Proyecto Consumidor
 
-La v1 cubre estos puntos:
+Úsalo cuando quieras que la configuración compartida de Copilot se gestione como infraestructura y no como archivos
+copiados a mano entre repositorios.
 
-- catálogo dinámico de agentes y skills leyendo el filesystem
-- packs declarativos de skills
-- manifiesto por proyecto consumidor en `.github/ghcopilot-hub.json`
-- sincronización de archivos gestionados hacia el repositorio consumidor
-- detección de drift y diff previo a aplicar cambios
-- preservación de personalizaciones locales en `.github/local-overrides/`
+Con `ghcopilot-hub`, un repositorio consumidor puede declarar los agentes y skills que necesita, materializarlos desde
+un hub central y mantener esa configuración consistente con el tiempo.
 
-No incluye versionado funcional por proyecto. Cada sincronización apunta al estado actual del hub y registra la
-revisión disponible en las cabeceras managed.
+Resultados típicos en el consumidor:
 
-## Layout del hub
+- arrancar un repositorio nuevo con un pack ya preparado como `spa-tanstack` o `node-api`
+- añadir o quitar skills según evoluciona el proyecto sin copiar archivos entre repositorios
+- ver qué packs y skills existen antes de decidir la configuración
+- revisar el drift antes de actualizar archivos gestionados
+- mantener archivos propios del proyecto fuera de las rutas gestionadas
 
-```text
-hub/
-  agents/            agentes compartidos
-  skills/            skills compartidas con sus assets y referencias
-  packs/             composiciones declarativas de skills
-tooling/cli/         CLI de materialización, diff y doctor
-docs/                documentación operativa
+El proyecto consumidor declara su estado deseado en `.github/ghcopilot-hub.json` y el CLI sincroniza ese estado bajo
+`.github/agents/` y `.github/skills/`.
+
+## Uso Rápido Desde un Proyecto Consumidor
+
+No hace falta instalar el paquete de forma global. El flujo normal es ejecutarlo con `npx`, y los mismos comandos se
+pueden lanzar con `bunx` u otro runner equivalente.
+
+Inspeccionar el catálogo:
+
+```bash
+npx ghcopilot-hub@latest list
+npx ghcopilot-hub@latest list packs
+npx ghcopilot-hub@latest list skills
 ```
 
-## Layout del proyecto consumidor
+Inicializar un proyecto consumidor con un pack:
+
+```bash
+npx ghcopilot-hub@latest init --pack spa-tanstack
+```
+
+Ajustar la selección más adelante:
+
+```bash
+npx ghcopilot-hub@latest add skill mermaid-expert
+npx ghcopilot-hub@latest remove skill tanstack-router
+```
+
+Revisar o aplicar el estado actual del hub:
+
+```bash
+npx ghcopilot-hub@latest diff
+npx ghcopilot-hub@latest doctor
+npx ghcopilot-hub@latest update
+```
+
+La ayuda está disponible directamente en terminal:
+
+```bash
+npx ghcopilot-hub@latest --help
+```
+
+Si prefieres, también puedes instalar el paquete y ejecutar `ghcopilot-hub` directamente en lugar de usar `npx`.
+
+## Modelo del Proyecto Consumidor
+
+Layout del proyecto consumidor:
 
 ```text
 .github/
@@ -43,7 +81,7 @@ docs/                documentación operativa
 El archivo `.github/ghcopilot-hub.json` es el fichero local de control del proyecto consumidor. No se trata como un
 artefacto gestionado y sincronizado.
 
-## Manifiesto
+Ejemplo de manifiesto:
 
 ```json
 {
@@ -65,63 +103,7 @@ Reglas de resolución:
 - `excludeSkills` gana incluso si una skill llega desde un pack
 - los archivos locales viven fuera de los paths gestionados
 
-## CLI
-
-Uso rápido:
-
-```bash
-npm install
-node tooling/cli/src/bin.js doctor --hub-only
-```
-
-Uso rápido con Bun:
-
-```bash
-bun install
-bun run validate:hub
-```
-
-Instalación como paquete distribuido:
-
-```bash
-npm install -g ghcopilot-hub
-ghcopilot-hub doctor --hub-only
-```
-
-Instalación global con Bun:
-
-```bash
-bun add -g ghcopilot-hub
-ghcopilot-hub doctor --hub-only
-```
-
-Uso efímero sin instalación global:
-
-```bash
-npx ghcopilot-hub@latest doctor --hub-only
-```
-
-Uso efímero con Bun:
-
-```bash
-bunx ghcopilot-hub@latest doctor --hub-only
-```
-
-Ejemplos sobre un proyecto consumidor:
-
-```bash
-ghcopilot-hub list
-ghcopilot-hub list packs
-ghcopilot-hub list skills
-ghcopilot-hub init --pack spa-tanstack
-ghcopilot-hub add skill mermaid-expert
-ghcopilot-hub remove skill tanstack-router
-ghcopilot-hub diff
-ghcopilot-hub doctor
-ghcopilot-hub update
-```
-
-## Reglas de sync
+## Archivos Gestionados y Locales
 
 Paths gestionados:
 
@@ -145,7 +127,28 @@ Cada archivo gestionado lleva una cabecera de trazabilidad con:
 `content-hash` permite distinguir entre un archivo desactualizado por cambios del hub y un archivo drifted por edición
 local manual.
 
-## Scaffolding del repo
+## Layout Interno del Proyecto
+
+```text
+hub/
+  agents/            agentes compartidos
+  skills/            skills compartidas con sus assets y referencias
+  packs/             composiciones declarativas de skills
+tooling/cli/         CLI de materialización, diff y doctor
+docs/                documentación operativa
+```
+
+La v1 cubre estos puntos:
+
+- catálogo dinámico de agentes y skills leyendo el filesystem
+- packs declarativos de skills
+- manifiesto por proyecto consumidor en `.github/ghcopilot-hub.json`
+- sincronización de archivos gestionados hacia el repositorio consumidor
+- detección de drift y diff previo a aplicar cambios
+- preservación de personalizaciones locales en `.github/local-overrides/`
+
+No incluye versionado funcional por proyecto. Cada sincronización apunta al estado actual del hub y registra la
+revisión disponible en las cabeceras managed.
 
 El catálogo sincronizable del hub vive bajo `hub/`. Así la raíz del repositorio queda reservada para tooling,
 documentación, workflows y metadata del paquete.
@@ -160,13 +163,7 @@ npm run validate:hub
 npm run pack:check
 ```
 
-Con Bun:
-
-```bash
-bun run validate:hub
-bun run test
-bun pm pack --quiet
-```
+Los mismos scripts también se pueden ejecutar con Bun.
 
 Documentación adicional:
 
