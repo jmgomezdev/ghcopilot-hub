@@ -43,6 +43,13 @@ bun run validate:hub
 bun run test
 ```
 
+Help:
+
+```bash
+ghcopilot-hub --help
+ghcopilot-hub list --help
+```
+
 ## Commands
 
 ### `init`
@@ -133,6 +140,7 @@ ghcopilot-hub doctor --hub-only
 - `--hub-dir <path>`: root of the hub when the CLI is run from elsewhere
 - `--force`: overrides `onConflict` to `overwrite` for that run
 - `--json`: emits structured output
+- `--help`: prints the CLI help to the terminal
 
 If there are conflicts only on some managed paths, `init`, `update`, `add`, and `remove` still apply the non-conflicting
 changes and exit with code `2` to indicate there are conflicts left to resolve.

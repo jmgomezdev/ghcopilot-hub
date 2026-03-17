@@ -97,6 +97,15 @@ test("list packs --json devuelve el catálogo filtrado", async () => {
   assert.equal("skills" in payload, false);
 });
 
+test("--help muestra la ayuda por stdout y termina con exit code 0", async () => {
+  const result = await runCliCapture(["--help"]);
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.match(result.stdout, /^Usage:/);
+  assert.match(result.stdout, /ghcopilot-hub --help/);
+  assert.equal(result.stderr, "");
+});
+
 test("remove skill añade exclusion y elimina archivos huérfanos", async () => {
   const projectDir = await createTempProject();
 

@@ -44,6 +44,13 @@ bun run validate:hub
 bun run test
 ```
 
+Ayuda:
+
+```bash
+ghcopilot-hub --help
+ghcopilot-hub list --help
+```
+
 ## Comandos
 
 ### `init`
@@ -134,6 +141,7 @@ ghcopilot-hub doctor --hub-only
 - `--hub-dir <path>`: raíz del hub cuando el CLI se ejecuta desde otro sitio
 - `--force`: cambia `onConflict` a `overwrite` para esa ejecución
 - `--json`: emite salida estructurada
+- `--help`: imprime la ayuda del CLI en terminal
 
 Si hay conflictos sólo en algunas rutas managed, `init`, `update`, `add` y `remove` aplican igualmente los cambios no
 conflictivos y terminan con exit code `2` para señalar que quedan conflictos por resolver.

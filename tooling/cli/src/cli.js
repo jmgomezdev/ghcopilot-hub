@@ -15,6 +15,12 @@ import {
 export async function runCli(argv, context) {
   try {
     const parsed = parseArgv(argv);
+
+    if (parsed.options.help) {
+      writeUsage(context.stdout);
+      return 0;
+    }
+
     const hubDir = path.resolve(parsed.options.hubDir ?? getDefaultHubDir());
 
     if (parsed.command === "doctor" && parsed.options.hubOnly) {
@@ -273,20 +279,24 @@ async function buildProjectReport({ projectDir, catalog, manifest, force }) {
 }
 
 function parseArgv(argv) {
-  const [command, maybeSubject, maybeName, ...rest] = argv;
+  const [firstToken, maybeSubject, maybeName, ...rest] = argv;
+  const command = firstToken?.startsWith("--") ? null : firstToken;
   const options = {
     packs: [],
     skills: [],
     json: false,
     force: false,
     hubOnly: false,
+    help: false,
   };
 
   const args = [];
   const tokens =
     command === "add" || command === "remove"
       ? [maybeSubject, maybeName, ...rest]
-      : [maybeSubject, maybeName, ...rest].filter((token) => token !== undefined);
+      : command
+        ? [maybeSubject, maybeName, ...rest].filter((token) => token !== undefined)
+        : argv;
 
   for (let index = 0; index < tokens.length; index += 1) {
     const token = tokens[index];
@@ -324,6 +334,9 @@ function parseArgv(argv) {
         break;
       case "--hub-only":
         options.hubOnly = true;
+        break;
+      case "--help":
+        options.help = true;
         break;
       default:
         throw new CliError(`Unknown option "${token}".`);
@@ -496,6 +509,7 @@ function writeUsage(stream) {
   stream.write(
     [
       "Usage:",
+      "  ghcopilot-hub --help",
       "  ghcopilot-hub init [--pack <id>] [--skill <id>] [--project-dir <path>] [--force]",
       "  ghcopilot-hub update [--project-dir <path>] [--force]",
       "  ghcopilot-hub list [packs|skills] [--hub-dir <path>] [--json]",
@@ -504,6 +518,9 @@ function writeUsage(stream) {
       "  ghcopilot-hub diff [--project-dir <path>] [--force] [--json]",
       "  ghcopilot-hub doctor [--project-dir <path>] [--force] [--json]",
       "  ghcopilot-hub doctor --hub-only [--json]",
+      "",
+      "Options:",
+      "  --help  Show this help text",
     ].join("\n")
   );
 }
