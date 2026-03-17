@@ -1,34 +1,34 @@
-# Arquitectura v1
+# v1 Architecture
 
-## Principios
+## Principles
 
-- Fuente de verdad única: la metadata real vive en el frontmatter de `*.agent.md` y `SKILL.md`.
-- Estado deseado declarativo: cada proyecto declara packs, skills extra y exclusiones en
+- Single source of truth: the actual metadata lives in the frontmatter of `*.agent.md` and `SKILL.md`.
+- Declarative desired state: each project declares packs, extra skills, and exclusions in
   `.github/ghcopilot-hub.json`.
-- Sin versionado funcional: el proyecto siempre sincroniza contra el último estado del hub.
-- Trazabilidad mínima: cada archivo gestionado registra origen, revisión y hash del contenido sincronizado.
-- Personalización controlada: los cambios locales van a `.github/local-overrides/`, no a archivos managed.
+- No functional versioning: the project always syncs against the latest hub state.
+- Minimal traceability: each managed file records the source, revision, and hash of the synced content.
+- Controlled customization: local changes go into `.github/local-overrides/`, not managed files.
 
-## Recursos del hub
+## Hub Resources
 
-### Agentes
+### Agents
 
-- Ubicación: `hub/agents/*.agent.md`
-- Identificador: nombre de archivo sin `.agent.md`
-- Frontmatter mínimo: `name`, `description`
-- Política v1: todos los agentes del hub se copian a cada proyecto consumidor
+- Location: `hub/agents/*.agent.md`
+- Identifier: filename without `.agent.md`
+- Minimum frontmatter: `name`, `description`
+- v1 policy: all hub agents are copied into every consumer project
 
 ### Skills
 
-- Ubicación: `hub/skills/<skill-id>/SKILL.md`
-- Identificador: nombre de carpeta
-- Frontmatter mínimo: `name`, `description`
-- Se sincroniza la carpeta completa de la skill, incluyendo `references/` y `assets/`
+- Location: `hub/skills/<skill-id>/SKILL.md`
+- Identifier: folder name
+- Minimum frontmatter: `name`, `description`
+- The entire skill folder is synced, including `references/` and `assets/`
 
 ### Packs
 
-- Ubicación: `hub/packs/*.json`
-- Formato:
+- Location: `hub/packs/*.json`
+- Format:
 
 ```json
 {
@@ -37,11 +37,11 @@
 }
 ```
 
-`name` debe ser único y toda skill referenciada debe existir en `hub/skills/`.
+`name` must be unique, and every referenced skill must exist under `hub/skills/`.
 
-## Manifiesto del proyecto
+## Project Manifest
 
-Archivo: `.github/ghcopilot-hub.json`
+File: `.github/ghcopilot-hub.json`
 
 ```json
 {
@@ -55,44 +55,44 @@ Archivo: `.github/ghcopilot-hub.json`
 }
 ```
 
-Contrato:
+Contract:
 
-- `packs`: lista de packs a expandir
-- `skills`: skills extra fuera de packs
-- `excludeSkills`: skills a retirar incluso si vienen por pack
-- `settings.onConflict`: `fail` o `overwrite`
-- `settings.preserveLocalOverrides`: mantiene `.github/local-overrides/` como espacio libre del proyecto
+- `packs`: list of packs to expand
+- `skills`: extra skills outside packs
+- `excludeSkills`: skills to remove even if they come from a pack
+- `settings.onConflict`: `fail` or `overwrite`
+- `settings.preserveLocalOverrides`: keeps `.github/local-overrides/` as unmanaged project space
 
-Skill por defecto:
+Default skill:
 
-- `ghcopilot-hub-consumer` se instala siempre salvo que el proyecto la excluya explícitamente en `excludeSkills`
+- `ghcopilot-hub-consumer` is always installed unless the project explicitly excludes it in `excludeSkills`
 
-## Resolución
+## Resolution
 
-Fórmula:
+Formula:
 
 ```text
-agents = todos los agentes del hub
+agents = all hub agents
 skills = defaultSkills + packs + skills - excludeSkills
 ```
 
-El layout interno del hub agrupa estos recursos bajo `hub/`.
+The internal hub layout groups these resources under `hub/`.
 
-Errores de resolución:
+Resolution errors:
 
-- pack inexistente
-- skill inexistente
-- frontmatter inválido o faltante
-- pack con JSON inválido o referencias rotas
+- missing pack
+- missing skill
+- invalid or missing frontmatter
+- pack with invalid JSON or broken references
 
 ## Sync
 
-Mapa origen a destino:
+Source-to-target mapping:
 
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 
-Cabecera de trazabilidad:
+Traceability header:
 
 ```md
 <!-- managed-by: ghcopilot-hub -->
@@ -101,32 +101,31 @@ Cabecera de trazabilidad:
 <!-- content-hash: <sha256> -->
 ```
 
-Para archivos JSONC se usa comentario `//`.
+JSONC files use `//` comments.
 
-Las versiones actuales del CLI ya no materializan archivos desde `hub/base/`. Si un proyecto conserva archivos
-legacy de versiones anteriores, `ghcopilot-hub update` los elimina.
+Current CLI versions no longer materialize files from `hub/base/`. If a project still has legacy files from earlier
+versions, `ghcopilot-hub update` removes them.
 
-Estados posibles por archivo:
+Possible file states:
 
-- `create`: falta en el proyecto
-- `update`: existe y puede actualizarse sin conflicto
-- `remove`: es managed y ya no forma parte del estado deseado
-- `conflict`: existe drift local o contenido no gestionado en una ruta managed
+- `create`: missing from the project
+- `update`: exists and can be updated without conflict
+- `remove`: is managed and no longer part of the desired state
+- `conflict`: has local drift or unmanaged content inside a managed path
 
-## Drift y conflictos
+## Drift and Conflicts
 
-Se considera drift cuando el cuerpo del archivo actual no coincide con el `content-hash` guardado en la última
-sincronización.
+Drift is detected when the current file body does not match the `content-hash` stored during the last sync.
 
-Política:
+Policy:
 
-- `onConflict: fail`: bloquea `update` y `remove` si hay drift
-- `onConflict: overwrite` o `--force`: sobrescribe o elimina aunque exista drift
+- `onConflict: fail`: blocks `update` and `remove` when drift exists
+- `onConflict: overwrite` or `--force`: overwrites or removes even when drift exists
 
-Si una ejecución encuentra conflictos en algunas rutas managed pero también tiene operaciones no conflictivas en otras,
-el CLI aplica esas operaciones seguras y devuelve exit code `2` para dejar el conflicto pendiente visible.
+If a run finds conflicts on some managed paths but also has safe operations on others, the CLI still applies those safe
+operations and returns exit code `2` so the remaining conflicts stay visible.
 
-## Overrides locales
+## Local Overrides
 
-`.github/local-overrides/` queda fuera del alcance del sync. El archivo base de instrucciones referencia este
-directorio para que el contexto local complemente al contenido gestionado sin editarlo.
+`.github/local-overrides/` is outside the sync scope. The base instructions file points to this directory so local
+context can complement the managed content without editing it directly.

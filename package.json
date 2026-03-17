@@ -38,6 +38,7 @@
         "agents",
         "skills"
     ],
+    "license": "MIT",
     "name": "ghcopilot-hub",
     "repository": {
         "type": "git",
@@ -55,5 +56,5 @@
         "validate:hub": "node ./tooling/cli/src/bin.js doctor --hub-only"
     },
     "type": "module",
-    "version": "1.0.3"
+    "version": "1.1.0"
 }

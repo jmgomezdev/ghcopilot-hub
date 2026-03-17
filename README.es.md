@@ -172,3 +172,9 @@ Documentación adicional:
 - [docs/create-skill.md](docs/create-skill.md)
 - [docs/create-pack.md](docs/create-pack.md)
 - [docs/publish.md](docs/publish.md)
+
+## Licencia
+
+Este proyecto se distribuye bajo licencia MIT. Consulta [LICENSE](LICENSE).
+
+Copyright (c) 2026 Jose Manuel Gomez Perez.

@@ -1,14 +1,14 @@
-# Publicar el paquete
+# Publish the Package
 
-Este repositorio queda preparado para distribuir `ghcopilot-hub` como paquete npm. El tarball incluye:
+This repository is set up to distribute `ghcopilot-hub` as an npm package. The tarball includes:
 
 - `hub/`
 - `tooling/cli/src/`
 - `README.md`
 
-## Validación previa
+## Pre-publish Validation
 
-El script `prepublishOnly` ejecuta estas comprobaciones:
+The `prepublishOnly` script runs these checks:
 
 ```bash
 npm run validate:hub
@@ -16,9 +16,9 @@ npm test
 npm run pack:check
 ```
 
-Con eso se bloquea una publicación cuando el catálogo del hub, la suite o el tarball están rotos.
+This blocks publishing when the hub catalog, the test suite, or the tarball contents are broken.
 
-El proyecto también se valida con Bun en CI y los mismos checks pueden ejecutarse localmente con:
+The project is also validated with Bun in CI, and the same checks can be run locally with:
 
 ```bash
 bun run validate:hub
@@ -26,33 +26,33 @@ bun run test
 bun pm pack --quiet
 ```
 
-## Publicación manual
+## Manual Publish
 
 ```bash
 npm run prepublishOnly
 npm publish
 ```
 
-Si quieres publicar con otra dist-tag:
+If you want to publish with another dist-tag:
 
 ```bash
 npm publish --tag next
 ```
 
-## Publicación desde GitHub Actions
+## Publish from GitHub Actions
 
-Existe un workflow manual en `.github/workflows/publish-package.yml`.
+There is a manual workflow in `.github/workflows/publish-package.yml`.
 
-Requisitos:
+Requirements:
 
-- secreto `NPM_TOKEN` configurado en el repositorio
-- versión actualizada en `package.json`
-- permisos para publicar en npm
+- `NPM_TOKEN` secret configured in the repository
+- version updated in `package.json`
+- permissions to publish on npm
 
-## Checklist para el primer release
+## First Release Checklist
 
-- verificar si `ghcopilot-hub` está libre en npm; si no lo está, cambiar `name` en `package.json`
-- fijar la licencia final que quieras publicar
-- verificar que `author`, `repository`, `homepage` y `bugs` siguen apuntando al repositorio público correcto
+- verify whether `ghcopilot-hub` is available on npm; if it is not, change `name` in `package.json`
+- set the final license you want to publish
+- verify that `author`, `repository`, `homepage`, and `bugs` still point to the correct public repository
 
-El empaquetado ya queda resuelto; esa checklist cubre solo metadata externa dependiente del destino final.
+Packaging itself is already solved; this checklist only covers external metadata that depends on the final target.

@@ -1,9 +1,8 @@
 # CLI
 
-El binario del paquete es `ghcopilot-hub` y también puede ejecutarse con `node tooling/cli/src/bin.js` dentro del
-hub.
+The package binary is `ghcopilot-hub`, and it can also be run with `node tooling/cli/src/bin.js` inside the hub.
 
-## Instalación
+## Installation
 
 Global:
 
@@ -12,43 +11,43 @@ npm install -g ghcopilot-hub
 ghcopilot-hub doctor --hub-only
 ```
 
-Global con Bun:
+Global with Bun:
 
 ```bash
 bun add -g ghcopilot-hub
 ghcopilot-hub doctor --hub-only
 ```
 
-Sin instalación global:
+Without global installation:
 
 ```bash
 npx ghcopilot-hub@latest doctor --hub-only
 ```
 
-Sin instalación global con Bun:
+Without global installation with Bun:
 
 ```bash
 bunx ghcopilot-hub@latest doctor --hub-only
 ```
 
-Durante desarrollo del hub:
+During hub development:
 
 ```bash
 node tooling/cli/src/bin.js doctor --hub-only
 ```
 
-Durante desarrollo del hub con Bun:
+During hub development with Bun:
 
 ```bash
 bun run validate:hub
 bun run test
 ```
 
-## Comandos
+## Commands
 
 ### `init`
 
-Inicializa `.github/ghcopilot-hub.json`, añade packs y skills opcionales, y aplica un sync completo.
+Initializes `.github/ghcopilot-hub.json`, adds optional packs and skills, and applies a full sync.
 
 ```bash
 ghcopilot-hub init --pack spa-tanstack
@@ -57,7 +56,7 @@ ghcopilot-hub init --pack base-web --skill mermaid-expert
 
 ### `update`
 
-Recalcula el estado deseado desde el manifiesto y sincroniza el proyecto contra el estado actual del hub.
+Recomputes the desired state from the manifest and syncs the project against the current hub state.
 
 ```bash
 ghcopilot-hub update
@@ -66,7 +65,7 @@ ghcopilot-hub update --force
 
 ### `add`
 
-Añade un pack o una skill al manifiesto y sincroniza.
+Adds a pack or skill to the manifest and syncs.
 
 ```bash
 ghcopilot-hub add pack nextjs-ssr
@@ -75,18 +74,18 @@ ghcopilot-hub add skill mermaid-expert
 
 ### `remove`
 
-Elimina un pack o una skill del manifiesto y sincroniza.
+Removes a pack or skill from the manifest and syncs.
 
 ```bash
 ghcopilot-hub remove pack spa-tanstack
 ghcopilot-hub remove skill tanstack-router
 ```
 
-En `remove skill`, la skill también se añade a `excludeSkills` para que un pack no la vuelva a incorporar.
+In `remove skill`, the skill is also added to `excludeSkills` so a pack cannot bring it back.
 
 ### `diff`
 
-Muestra qué crearía, actualizaría o borraría el sync sin escribir archivos.
+Shows what the sync would create, update, or remove without writing files.
 
 ```bash
 ghcopilot-hub diff
@@ -95,16 +94,16 @@ ghcopilot-hub diff --json
 
 ### `doctor`
 
-Audita el estado del proyecto consumidor.
+Audits the state of the consumer project.
 
-Comprueba:
+Checks:
 
-- manifiesto válido
-- packs y skills existentes
-- archivos managed faltantes
-- drift en archivos managed
-- rutas managed con contenido no gestionado
-- archivos managed huérfanos
+- valid manifest
+- existing packs and skills
+- missing managed files
+- drift in managed files
+- managed paths with unmanaged content
+- orphaned managed files
 
 ```bash
 ghcopilot-hub doctor
@@ -112,35 +111,35 @@ ghcopilot-hub doctor --json
 ghcopilot-hub doctor --hub-only
 ```
 
-`--hub-only` valida el propio repositorio hub: frontmatter, packs, catálogo y base.
+`--hub-only` validates the hub repository itself: frontmatter, packs, catalog, and base.
 
-## Opciones comunes
+## Common Options
 
-- `--project-dir <path>`: raíz del proyecto consumidor
-- `--hub-dir <path>`: raíz del hub cuando el CLI se ejecuta desde otro sitio
-- `--force`: cambia `onConflict` a `overwrite` para esa ejecución
-- `--json`: emite salida estructurada
+- `--project-dir <path>`: root of the consumer project
+- `--hub-dir <path>`: root of the hub when the CLI is run from elsewhere
+- `--force`: overrides `onConflict` to `overwrite` for that run
+- `--json`: emits structured output
 
-Si hay conflictos sólo en algunas rutas managed, `init`, `update`, `add` y `remove` aplican igualmente los cambios no
-conflictivos y terminan con exit code `2` para señalar que quedan conflictos por resolver.
+If there are conflicts only on some managed paths, `init`, `update`, `add`, and `remove` still apply the non-conflicting
+changes and exit with code `2` to indicate there are conflicts left to resolve.
 
-## Exit codes
+## Exit Codes
 
-- `0`: operación correcta o sin issues
-- `1`: error de uso, manifiesto inválido o fallo de ejecución
-- `2`: `diff` o `doctor` detectaron conflictos/issues, o una sincronización quedó bloqueada por conflictos
+- `0`: operation succeeded or found no issues
+- `1`: usage error, invalid manifest, or execution failure
+- `2`: `diff` or `doctor` found conflicts/issues, or a sync was partially blocked by conflicts
 
-## Distribución
+## Distribution
 
-Antes de publicar el paquete:
+Before publishing the package:
 
 ```bash
 npm run prepublishOnly
 ```
 
-Eso valida el hub, ejecuta la suite y comprueba el contenido final del tarball con `npm pack --dry-run`.
+This validates the hub, runs the test suite, and checks the final tarball contents with `npm pack --dry-run`.
 
-Con Bun puedes ejecutar las validaciones equivalentes así:
+With Bun you can run the equivalent validations like this:
 
 ```bash
 bun run validate:hub

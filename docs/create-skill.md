@@ -1,8 +1,8 @@
-# Crear una skill
+# Create a Skill
 
-## Contrato mínimo
+## Minimum Contract
 
-Cada skill vive en su propia carpeta bajo `hub/skills/` y debe tener un `SKILL.md` con frontmatter válido.
+Each skill lives in its own folder under `hub/skills/` and must include a `SKILL.md` with valid frontmatter.
 
 ```md
 ---
@@ -13,23 +13,23 @@ description: Brief description of what the skill does.
 # Skill content
 ```
 
-Reglas:
+Rules:
 
-- el id de la skill es el nombre de carpeta
-- `name` y `description` son obligatorios
-- cualquier asset adicional debe vivir dentro de la misma carpeta
-- evita metadata duplicada fuera del frontmatter
+- the skill id is the folder name
+- `name` and `description` are required
+- any additional asset must live inside the same folder
+- avoid duplicated metadata outside frontmatter
 
-## Pasos
+## Steps
 
-1. Crea `hub/skills/<skill-id>/SKILL.md`.
-2. Añade `references/` y `assets/` si son necesarios.
-3. Ejecuta `npm run validate:hub`.
-4. Si la skill debe ser reutilizable por varios stacks, añádela a uno o más packs.
+1. Create `hub/skills/<skill-id>/SKILL.md`.
+2. Add `references/` and `assets/` if needed.
+3. Run `npm run validate:hub`.
+4. If the skill should be reusable across several stacks, add it to one or more packs.
 
 ## Checklist
 
-- la carpeta coincide con el id
-- `SKILL.md` tiene frontmatter válido
-- el contenido es autocontenido dentro de la carpeta
-- el hub valida sin errores
+- the folder matches the id
+- `SKILL.md` has valid frontmatter
+- the content is self-contained inside the folder
+- the hub validates without errors

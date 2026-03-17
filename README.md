@@ -1,6 +1,6 @@
 # ghcopilot-hub
 
-[English](README.md) | [Español](README.es.md)
+[English](README.md) | [Español](docs/es/README.es.md)
 
 Centralized hub for reusing GitHub Copilot agents and skills across projects and materializing them into each
 repository with a declarative CLI.
@@ -172,3 +172,9 @@ Additional documentation:
 - [docs/create-skill.md](docs/create-skill.md)
 - [docs/create-pack.md](docs/create-pack.md)
 - [docs/publish.md](docs/publish.md)
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE).
+
+Copyright (c) 2026 Jose Manuel Gomez Perez.

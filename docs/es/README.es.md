@@ -1,18 +1,18 @@
 # ghcopilot-hub
 
-[English](README.md) | [Español](README.es.md)
+[English](../../README.md) | [Español](README.es.md)
 
 Hub centralizado para reutilizar agentes y skills de GitHub Copilot entre proyectos y materializarlos en cada
 repositorio con un CLI declarativo.
 
 ## Objetivo de v1
 
-La v1 resuelve estos puntos:
+La v1 cubre estos puntos:
 
 - catálogo dinámico de agentes y skills leyendo el filesystem
 - packs declarativos de skills
 - manifiesto por proyecto consumidor en `.github/ghcopilot-hub.json`
-- sincronización de archivos gestionados hacia el repo consumidor
+- sincronización de archivos gestionados hacia el repositorio consumidor
 - detección de drift y diff previo a aplicar cambios
 - preservación de personalizaciones locales en `.github/local-overrides/`
 
@@ -26,7 +26,6 @@ hub/
   agents/            agentes compartidos
   skills/            skills compartidas con sus assets y referencias
   packs/             composiciones declarativas de skills
-  base/              archivos base sincronizados a cada proyecto
 tooling/cli/         CLI de materialización, diff y doctor
 docs/                documentación operativa
 ```
@@ -36,15 +35,13 @@ docs/                documentación operativa
 ```text
 .github/
   ghcopilot-hub.json
-  copilot-instructions.md
-  instructions/
-  prompts/
   agents/
   skills/
   local-overrides/
-.vscode/
-  settings.json
 ```
+
+El archivo `.github/ghcopilot-hub.json` es el fichero local de control del proyecto consumidor. No se trata como un
+artefacto gestionado y sincronizado.
 
 ## Manifiesto
 
@@ -142,8 +139,8 @@ Cada archivo gestionado lleva una cabecera de trazabilidad con:
 - `revision`
 - `content-hash`
 
-`content-hash` permite distinguir entre un archivo desactualizado por cambios del hub y un archivo drifted por
-edición local manual.
+`content-hash` permite distinguir entre un archivo desactualizado por cambios del hub y un archivo drifted por edición
+local manual.
 
 ## Scaffolding del repo
 
@@ -170,8 +167,8 @@ bun pm pack --quiet
 
 Documentación adicional:
 
-- [docs/architecture.md](docs/architecture.md)
-- [docs/cli.md](docs/cli.md)
-- [docs/create-skill.md](docs/create-skill.md)
-- [docs/create-pack.md](docs/create-pack.md)
-- [docs/publish.md](docs/publish.md)
+- [architecture.md](architecture.md)
+- [cli.md](cli.md)
+- [create-skill.md](create-skill.md)
+- [create-pack.md](create-pack.md)
+- [publish.md](publish.md)

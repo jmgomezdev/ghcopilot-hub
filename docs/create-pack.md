@@ -1,10 +1,10 @@
-# Crear un pack
+# Create a Pack
 
-Los packs son composiciones declarativas de skills. No contienen lógica, solo selección.
+Packs are declarative skill compositions. They contain no logic, only selection.
 
-## Formato
+## Format
 
-Archivo en `hub/packs/<pack-id>.json`:
+File in `hub/packs/<pack-id>.json`:
 
 ```json
 {
@@ -13,16 +13,16 @@ Archivo en `hub/packs/<pack-id>.json`:
 }
 ```
 
-Reglas:
+Rules:
 
-- `name` debe ser único
-- cada skill listada debe existir en `hub/skills/`
-- el nombre del archivo puede coincidir con `name` para facilitar navegación
-- mantén packs pequeños y compositivos
+- `name` must be unique
+- every listed skill must exist under `hub/skills/`
+- the filename may match `name` to make navigation easier
+- keep packs small and composable
 
-## Pasos
+## Steps
 
-1. Crea el JSON en `hub/packs/`.
-2. Referencia solo skills existentes.
-3. Ejecuta `npm run validate:hub`.
-4. Si aplica, documenta el caso de uso del pack en el README.
+1. Create the JSON file in `hub/packs/`.
+2. Reference only existing skills.
+3. Run `npm run validate:hub`.
+4. If relevant, document the pack use case in the README.
