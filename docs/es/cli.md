@@ -59,7 +59,7 @@ Inicializa `.github/ghcopilot-hub.json`, añade packs y skills opcionales, y apl
 
 ```bash
 ghcopilot-hub init --pack spa-tanstack
-ghcopilot-hub init --pack base-web --skill mermaid-expert
+ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
 ```
 
 ### `update`
@@ -91,7 +91,7 @@ Añade un pack o una skill al manifiesto y sincroniza.
 
 ```bash
 ghcopilot-hub add pack nextjs-ssr
-ghcopilot-hub add skill mermaid-expert
+ghcopilot-hub add skill ghcopilot-hub-mermaid-expert
 ```
 
 ### `remove`
@@ -100,7 +100,7 @@ Elimina un pack o una skill del manifiesto y sincroniza.
 
 ```bash
 ghcopilot-hub remove pack spa-tanstack
-ghcopilot-hub remove skill tanstack-router
+ghcopilot-hub remove skill ghcopilot-hub-tanstack-router
 ```
 
 En `remove skill`, la skill también se añade a `excludeSkills` para que un pack no la vuelva a incorporar.

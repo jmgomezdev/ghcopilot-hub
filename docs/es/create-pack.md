@@ -9,7 +9,7 @@ Archivo en `hub/packs/<pack-id>.json`:
 ```json
 {
   "name": "node-api",
-  "skills": ["typescript", "testing", "zod"]
+  "skills": ["ghcopilot-hub-typescript", "ghcopilot-hub-testing", "ghcopilot-hub-zod"]
 }
 ```
 

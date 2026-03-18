@@ -1,17 +1,17 @@
 {
   "name": "spa-tanstack",
   "skills": [
-    "architecture-testing",
-    "mermaid-expert",
-    "react",
-    "react-hook-form",
-    "tailwind",
-    "tanstack",
-    "tanstack-query",
-    "tanstack-router",
-    "testing",
-    "typescript",
-    "zod",
-    "zustand"
+    "ghcopilot-hub-architecture-testing",
+    "ghcopilot-hub-mermaid-expert",
+    "ghcopilot-hub-react",
+    "ghcopilot-hub-react-hook-form",
+    "ghcopilot-hub-tailwind",
+    "ghcopilot-hub-tanstack",
+    "ghcopilot-hub-tanstack-query",
+    "ghcopilot-hub-tanstack-router",
+    "ghcopilot-hub-testing",
+    "ghcopilot-hub-typescript",
+    "ghcopilot-hub-zod",
+    "ghcopilot-hub-zustand"
   ]
 }

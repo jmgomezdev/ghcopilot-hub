@@ -6,7 +6,7 @@ Each skill lives in its own folder under `hub/skills/` and must include a `SKILL
 
 ```md
 ---
-name: my-skill
+name: ghcopilot-hub-my-skill
 description: Brief description of what the skill does.
 ---
 
@@ -15,14 +15,14 @@ description: Brief description of what the skill does.
 
 Rules:
 
-- the skill id is the folder name
+- the skill id is the folder name and must start with `ghcopilot-hub-`
 - `name` and `description` are required
 - any additional asset must live inside the same folder
 - avoid duplicated metadata outside frontmatter
 
 ## Steps
 
-1. Create `hub/skills/<skill-id>/SKILL.md`.
+1. Create `hub/skills/ghcopilot-hub-<skill-id>/SKILL.md`.
 2. Add `references/` and `assets/` if needed.
 3. Run `npm run validate:hub`.
 4. If the skill should be reusable across several stacks, add it to one or more packs.

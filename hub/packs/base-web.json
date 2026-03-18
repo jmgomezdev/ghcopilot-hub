@@ -1,4 +1,7 @@
 {
   "name": "base-web",
-  "skills": ["typescript", "testing"]
+  "skills": [
+    "ghcopilot-hub-testing",
+    "ghcopilot-hub-typescript"
+  ]
 }

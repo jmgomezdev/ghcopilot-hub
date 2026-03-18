@@ -33,7 +33,7 @@ test("init materializa agentes y skills del pack", async () => {
     await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
     true
   );
-  assert.equal(await fileExists(projectDir, ".github/skills/react/SKILL.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/skills/ghcopilot-hub-react/SKILL.md"), true);
   assert.equal(
     await fileExists(projectDir, ".github/prompts/ghcopilot-hub-maintenance.prompt.md"),
     false
@@ -71,7 +71,7 @@ test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync
   const result = await runCliCapture(["diff", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
 
   assert.equal(result.exitCode, 0, result.stderr);
-  assert.match(result.stdout, /\.github\/skills\/mermaid-expert\/SKILL\.md/);
+  assert.match(result.stdout, /\.github\/skills\/ghcopilot-hub-mermaid-expert\/SKILL\.md/);
 });
 
 test("list muestra packs y skills disponibles del hub", async () => {
@@ -81,7 +81,7 @@ test("list muestra packs y skills disponibles del hub", async () => {
   assert.match(result.stdout, /Packs:/);
   assert.match(result.stdout, /- spa-tanstack \(/);
   assert.match(result.stdout, /Skills:/);
-  assert.match(result.stdout, /- mermaid-expert/);
+  assert.match(result.stdout, /- ghcopilot-hub-mermaid-expert/);
 });
 
 test("list packs --json devuelve el catálogo filtrado", async () => {
@@ -132,8 +132,11 @@ test("remove skill añade exclusion y elimina archivos huérfanos", async () => 
   assert.equal(result.exitCode, 0, result.stderr);
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
-  assert.deepEqual(manifest.excludeSkills, ["tanstack-router"]);
-  assert.equal(await fileExists(projectDir, ".github/skills/tanstack-router/SKILL.md"), false);
+  assert.deepEqual(manifest.excludeSkills, ["ghcopilot-hub-tanstack-router"]);
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-tanstack-router/SKILL.md"),
+    false
+  );
 });
 
 test("doctor detecta drift en un archivo gestionado", async () => {

@@ -28,6 +28,7 @@ For most requests inside a managed repository:
 
 - All hub agents are always installed.
 - `ghcopilot-hub-consumer` is installed by default.
+- Shared hub skills use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills.
 - Final skills are resolved as `defaultSkills + packs + skills - excludeSkills`.
 - `excludeSkills` wins over packs and default skills.
 

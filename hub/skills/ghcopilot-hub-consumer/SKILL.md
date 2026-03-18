@@ -77,7 +77,7 @@ Need repo-specific customization only?         -> edit repository-owned files ou
 ```json
 {
   "packs": ["spa-tanstack"],
-  "skills": ["mermaid-expert"],
+  "skills": ["ghcopilot-hub-mermaid-expert"],
   "excludeSkills": [],
   "settings": {
     "onConflict": "fail"
@@ -98,8 +98,8 @@ Need repo-specific customization only?         -> edit repository-owned files ou
 
 ```bash
 ghcopilot-hub init --pack spa-tanstack          # Start managing a repository
-ghcopilot-hub add skill mermaid-expert          # Add one managed skill
-ghcopilot-hub remove skill tanstack-router      # Remove one managed skill and exclude it
+ghcopilot-hub add skill ghcopilot-hub-mermaid-expert          # Add one managed skill
+ghcopilot-hub remove skill ghcopilot-hub-tanstack-router      # Remove one managed skill and exclude it
 ghcopilot-hub doctor                            # Audit manifest, drift, and missing files
 ghcopilot-hub diff                              # Preview managed file changes
 ghcopilot-hub update                            # Apply the current hub state

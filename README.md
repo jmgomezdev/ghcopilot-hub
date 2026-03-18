@@ -45,8 +45,8 @@ npx ghcopilot-hub@latest init --pack spa-tanstack
 Adjust the selection later:
 
 ```bash
-npx ghcopilot-hub@latest add skill mermaid-expert
-npx ghcopilot-hub@latest remove skill tanstack-router
+npx ghcopilot-hub@latest add skill ghcopilot-hub-mermaid-expert
+npx ghcopilot-hub@latest remove skill ghcopilot-hub-tanstack-router
 ```
 
 Review or apply the current hub state:
@@ -102,7 +102,7 @@ Example manifest:
 ```json
 {
   "packs": ["spa-tanstack"],
-  "skills": ["mermaid-expert"],
+  "skills": ["ghcopilot-hub-mermaid-expert"],
   "excludeSkills": [],
   "settings": {
     "onConflict": "fail"
@@ -113,6 +113,7 @@ Example manifest:
 Resolution rules:
 
 - the `ghcopilot-hub-consumer` skill is installed by default in every project managed by the CLI
+- shared hub skill ids use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills
 - all hub agents are always copied
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack

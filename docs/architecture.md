@@ -32,7 +32,13 @@
 ```json
 {
   "name": "spa-tanstack",
-  "skills": ["typescript", "react", "tanstack-query", "tanstack-router", "testing"]
+  "skills": [
+    "ghcopilot-hub-typescript",
+    "ghcopilot-hub-react",
+    "ghcopilot-hub-tanstack-query",
+    "ghcopilot-hub-tanstack-router",
+    "ghcopilot-hub-testing"
+  ]
 }
 ```
 
@@ -59,6 +65,7 @@ Contract:
 - `skills`: extra skills outside packs
 - `excludeSkills`: skills to remove even if they come from a pack
 - `settings.onConflict`: `fail` or `overwrite`
+- hub-managed skill ids must use the `ghcopilot-hub-` prefix
 
 Default skill:
 
@@ -93,7 +100,7 @@ Traceability header:
 
 ```md
 <!-- managed-by: ghcopilot-hub -->
-<!-- source: hub/skills/testing/SKILL.md -->
+<!-- source: hub/skills/ghcopilot-hub-testing/SKILL.md -->
 <!-- revision: unknown -->
 <!-- content-hash: <sha256> -->
 ```

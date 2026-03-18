@@ -5,6 +5,7 @@ import { getDefaultHubDir } from "./lib/constants.js";
 import { CliError } from "./lib/errors.js";
 import { ensureManifest, readManifest, writeManifest } from "./lib/manifest.js";
 import { resolveProjectState } from "./lib/resolver.js";
+import { buildSkillIdLookup, canonicalizeSkillId, canonicalizeSkillIds } from "./lib/skill-ids.js";
 import {
   applyProjectSync,
   createDesiredFiles,
@@ -81,9 +82,15 @@ export async function runCli(argv, context) {
 
 async function runInit({ parsed, context, projectDir, catalog }) {
   const manifest = await ensureManifest(projectDir);
+  const skillIdLookup = buildSkillIdLookup(catalog.skills);
+
+  canonicalizeManifestSkillSelections(manifest, skillIdLookup);
 
   manifest.packs = mergeUnique(manifest.packs, parsed.options.packs ?? []);
-  manifest.skills = mergeUnique(manifest.skills, parsed.options.skills ?? []);
+  manifest.skills = mergeUnique(
+    manifest.skills,
+    canonicalizeSkillIds(parsed.options.skills ?? [], skillIdLookup)
+  );
   manifest.excludeSkills = manifest.excludeSkills.filter(
     (skillId) => !manifest.skills.includes(skillId)
   );
@@ -188,6 +195,9 @@ async function runMutatingManifestCommand({ action, parsed, context, projectDir,
   }
 
   const manifest = await readManifest(projectDir);
+  const skillIdLookup = buildSkillIdLookup(catalog.skills);
+
+  canonicalizeManifestSkillSelections(manifest, skillIdLookup);
 
   if (parsed.subject === "pack") {
     manifest.packs =
@@ -195,12 +205,16 @@ async function runMutatingManifestCommand({ action, parsed, context, projectDir,
         ? mergeUnique(manifest.packs, [parsed.name])
         : manifest.packs.filter((value) => value !== parsed.name);
   } else if (parsed.subject === "skill") {
+    const canonicalSkillName = canonicalizeSkillId(parsed.name, skillIdLookup) ?? parsed.name;
+
     if (action === "add") {
-      manifest.skills = mergeUnique(manifest.skills, [parsed.name]);
-      manifest.excludeSkills = manifest.excludeSkills.filter((value) => value !== parsed.name);
+      manifest.skills = mergeUnique(manifest.skills, [canonicalSkillName]);
+      manifest.excludeSkills = manifest.excludeSkills.filter(
+        (value) => value !== canonicalSkillName
+      );
     } else {
-      manifest.skills = manifest.skills.filter((value) => value !== parsed.name);
-      manifest.excludeSkills = mergeUnique(manifest.excludeSkills, [parsed.name]);
+      manifest.skills = manifest.skills.filter((value) => value !== canonicalSkillName);
+      manifest.excludeSkills = mergeUnique(manifest.excludeSkills, [canonicalSkillName]);
     }
   } else {
     throw new CliError(`Unknown subject "${parsed.subject}". Use "pack" or "skill".`);
@@ -481,6 +495,13 @@ function appendList(buffer, title, values) {
   for (const value of values) {
     buffer.push(`- ${value}`);
   }
+}
+
+function canonicalizeManifestSkillSelections(manifest, skillIdLookup) {
+  manifest.skills = canonicalizeSkillIds(manifest.skills, skillIdLookup);
+  manifest.excludeSkills = canonicalizeSkillIds(manifest.excludeSkills, skillIdLookup).filter(
+    (skillId) => !manifest.skills.includes(skillId)
+  );
 }
 
 function mergeUnique(currentValues, nextValues) {

@@ -5,6 +5,7 @@ export const MANAGED_BY = "ghcopilot-hub";
 export const MANIFEST_PATH = ".github/ghcopilot-hub.json";
 export const DEFAULT_REVISION = "unknown";
 export const HUB_CONTENT_DIR = "hub";
+export const HUB_SKILL_PREFIX = "ghcopilot-hub-";
 
 export const MANAGED_ROOTS = [
   ".github/agents",

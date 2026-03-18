@@ -52,7 +52,7 @@ If there is no plan or there are multiple paths -> **REJECT** for ambiguity.
      - `PARTIAL` → Test exists but only covers part of the Given/When/Then conditions.
 
 5. **Architecture Tests**
-   - If the plan mentions dependency rules or `architecture-testing`, locate the corresponding test under `src/core/test/architecture/`.
+   - If the plan mentions dependency rules or `ghcopilot-hub-architecture-testing`, locate the corresponding test under `src/core/test/architecture/`.
 
 6. **Execution Evidence (MANDATORY)**
    - Do not accept "recent", "likely", or "probably still valid" execution evidence.

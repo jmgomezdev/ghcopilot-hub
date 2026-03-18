@@ -46,8 +46,8 @@ npx ghcopilot-hub@latest init --pack spa-tanstack
 Ajustar la selección más adelante:
 
 ```bash
-npx ghcopilot-hub@latest add skill mermaid-expert
-npx ghcopilot-hub@latest remove skill tanstack-router
+npx ghcopilot-hub@latest add skill ghcopilot-hub-mermaid-expert
+npx ghcopilot-hub@latest remove skill ghcopilot-hub-tanstack-router
 ```
 
 Revisar o aplicar el estado actual del hub:
@@ -103,7 +103,7 @@ Ejemplo de manifiesto:
 ```json
 {
   "packs": ["spa-tanstack"],
-  "skills": ["mermaid-expert"],
+  "skills": ["ghcopilot-hub-mermaid-expert"],
   "excludeSkills": [],
   "settings": {
     "onConflict": "fail"
@@ -114,6 +114,7 @@ Ejemplo de manifiesto:
 Reglas de resolución:
 
 - la skill `ghcopilot-hub-consumer` se instala por defecto en cualquier proyecto gestionado por el CLI
+- los ids de skills compartidas del hub usan el prefijo `ghcopilot-hub-` para evitar colisiones con skills del repositorio
 - todos los agentes del hub se copian siempre
 - las skills finales salen de `packs + skills - excludeSkills`
 - `excludeSkills` gana incluso si una skill llega desde un pack

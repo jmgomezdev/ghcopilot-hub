@@ -9,14 +9,14 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
     agents: [{ id: "planner" }],
     skills: [
       { id: "ghcopilot-hub-consumer" },
-      { id: "typescript" },
-      { id: "react" },
-      { id: "testing" },
-      { id: "mermaid-expert" },
+      { id: "ghcopilot-hub-typescript" },
+      { id: "ghcopilot-hub-react" },
+      { id: "ghcopilot-hub-testing" },
+      { id: "ghcopilot-hub-mermaid-expert" },
     ],
     packs: [
-      { name: "base-web", skills: ["typescript", "testing"] },
-      { name: "spa", skills: ["typescript", "react"] },
+      { name: "base-web", skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-testing"] },
+      { name: "spa", skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-react"] },
     ],
   };
 
@@ -36,15 +36,20 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
   );
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
-    ["ghcopilot-hub-consumer", "mermaid-expert", "react", "typescript"]
+    [
+      "ghcopilot-hub-consumer",
+      "ghcopilot-hub-mermaid-expert",
+      "ghcopilot-hub-react",
+      "ghcopilot-hub-typescript",
+    ]
   );
 });
 
 test("resolveProjectState permite excluir la skill por defecto", () => {
   const catalog = {
     agents: [{ id: "planner" }],
-    skills: [{ id: "ghcopilot-hub-consumer" }, { id: "typescript" }],
-    packs: [{ name: "base-web", skills: ["typescript"] }],
+    skills: [{ id: "ghcopilot-hub-consumer" }, { id: "ghcopilot-hub-typescript" }],
+    packs: [{ name: "base-web", skills: ["ghcopilot-hub-typescript"] }],
   };
 
   const state = resolveProjectState({
@@ -59,7 +64,7 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
 
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
-    ["typescript"]
+    ["ghcopilot-hub-typescript"]
   );
 });
 
@@ -67,7 +72,7 @@ test("managed header preserva el cuerpo y expone el hash de contenido", () => {
   const body = "# Example\n";
   const rendered = renderManagedFile({
     targetRelativePath: ".github/copilot-instructions.md",
-    sourceRelativePath: "hub/skills/testing/SKILL.md",
+    sourceRelativePath: "hub/skills/ghcopilot-hub-testing/SKILL.md",
     revision: "abc123",
     body,
   });
@@ -79,7 +84,7 @@ test("managed header preserva el cuerpo y expone el hash de contenido", () => {
 
   assert.ok(parsed);
   assert.equal(parsed.header["managed-by"], "ghcopilot-hub");
-  assert.equal(parsed.header.source, "hub/skills/testing/SKILL.md");
+  assert.equal(parsed.header.source, "hub/skills/ghcopilot-hub-testing/SKILL.md");
   assert.equal(parsed.header.revision, "abc123");
   assert.equal(parsed.header["content-hash"], hashContent(body));
   assert.equal(parsed.body, body);
