@@ -38,14 +38,14 @@ If the mandatory reference is not loaded, avoid hard recommendations for that ar
 
 ## Symptom Router (Fast Path)
 
-| Symptom / question                        | Go to                                                                                                      |
-| ----------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| "Should I use `satisfies` or `: Type`?"   | [Critical Patterns](#critical-patterns) + [references/style-and-types.md](references/style-and-types.md)   |
-| "Can I use `enum` here?"                  | [No `enum` (REQUIRED)](#no-enum-required) + [references/style-and-types.md](references/style-and-types.md) |
-| "This function is slow on hot path"       | [references/perf-additional-concerns.md](references/perf-additional-concerns.md)                           |
-| "Too many loops/filter-map-reduce passes" | [references/reduce-looping.md](references/reduce-looping.md)                                               |
-| "Too many nested conditionals"            | [references/reduce-branching.md](references/reduce-branching.md)                                           |
-| "Type or interface?"                      | [references/type-vs-interface.md](references/type-vs-interface.md)                                         |
+| Symptom / question                        | Go to                                                                                 |
+| ----------------------------------------- | ------------------------------------------------------------------------------------- |
+| "Should I use `satisfies` or `: Type`?"   | Critical Patterns + [references/style-and-types.md](references/style-and-types.md)    |
+| "Can I use `enum` here?"                  | No `enum` (REQUIRED) + [references/style-and-types.md](references/style-and-types.md) |
+| "This function is slow on hot path"       | [references/perf-additional-concerns.md](references/perf-additional-concerns.md)      |
+| "Too many loops/filter-map-reduce passes" | [references/reduce-looping.md](references/reduce-looping.md)                          |
+| "Too many nested conditionals"            | [references/reduce-branching.md](references/reduce-branching.md)                      |
+| "Type or interface?"                      | [references/type-vs-interface.md](references/type-vs-interface.md)                    |
 
 ## Naming Conventions (Casing)
 
