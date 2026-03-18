@@ -28,7 +28,7 @@ test("init materializa agentes y skills del pack", async () => {
 
   assert.equal(result.exitCode, 0, result.stderr);
   assert.equal(await fileExists(projectDir, ".github/ghcopilot-hub.json"), true);
-  assert.equal(await fileExists(projectDir, ".github/agents/planificador.agent.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/agents/planner.agent.md"), true);
   assert.equal(
     await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
     true

@@ -6,7 +6,7 @@ import { resolveProjectState } from "../src/lib/resolver.js";
 
 test("resolveProjectState expande packs, extras y exclusiones sin duplicados", () => {
   const catalog = {
-    agents: [{ id: "planificador" }],
+    agents: [{ id: "planner" }],
     skills: [
       { id: "ghcopilot-hub-consumer" },
       { id: "typescript" },
@@ -32,7 +32,7 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
 
   assert.deepEqual(
     state.agents.map((agent) => agent.id),
-    ["planificador"]
+    ["planner"]
   );
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
@@ -42,7 +42,7 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
 
 test("resolveProjectState permite excluir la skill por defecto", () => {
   const catalog = {
-    agents: [{ id: "planificador" }],
+    agents: [{ id: "planner" }],
     skills: [{ id: "ghcopilot-hub-consumer" }, { id: "typescript" }],
     packs: [{ name: "base-web", skills: ["typescript"] }],
   };

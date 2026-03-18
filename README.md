@@ -72,9 +72,14 @@ to treat it as a two-step workflow.
 
 Use it like this:
 
-1. Run `/planificador` to turn the request into an approved execution plan.
-   It coordinates discovery and design with agents sShared URL, or session memory, so the implementation phase can resume
-   without re-planning.
+1. Run `/planner` to turn the request into an approved execution plan.
+   It coordinates discovery and design with agents such as `explorer`, `librarian`, `architect`, and `gatekeeper`.
+2. Pass that approved plan to `/builder`.
+   It executes the approved handoff and closes the loop with `plan-guardian`, `test-sentinel`, and `archiver` for review,
+   testing, and traceability.
+
+That plan can be delivered as chat context, a shared URL, or session memory so the implementation phase can resume
+without re-planning.
 
 See the full agent system overview in [docs/agent-system.md](docs/agent-system.md).
 

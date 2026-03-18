@@ -24,20 +24,20 @@ También aparecen conceptos clásicos de ingeniería de software y delivery como
 
 ## Fase 1: planificación
 
-La fase de planificación está orquestada por **Planificador**. Su trabajo no es programar, sino convertir una petición en un plan ejecutable y verificable.
+La fase de planificación está orquestada por **planner**. Su trabajo no es programar, sino convertir una petición en un plan ejecutable y verificable.
 
-- **Explore** localiza rutas, archivos, patrones y puntos de entrada.
-- **Librarian** aporta documentación, firmas y ejemplos cuando hace falta contexto técnico.
-- **Oracle** fija decisiones de arquitectura, límites de capa y estrategia de pruebas.
-- **Momus** revisa el plan final y decide si el traspaso a implementación está libre de ambigüedades.
+- **explorer** localiza rutas, archivos, patrones y puntos de entrada.
+- **librarian** aporta documentación, firmas y ejemplos cuando hace falta contexto técnico.
+- **architect** fija decisiones de arquitectura, límites de capa y estrategia de pruebas.
+- **gatekeeper** revisa el plan final y decide si el traspaso a implementación está libre de ambigüedades.
 
-### Qué hace realmente Planificador
+### Qué hace realmente planner
 
-Planificador actúa como un diseñador de ejecución. Antes de producir un plan, clasifica la petición para decidir la profundidad necesaria:
+planner actúa como un diseñador de ejecución. Antes de producir un plan, clasifica la petición para decidir la profundidad necesaria:
 
 - **Trivial**: cambio pequeño y obvio.
 - **Standard**: feature, bugfix o refactor normal con varias piezas.
-- **Architecture**: cambio transversal o con impacto estructural; aquí Oracle es obligatorio.
+- **Architecture**: cambio transversal o con impacto estructural; aquí **architect** es obligatorio.
 
 Después recorre un flujo fijo:
 
@@ -45,28 +45,28 @@ Después recorre un flujo fijo:
 2. **Alignment**: solo pregunta cuando faltan preferencias, tradeoffs o decisiones de producto.
 3. **Design**: construye un plan detallado con tareas atómicas, archivos exactos, pruebas, restricciones y comandos.
 4. **Persistence**: mantiene el plan vivo en memoria de sesión para que el sistema pueda retomar contexto sin rehacer el análisis.
-5. **Review**: envía el plan a Momus y no lo considera listo hasta recibir OKAY.
+5. **Review**: envía el plan a **gatekeeper** y no lo considera listo hasta recibir OKAY.
 
 ### Valor de los agentes auxiliares en planificación
 
-- **Explore** evita preguntas innecesarias porque localiza patrones, rutas, archivos y puntos de entrada ya existentes.
-- **Librarian** reduce errores por conocimiento obsoleto cuando una decisión depende de librerías, firmas, configuración o breaking changes.
-- **Oracle** protege la arquitectura: define qué capa debe hacer cada cosa, qué no se puede mezclar y cómo debe probarse.
-- **Momus** no mejora el diseño por gusto; comprueba si Implementador podrá ejecutar el plan sin inventar nombres, pasos o validaciones.
+- **explorer** evita preguntas innecesarias porque localiza patrones, rutas, archivos y puntos de entrada ya existentes.
+- **librarian** reduce errores por conocimiento obsoleto cuando una decisión depende de librerías, firmas, configuración o breaking changes.
+- **architect** protege la arquitectura: define qué capa debe hacer cada cosa, qué no se puede mezclar y cómo debe probarse.
+- **gatekeeper** no mejora el diseño por gusto; comprueba si **builder** podrá ejecutar el plan sin inventar nombres, pasos o validaciones.
 
 ```mermaid
 %%{init: {'theme': 'forest', 'look': 'classic', 'flowchart': {'curve': 'stepBefore'}} }%%
 flowchart TD
-    user[Solicitud del usuario] --> planificador[Planificador]
+    user[Solicitud del usuario] --> planner[planner]
 
     subgraph fase_plan[FASE 1 · PLANIFICACION · Progressive Elaboration]
-        planificador --> explore[Explore]
-        planificador --> librarian[Librarian]
-        planificador --> oracle[Oracle]
+        planner --> explorer[explorer]
+        planner --> librarian[librarian]
+        planner --> architect[architect]
 
-        explore --> findings[Discovery / Contexto y referencias]
+        explorer --> findings[Discovery / Contexto y referencias]
         librarian --> findings
-        oracle --> findings
+        architect --> findings
 
         findings --> questions{Alignment / Hay dudas de alcance o preferencia}
         questions -- Si --> user_feedback[Preguntas al usuario]
@@ -74,10 +74,10 @@ flowchart TD
         questions -- No --> draft[Design / Plan ejecutable]
 
         draft --> session_memory[Persistence / Memoria de sesion]
-        session_memory --> momus[Momus]
-        momus --> approved{Quality Gate / Plan OKAY}
+        session_memory --> gatekeeper[gatekeeper]
+        gatekeeper --> approved{Quality Gate / Plan OKAY}
 
-        approved -- No --> planificador
+        approved -- No --> planner
         approved -- Si --> approved_plan[Handoff / Contrato ejecutable]
     end
 ```
@@ -88,7 +88,7 @@ En esta fase la salida importante no es código: es un plan con archivos exactos
 
 - **Discovery-driven planning** y **progressive elaboration**: primero se investiga y luego se concreta.
 - **Specification by contract**: el plan fija archivos, restricciones, dependencias y validaciones antes de ejecutar.
-- **Architecture governance**: Oracle y los guardrails convierten la arquitectura en una restricción activa.
+- **Architecture governance**: **architect** y los guardrails convierten la arquitectura en una restricción activa.
 - **Verification planning**: los criterios de aceptación y comandos se definen antes de escribir producción.
 
 ### Qué contiene un plan aprobado
@@ -106,7 +106,7 @@ En otras palabras: la salida de planificación es un **contrato de ejecución**,
 
 ## Fase 2: implementación
 
-La fase de implementación empieza solo cuando existe un plan aprobado. **Implementador** consume ese plan como contrato y no debería inventar nombres, capas ni validaciones.
+La fase de implementación empieza solo cuando existe un plan aprobado. **builder** consume ese plan como contrato y no debería inventar nombres, capas ni validaciones.
 
 - Lee el plan en un orden fijo.
 - Revisa referencias antes de editar.
@@ -115,9 +115,9 @@ La fase de implementación empieza solo cuando existe un plan aprobado. **Implem
 - Ejecuta validaciones atómicas por tarea.
 - Cierra con dos revisiones obligatorias y un archivado final: **plan-guardian**, **test-sentinel** y **archiver**.
 
-### Qué hace realmente Implementador
+### Qué hace realmente builder
 
-Implementador está optimizado para ejecutar, no para rediseñar. Su primer filtro es comprobar que el plan cumple el contrato exigido por el sistema:
+builder está optimizado para ejecutar, no para rediseñar. Su primer filtro es comprobar que el plan cumple el contrato exigido por el sistema:
 
 - rutas y archivos exactos;
 - skills invocadas por tarea;
@@ -131,7 +131,7 @@ Si eso no existe, debe detenerse y pedir un nuevo paso de planificación. Esa re
 
 ### Orden interno de trabajo
 
-Implementador lee el plan en un orden deliberado:
+builder lee el plan en un orden deliberado:
 
 1. requisitos de producto y reglas de negocio;
 2. decisiones de contexto y arquitectura;
@@ -156,15 +156,15 @@ Cada tarea debería recorrer este ciclo:
 8. ejecutar la validación atómica definida en el plan;
 9. cerrar la tarea solo si pasa su criterio de aceptación.
 
-Con esto, Implementador no trabaja por intuición sino por una secuencia repetible.
+Con esto, **builder** no trabaja por intuición sino por una secuencia repetible.
 
 ```mermaid
 %%{init: {'theme': 'default', 'look': 'neo', 'flowchart': {'curve': 'stepBefore'}} }%%
 flowchart TD
-    plan[Plan aprobado] --> imp[Implementador]
+    plan[Plan aprobado] --> builder[builder]
 
     subgraph fase_impl[FASE 2 · IMPLEMENTACION · TDD y Quality Gates]
-        imp --> tasks[Small Batches / Tasks del plan]
+        builder --> tasks[Small Batches / Tasks del plan]
         tasks --> task_ctx[Contexto + referencias + skills]
         task_ctx --> task_red[RED / Failing tests]
         task_red --> task_green[GREEN / Implementacion minima]
@@ -196,7 +196,7 @@ La implementación no termina cuando "todo compila". El sistema exige dos revisi
 
 - **plan-guardian** audita el código de producción contra el plan aprobado. Busca desvíos como archivos inventados, capas mal conectadas, reglas violadas o trabajo incompleto respecto al handoff.
 - **test-sentinel** audita la parte de calidad. Comprueba que los tests pedidos existen, que se respetó la matriz de testing por capas y que hay evidencia de ejecución.
-- **archiver** corre al final, lanzado por **Implementador** solo cuando ambos revisores ya devolvieron OK para la revisión actual. Convierte el contexto final y unos Delta Specs en formato fijo en una entrada de `changelog.md` y, si al leer el `README.md` detecta que el cambio lo dejó obsoleto, también lo ajusta. Si el cambio altera un flujo o un handoff, puede cargar la skill de Mermaid del repositorio para generar y validar un diagrama antes de archivarlo.
+- **archiver** corre al final, lanzado por **builder** solo cuando ambos revisores ya devolvieron OK para la revisión actual. Convierte el contexto final y unos Delta Specs en formato fijo en una entrada de `changelog.md` y, si al leer el `README.md` detecta que el cambio lo dejó obsoleto, también lo ajusta. Si el cambio altera un flujo o un handoff, puede cargar la skill de Mermaid del repositorio para generar y validar un diagrama antes de archivarlo.
 
 Esta separación es útil porque evita mezclar preguntas distintas:
 
@@ -217,9 +217,9 @@ El sistema responde cada una con un agente diferente. Esa separación reduce ses
 
 La frontera entre ambas fases es deliberada:
 
-1. **Planificador** reduce incertidumbre.
-2. **Momus** bloquea planes ambiguos o incompletos.
-3. **Implementador** ejecuta sin reinterpretar el alcance.
+1. **planner** reduce incertidumbre.
+2. **gatekeeper** bloquea planes ambiguos o incompletos.
+3. **builder** ejecuta sin reinterpretar el alcance.
 4. **plan-guardian** confirma que el código coincide con el plan.
 5. **test-sentinel** confirma que las pruebas pedidas existen y se han ejecutado.
 6. **archiver** deja el cambio archivado en `changelog.md` y mantiene `README.md` al día cuando el cambio afecta la documentación principal del proyecto.
@@ -230,12 +230,12 @@ En resumen, el sistema usa la planificación para fijar decisiones antes de edit
 
 Visto como sistema, cada agente cubre un riesgo distinto:
 
-- **Planificador**: riesgo de ambigüedad.
-- **Explore**: riesgo de desconocer el repositorio.
-- **Librarian**: riesgo de aplicar documentación incorrecta o desactualizada.
-- **Oracle**: riesgo de romper arquitectura o testing strategy.
-- **Momus**: riesgo de entregar un plan imposible de ejecutar sin improvisación.
-- **Implementador**: riesgo de ejecución inconsistente.
+- **planner**: riesgo de ambigüedad.
+- **explorer**: riesgo de desconocer el repositorio.
+- **librarian**: riesgo de aplicar documentación incorrecta o desactualizada.
+- **architect**: riesgo de romper arquitectura o testing strategy.
+- **gatekeeper**: riesgo de entregar un plan imposible de ejecutar sin improvisación.
+- **builder**: riesgo de ejecución inconsistente.
 - **plan-guardian**: riesgo de desviación entre plan y código real.
 - **test-sentinel**: riesgo de calidad insuficiente o TDD incompleto.
 - **archiver**: riesgo de perder trazabilidad verificable del cambio una vez validado.

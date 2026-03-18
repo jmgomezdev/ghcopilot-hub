@@ -73,9 +73,9 @@ fácil de usarlo es tratarlo como un flujo de dos pasos.
 
 Úsalo así:
 
-1. Ejecuta `/planificador` para convertir la petición en un plan de ejecución aprobado.
-   Coordina el discovery y el diseño con agentes como `Explore`, `Librarian`, `Oracle` y `Momus`.
-2. Pasa ese plan aprobado a `/implementador`.
+1. Ejecuta `/planner` para convertir la petición en un plan de ejecución aprobado.
+   Coordina el discovery y el diseño con agentes como `explorer`, `librarian`, `architect` y `gatekeeper`.
+2. Pasa ese plan aprobado a `/builder`.
    Ejecuta el handoff aprobado y cierra el ciclo con `plan-guardian`, `test-sentinel` y `archiver` para revisión,
    pruebas y trazabilidad.
 
