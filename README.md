@@ -65,6 +65,19 @@ npx ghcopilot-hub@latest --help
 
 If you prefer, you can also install the package and run `ghcopilot-hub` directly instead of using `npx`.
 
+## Agent System
+
+Every consumer project receives the full hub agent catalog under `.github/agents/`, but the easiest way to use it is
+to treat it as a two-step workflow.
+
+Use it like this:
+
+1. Run `/planificador` to turn the request into an approved execution plan.
+   It coordinates discovery and design with agents sShared URL, or session memory, so the implementation phase can resume
+   without re-planning.
+
+See the full agent system overview in [hub/agents/README.md](hub/agents/README.md).
+
 ## Consumer Project Model
 
 Consumer project layout:
@@ -101,30 +114,6 @@ Resolution rules:
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack
 - local files live outside managed paths
-
-## Managed vs Local Files
-
-Managed paths:
-
-- `.github/agents/**`
-- `.github/skills/**`
-
-Local paths:
-
-- `.github/local-overrides/**`
-- `.github/ghcopilot-hub.json`
-
-Legacy files that came from older `hub/base/` versions are removed on `ghcopilot-hub update`.
-
-Each managed file includes a traceability header with:
-
-- `managed-by`
-- `source`
-- `revision`
-- `content-hash`
-
-`content-hash` allows the CLI to distinguish between a file that is outdated because the hub changed and a file that
-has drifted because of manual local edits.
 
 ## Internal Project Layout
 

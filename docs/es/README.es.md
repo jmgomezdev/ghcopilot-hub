@@ -66,6 +66,24 @@ npx ghcopilot-hub@latest --help
 
 Si prefieres, también puedes instalar el paquete y ejecutar `ghcopilot-hub` directamente en lugar de usar `npx`.
 
+## Sistema de agentes
+
+Cada proyecto consumidor recibe el catálogo completo de agentes del hub bajo `.github/agents/`, pero la forma más
+fácil de usarlo es tratarlo como un flujo de dos pasos.
+
+Úsalo así:
+
+1. Ejecuta `/planificador` para convertir la petición en un plan de ejecución aprobado.
+   Coordina el discovery y el diseño con agentes como `Explore`, `Librarian`, `Oracle` y `Momus`.
+2. Pasa ese plan aprobado a `/implementador`.
+   Ejecuta el handoff aprobado y cierra el ciclo con `plan-guardian`, `test-sentinel` y `archiver` para revisión,
+   pruebas y trazabilidad.
+
+Ese plan se puede entregar como contexto del chat, una URL compartida o memoria de sesión para que la implementación
+retome el trabajo sin volver a planificar.
+
+Consulta la explicación completa en [../../hub/agents/README.md](../../hub/agents/README.md).
+
 ## Modelo del Proyecto Consumidor
 
 Layout del proyecto consumidor:
@@ -102,30 +120,6 @@ Reglas de resolución:
 - las skills finales salen de `packs + skills - excludeSkills`
 - `excludeSkills` gana incluso si una skill llega desde un pack
 - los archivos locales viven fuera de los paths gestionados
-
-## Archivos Gestionados y Locales
-
-Paths gestionados:
-
-- `.github/agents/**`
-- `.github/skills/**`
-
-Paths locales:
-
-- `.github/local-overrides/**`
-- `.github/ghcopilot-hub.json`
-
-Los archivos legacy que venían de versiones antiguas de `hub/base/` se eliminan con `ghcopilot-hub update`.
-
-Cada archivo gestionado lleva una cabecera de trazabilidad con:
-
-- `managed-by`
-- `source`
-- `revision`
-- `content-hash`
-
-`content-hash` permite distinguir entre un archivo desactualizado por cambios del hub y un archivo drifted por edición
-local manual.
 
 ## Layout Interno del Proyecto
 

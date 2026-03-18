@@ -113,6 +113,25 @@ Possible file states:
 - `remove`: is managed and no longer part of the desired state
 - `conflict`: has local drift or unmanaged content inside a managed path
 
+Managed paths vs local paths:
+
+- managed: `.github/agents/**`
+- managed: `.github/skills/**`
+- local: `.github/ghcopilot-hub.json`
+- local: `.github/local-overrides/**`
+
+Legacy files that came from older `hub/base/` versions are removed on `ghcopilot-hub update`.
+
+Each managed file includes a traceability header with:
+
+- `managed-by`
+- `source`
+- `revision`
+- `content-hash`
+
+`content-hash` lets the CLI distinguish between files that are outdated because the hub changed and files that drifted
+because of manual local edits.
+
 ## Drift and Conflicts
 
 Drift is detected when the current file body does not match the `content-hash` stored during the last sync.

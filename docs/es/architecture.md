@@ -113,6 +113,25 @@ Estados posibles por archivo:
 - `remove`: es managed y ya no forma parte del estado deseado
 - `conflict`: existe drift local o contenido no gestionado en una ruta managed
 
+Rutas gestionadas frente a rutas locales:
+
+- gestionada: `.github/agents/**`
+- gestionada: `.github/skills/**`
+- local: `.github/ghcopilot-hub.json`
+- local: `.github/local-overrides/**`
+
+Los archivos legacy que venían de versiones antiguas de `hub/base/` se eliminan con `ghcopilot-hub update`.
+
+Cada archivo gestionado lleva una cabecera de trazabilidad con:
+
+- `managed-by`
+- `source`
+- `revision`
+- `content-hash`
+
+`content-hash` permite distinguir entre archivos desactualizados por cambios del hub y archivos con drift por edición
+local manual.
+
 ## Drift y conflictos
 
 Se considera drift cuando el cuerpo del archivo actual no coincide con el `content-hash` guardado en la última
