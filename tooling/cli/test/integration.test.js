@@ -179,26 +179,26 @@ test("init sin pack instala la skill por defecto del hub", async () => {
   assert.deepEqual(manifest.skills, []);
 });
 
-test("update elimina archivos legacy previamente gestionados desde hub/base", async () => {
+test("update elimina archivos legacy previamente gestionados", async () => {
   const projectDir = await createTempProject();
 
   await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
 
   const legacyInstruction = renderManagedFile({
     targetRelativePath: ".github/copilot-instructions.md",
-    sourceRelativePath: "hub/base/.github/copilot-instructions.md",
+    sourceRelativePath: "legacy/.github/copilot-instructions.md",
     revision: "legacy",
     body: "# Legacy\n",
   });
   const legacyPrompt = renderManagedFile({
     targetRelativePath: ".github/prompts/ghcopilot-hub-maintenance.prompt.md",
-    sourceRelativePath: "hub/base/.github/prompts/ghcopilot-hub-maintenance.prompt.md",
+    sourceRelativePath: "legacy/.github/prompts/ghcopilot-hub-maintenance.prompt.md",
     revision: "legacy",
     body: "# Legacy prompt\n",
   });
   const legacySettings = renderManagedFile({
     targetRelativePath: ".vscode/settings.json",
-    sourceRelativePath: "hub/base/.vscode/settings.json",
+    sourceRelativePath: "legacy/.vscode/settings.json",
     revision: "legacy",
     body: '{\n  "legacy": true\n}\n',
   });

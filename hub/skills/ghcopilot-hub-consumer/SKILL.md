@@ -33,8 +33,7 @@ Managed paths:
 
 If the requested change affects managed content, change the manifest or the hub source, then run the CLI.
 
-Legacy files from older `hub/base/` versions may still exist in some repositories; `ghcopilot-hub update` removes
-them.
+Legacy files from earlier CLI versions may still exist in some repositories; `ghcopilot-hub update` removes them.
 
 ### Local Customization Goes to Overrides
 

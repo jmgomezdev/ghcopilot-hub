@@ -12,7 +12,8 @@ Local files stay under project control:
 - `.github/local-overrides/**`
 - `.github/ghcopilot-hub.json`
 
-Older repositories may still have legacy managed files from `hub/base/`; `ghcopilot-hub update` removes them.
+Older repositories may still have legacy managed files from earlier CLI versions; `ghcopilot-hub update`
+removes them.
 
 ## Recommended Operating Sequence
 

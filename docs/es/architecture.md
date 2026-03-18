@@ -103,8 +103,8 @@ Cabecera de trazabilidad:
 
 Para archivos JSONC se usa comentario `//`.
 
-Las versiones actuales del CLI ya no materializan archivos desde `hub/base/`. Si un proyecto conserva archivos
-legacy de versiones anteriores, `ghcopilot-hub update` los elimina.
+Las versiones actuales del CLI ya no materializan archivos gestionados legacy. Si un proyecto conserva archivos legacy
+de versiones anteriores, `ghcopilot-hub update` los elimina.
 
 Estados posibles por archivo:
 
@@ -120,7 +120,7 @@ Rutas gestionadas frente a rutas locales:
 - local: `.github/ghcopilot-hub.json`
 - local: `.github/local-overrides/**`
 
-Los archivos legacy que venían de versiones antiguas de `hub/base/` se eliminan con `ghcopilot-hub update`.
+Los archivos legacy de versiones anteriores se eliminan con `ghcopilot-hub update`.
 
 Cada archivo gestionado lleva una cabecera de trazabilidad con:
 

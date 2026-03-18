@@ -103,7 +103,7 @@ Traceability header:
 
 JSONC files use `//` comments.
 
-Current CLI versions no longer materialize files from `hub/base/`. If a project still has legacy files from earlier
+Current CLI versions no longer materialize legacy managed files. If a project still has legacy files from earlier
 versions, `ghcopilot-hub update` removes them.
 
 Possible file states:
@@ -120,7 +120,7 @@ Managed paths vs local paths:
 - local: `.github/ghcopilot-hub.json`
 - local: `.github/local-overrides/**`
 
-Legacy files that came from older `hub/base/` versions are removed on `ghcopilot-hub update`.
+Legacy files from earlier CLI versions are removed on `ghcopilot-hub update`.
 
 Each managed file includes a traceability header with:
 
