@@ -50,6 +50,10 @@ npx ghcopilot-hub@latest add skill ghcopilot-hub-mermaid-expert
 npx ghcopilot-hub@latest remove skill ghcopilot-hub-tanstack-router
 ```
 
+Para excluir una skill que llega desde un pack, elimínala de forma explícita. El CLI la añade a
+`excludeSkills`, así que el pack no la volverá a incorporar en el siguiente sync. También puedes
+editar `.github/ghcopilot-hub.json` a mano y después ejecutar `update`.
+
 Revisar o aplicar el estado actual del hub:
 
 ```bash
