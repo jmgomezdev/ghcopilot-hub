@@ -11,7 +11,6 @@ export const DEFAULT_MANIFEST = {
   excludeSkills: [],
   settings: {
     onConflict: "fail",
-    preserveLocalOverrides: true,
   },
 };
 
@@ -32,10 +31,6 @@ export function normalizeManifest(rawManifest) {
 
   manifest.settings = {
     onConflict,
-    preserveLocalOverrides:
-      typeof rawSettings.preserveLocalOverrides === "boolean"
-        ? rawSettings.preserveLocalOverrides
-        : DEFAULT_MANIFEST.settings.preserveLocalOverrides,
   };
 
   return manifest;

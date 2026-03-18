@@ -17,12 +17,6 @@ export const MANAGED_ROOTS = [
 
 export const REQUIRED_DIRS = [".github", ".github/agents", ".github/skills"];
 
-export function getRequiredDirs(preserveLocalOverrides) {
-  return preserveLocalOverrides
-    ? [...REQUIRED_DIRS, ".github/local-overrides"]
-    : [...REQUIRED_DIRS];
-}
-
 export function getDefaultHubDir() {
   return path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../../..");
 }

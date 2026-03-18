@@ -7,7 +7,6 @@
   `.github/ghcopilot-hub.json`.
 - Sin versionado funcional: el proyecto siempre sincroniza contra el último estado del hub.
 - Trazabilidad mínima: cada archivo gestionado registra origen, revisión y hash del contenido sincronizado.
-- Personalización controlada: los cambios locales van a `.github/local-overrides/`, no a archivos managed.
 
 ## Recursos del hub
 
@@ -49,8 +48,7 @@ Archivo: `.github/ghcopilot-hub.json`
   "skills": [],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail",
-    "preserveLocalOverrides": true
+    "onConflict": "fail"
   }
 }
 ```
@@ -61,7 +59,6 @@ Contrato:
 - `skills`: skills extra fuera de packs
 - `excludeSkills`: skills a retirar incluso si vienen por pack
 - `settings.onConflict`: `fail` o `overwrite`
-- `settings.preserveLocalOverrides`: mantiene `.github/local-overrides/` como espacio libre del proyecto
 
 Skill por defecto:
 
@@ -118,7 +115,8 @@ Rutas gestionadas frente a rutas locales:
 - gestionada: `.github/agents/**`
 - gestionada: `.github/skills/**`
 - local: `.github/ghcopilot-hub.json`
-- local: `.github/local-overrides/**`
+
+El CLI sólo inspecciona las rutas gestionadas para diff, doctor, update y decisiones de borrado.
 
 Los archivos legacy de versiones anteriores se eliminan con `ghcopilot-hub update`.
 
@@ -144,8 +142,3 @@ Política:
 
 Si una ejecución encuentra conflictos en algunas rutas managed pero también tiene operaciones no conflictivas en otras,
 el CLI aplica esas operaciones seguras y devuelve exit code `2` para dejar el conflicto pendiente visible.
-
-## Overrides locales
-
-`.github/local-overrides/` queda fuera del alcance del sync. El archivo base de instrucciones referencia este
-directorio para que el contexto local complemente al contenido gestionado sin editarlo.

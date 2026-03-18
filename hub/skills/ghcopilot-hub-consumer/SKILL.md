@@ -35,12 +35,10 @@ If the requested change affects managed content, change the manifest or the hub 
 
 Legacy files from earlier CLI versions may still exist in some repositories; `ghcopilot-hub update` removes them.
 
-### Local Customization Goes to Overrides
+### Local Customization Stays Outside Managed Paths
 
-Repository-specific conventions belong in `.github/local-overrides/`.
-
-Use that folder for local preferences, additive instructions, and repository-specific context that should survive
-hub updates.
+Keep repository-specific notes and conventions in repository-owned files outside `.github/agents/**` and
+`.github/skills/**`.
 
 ### Preferred Workflow
 
@@ -51,7 +49,8 @@ When acting inside a managed consumer repository:
 3. Preview or audit first with `ghcopilot-hub doctor` and `ghcopilot-hub diff` when drift or unexpected changes may
    exist.
 4. Apply `ghcopilot-hub update` only after confirming the intended change.
-5. If local customization is needed, write to `.github/local-overrides/` instead of editing managed files.
+5. If local customization is needed, write it in repository-owned files outside managed paths instead of editing
+   managed files.
 
 ### Conflict Handling
 
@@ -68,7 +67,7 @@ Need to remove managed capability?             -> ghcopilot-hub remove pack <id>
 Need to inspect drift or missing files?        -> ghcopilot-hub doctor
 Need to preview file changes before writing?   -> ghcopilot-hub diff
 Need to apply the current hub state?           -> ghcopilot-hub update
-Need repo-specific customization only?         -> edit .github/local-overrides/
+Need repo-specific customization only?         -> edit repository-owned files outside managed paths
 ```
 
 ## Code Examples
@@ -81,13 +80,12 @@ Need repo-specific customization only?         -> edit .github/local-overrides/
   "skills": ["mermaid-expert"],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail",
-    "preserveLocalOverrides": true
+    "onConflict": "fail"
   }
 }
 ```
 
-### Example 2: Local Override Note
+### Example 2: Repository Local Note
 
 ```md
 # Repository Overrides

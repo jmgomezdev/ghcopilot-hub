@@ -92,7 +92,6 @@ Consumer project layout:
   ghcopilot-hub.json
   agents/
   skills/
-  local-overrides/
 ```
 
 The manifest file `.github/ghcopilot-hub.json` is the local control file for the consumer project. It is not treated
@@ -106,8 +105,7 @@ Example manifest:
   "skills": ["mermaid-expert"],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail",
-    "preserveLocalOverrides": true
+    "onConflict": "fail"
   }
 }
 ```
@@ -138,7 +136,6 @@ Version 1 covers the following:
 - per-consumer manifest in `.github/ghcopilot-hub.json`
 - synchronization of managed files into the consumer repository
 - drift detection and diff preview before applying changes
-- preservation of local customizations in `.github/local-overrides/`
 
 It does not include functional versioning per project. Every sync targets the current hub state and records the
 available revision in managed file headers.

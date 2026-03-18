@@ -9,7 +9,6 @@ Managed files are rewritten by the CLI and should not be edited by hand:
 
 Local files stay under project control:
 
-- `.github/local-overrides/**`
 - `.github/ghcopilot-hub.json`
 
 Older repositories may still have legacy managed files from earlier CLI versions; `ghcopilot-hub update`
@@ -34,6 +33,6 @@ For most requests inside a managed repository:
 
 ## Safe Customization Rules
 
-- Prefer `.github/local-overrides/` for repo-specific instructions.
+- Keep repo-specific instructions in repository-owned files outside managed paths.
 - If a user wants to change centrally managed content, update the hub source instead of patching the consumer copy.
 - Only force overwrite drift if the user explicitly accepts replacing local edits.

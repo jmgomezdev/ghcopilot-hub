@@ -26,7 +26,7 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
       packs: ["base-web", "spa"],
       skills: ["mermaid-expert"],
       excludeSkills: ["testing"],
-      settings: { onConflict: "fail", preserveLocalOverrides: true },
+      settings: { onConflict: "fail" },
     },
   });
 
@@ -53,7 +53,7 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
       packs: ["base-web"],
       skills: [],
       excludeSkills: ["ghcopilot-hub-consumer"],
-      settings: { onConflict: "fail", preserveLocalOverrides: true },
+      settings: { onConflict: "fail" },
     },
   });
 

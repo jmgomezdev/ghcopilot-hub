@@ -231,7 +231,6 @@ async function syncFromManifest({ context, projectDir, catalog, manifest, force,
       projectDir,
       desiredFiles: report.desiredFiles,
       plan: applicablePlan,
-      preserveLocalOverrides: manifest.settings.preserveLocalOverrides,
     });
   }
 

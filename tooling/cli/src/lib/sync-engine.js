@@ -2,7 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 
 import { CliError } from "./errors.js";
-import { MANAGED_ROOTS, getRequiredDirs } from "./constants.js";
+import { MANAGED_ROOTS, REQUIRED_DIRS } from "./constants.js";
 import {
   ensureDir,
   fromRoot,
@@ -151,7 +151,7 @@ export async function planProjectSync({ projectDir, desiredFiles, onConflict }) 
   };
 }
 
-export async function applyProjectSync({ projectDir, desiredFiles, plan, preserveLocalOverrides }) {
+export async function applyProjectSync({ projectDir, desiredFiles, plan }) {
   if (plan.conflicts.length > 0) {
     const summary = plan.conflicts
       .map((conflict) => `${conflict.targetRelativePath}: ${conflict.reason}`)
@@ -159,9 +159,7 @@ export async function applyProjectSync({ projectDir, desiredFiles, plan, preserv
     throw new CliError(`Cannot apply sync because conflicts were detected:\n${summary}`);
   }
 
-  const requiredDirs = getRequiredDirs(preserveLocalOverrides);
-
-  for (const requiredDir of requiredDirs) {
+  for (const requiredDir of REQUIRED_DIRS) {
     await ensureDir(fromRoot(projectDir, requiredDir));
   }
 
@@ -182,7 +180,7 @@ export async function applyProjectSync({ projectDir, desiredFiles, plan, preserv
     }
   }
 
-  for (const requiredDir of requiredDirs) {
+  for (const requiredDir of REQUIRED_DIRS) {
     await ensureDir(fromRoot(projectDir, requiredDir));
   }
 }

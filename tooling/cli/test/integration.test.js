@@ -47,6 +47,7 @@ test("init materializa agentes y skills del pack", async () => {
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
   assert.deepEqual(manifest.packs, ["spa-tanstack"]);
+  assert.deepEqual(manifest.settings, { onConflict: "fail" });
 });
 
 test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync", async () => {

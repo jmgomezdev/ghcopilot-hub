@@ -93,7 +93,6 @@ Layout del proyecto consumidor:
   ghcopilot-hub.json
   agents/
   skills/
-  local-overrides/
 ```
 
 El archivo `.github/ghcopilot-hub.json` es el fichero local de control del proyecto consumidor. No se trata como un
@@ -107,8 +106,7 @@ Ejemplo de manifiesto:
   "skills": ["mermaid-expert"],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail",
-    "preserveLocalOverrides": true
+    "onConflict": "fail"
   }
 }
 ```
@@ -139,7 +137,6 @@ La v1 cubre estos puntos:
 - manifiesto por proyecto consumidor en `.github/ghcopilot-hub.json`
 - sincronización de archivos gestionados hacia el repositorio consumidor
 - detección de drift y diff previo a aplicar cambios
-- preservación de personalizaciones locales en `.github/local-overrides/`
 
 No incluye versionado funcional por proyecto. Cada sincronización apunta al estado actual del hub y registra la
 revisión disponible en las cabeceras managed.
