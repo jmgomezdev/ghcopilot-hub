@@ -82,7 +82,7 @@ fácil de usarlo es tratarlo como un flujo de dos pasos.
 Ese plan se puede entregar como contexto del chat, una URL compartida o memoria de sesión para que la implementación
 retome el trabajo sin volver a planificar.
 
-Consulta la explicación completa en [../../hub/agents/README.md](../../hub/agents/README.md).
+Consulta la explicación completa en [agent-system.md](agent-system.md).
 
 ## Modelo del Proyecto Consumidor
 
@@ -161,6 +161,7 @@ Los mismos scripts también se pueden ejecutar con Bun.
 
 Documentación adicional:
 
+- [agent-system.md](agent-system.md)
 - [architecture.md](architecture.md)
 - [cli.md](cli.md)
 - [create-skill.md](create-skill.md)

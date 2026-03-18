@@ -76,7 +76,7 @@ Use it like this:
    It coordinates discovery and design with agents sShared URL, or session memory, so the implementation phase can resume
    without re-planning.
 
-See the full agent system overview in [hub/agents/README.md](hub/agents/README.md).
+See the full agent system overview in [docs/agent-system.md](docs/agent-system.md).
 
 ## Consumer Project Model
 
@@ -155,6 +155,7 @@ The same scripts can also be run with Bun.
 
 Additional documentation:
 
+- [docs/agent-system.md](docs/agent-system.md)
 - [docs/architecture.md](docs/architecture.md)
 - [docs/cli.md](docs/cli.md)
 - [docs/create-skill.md](docs/create-skill.md)
