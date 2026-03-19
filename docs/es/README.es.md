@@ -15,6 +15,7 @@ un hub central y mantener esa configuración consistente con el tiempo.
 
 Resultados típicos en el consumidor:
 
+- arrancar un repositorio solo con el catálogo compartido de agentes cuando todavía no encaja ningún pack predefinido
 - arrancar un repositorio nuevo con un pack ya preparado como `spa-tanstack` o `node-api`
 - añadir o quitar skills según evoluciona el proyecto sin copiar archivos entre repositorios
 - ver qué packs y skills existen antes de decidir la configuración
@@ -37,7 +38,16 @@ npx ghcopilot-hub@latest list packs
 npx ghcopilot-hub@latest list skills
 ```
 
-Inicializar un proyecto consumidor con un pack:
+Inicializar un proyecto consumidor sin pack predefinido:
+
+```bash
+npx ghcopilot-hub@latest init
+```
+
+Ese arranque orientado a agentes sincroniza todo el catálogo de agentes del hub y solo instala la skill por defecto
+`ghcopilot-hub-consumer`, salvo que también pases opciones `--skill`.
+
+Inicializar un proyecto consumidor con un pack cuando sí encaja uno:
 
 ```bash
 npx ghcopilot-hub@latest init --pack spa-tanstack
@@ -102,7 +112,20 @@ Layout del proyecto consumidor:
 El archivo `.github/ghcopilot-hub.json` es el fichero local de control del proyecto consumidor. No se trata como un
 artefacto gestionado y sincronizado.
 
-Ejemplo de manifiesto:
+Manifiesto mínimo para un proyecto orientado a agentes:
+
+```json
+{
+  "packs": [],
+  "skills": [],
+  "excludeSkills": [],
+  "settings": {
+    "onConflict": "fail"
+  }
+}
+```
+
+Ejemplo de manifiesto con pack:
 
 ```json
 {
@@ -120,6 +143,7 @@ Reglas de resolución:
 - la skill `ghcopilot-hub-consumer` se instala por defecto en cualquier proyecto gestionado por el CLI
 - los ids de skills compartidas del hub usan el prefijo `ghcopilot-hub-` para evitar colisiones con skills del repositorio
 - todos los agentes del hub se copian siempre
+- `packs` es opcional, así que `init` puede usarse como comando de arranque orientado a agentes
 - las skills finales salen de `packs + skills - excludeSkills`
 - `excludeSkills` gana incluso si una skill llega desde un pack
 - los archivos locales viven fuera de los paths gestionados

@@ -14,6 +14,7 @@ central hub, and keep that setup consistent over time.
 
 Typical consumer outcomes:
 
+- Bootstrap a repository with only the shared agent catalog when no predefined pack fits yet
 - Start a new repository with a predefined pack such as `spa-tanstack` or `node-api`
 - Add or remove skills over time without manually copying files across repositories
 - Inspect the available packs and skills before choosing the setup
@@ -36,7 +37,16 @@ npx ghcopilot-hub@latest list packs
 npx ghcopilot-hub@latest list skills
 ```
 
-Initialize a consumer project with a pack:
+Bootstrap a consumer project without a predefined pack:
+
+```bash
+npx ghcopilot-hub@latest init
+```
+
+That agents-first setup syncs the full hub agent catalog and only installs the default
+`ghcopilot-hub-consumer` skill unless you also pass explicit `--skill` options.
+
+Initialize a consumer project with a pack when one fits:
 
 ```bash
 npx ghcopilot-hub@latest init --pack spa-tanstack
@@ -101,7 +111,20 @@ Consumer project layout:
 The manifest file `.github/ghcopilot-hub.json` is the local control file for the consumer project. It is not treated
 as a managed synced artifact.
 
-Example manifest:
+Minimal manifest for an agents-first project:
+
+```json
+{
+  "packs": [],
+  "skills": [],
+  "excludeSkills": [],
+  "settings": {
+    "onConflict": "fail"
+  }
+}
+```
+
+Example manifest with a pack:
 
 ```json
 {
@@ -119,6 +142,7 @@ Resolution rules:
 - the `ghcopilot-hub-consumer` skill is installed by default in every project managed by the CLI
 - shared hub skill ids use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills
 - all hub agents are always copied
+- `packs` is optional, so `init` can be used as an agents-first bootstrap command
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack
 - local files live outside managed paths

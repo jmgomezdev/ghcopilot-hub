@@ -167,16 +167,18 @@ test("doctor detecta drift en un archivo gestionado", async () => {
   assert.match(result.stdout, /\.github\/skills\/ghcopilot-hub-consumer\/SKILL\.md/);
 });
 
-test("init sin pack instala la skill por defecto del hub", async () => {
+test("init sin pack sincroniza agentes y solo la skill por defecto", async () => {
   const projectDir = await createTempProject();
 
   const result = await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
 
   assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, ".github/agents/planner.agent.md"), true);
   assert.equal(
     await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
     true
   );
+  assert.equal(await fileExists(projectDir, ".github/skills/ghcopilot-hub-react/SKILL.md"), false);
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
   assert.deepEqual(manifest.packs, []);

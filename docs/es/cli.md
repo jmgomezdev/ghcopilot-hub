@@ -55,12 +55,19 @@ ghcopilot-hub list --help
 
 ### `init`
 
-Inicializa `.github/ghcopilot-hub.json`, añade packs y skills opcionales, y aplica un sync completo.
+Inicializa `.github/ghcopilot-hub.json`, sincroniza todos los agentes del hub, añade packs y skills opcionales, y
+aplica un sync completo.
 
 ```bash
+ghcopilot-hub init
+ghcopilot-hub init --skill ghcopilot-hub-mermaid-expert
 ghcopilot-hub init --pack spa-tanstack
 ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
 ```
+
+Cuando `init` se ejecuta sin `--pack`, arranca un proyecto orientado a agentes: copia todos los agentes del hub y la
+única skill sincronizada es la `ghcopilot-hub-consumer` por defecto, salvo que también pases una o más opciones
+`--skill`.
 
 ### `update`
 

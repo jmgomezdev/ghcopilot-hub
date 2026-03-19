@@ -3,7 +3,7 @@
 ## Principles
 
 - Single source of truth: the actual metadata lives in the frontmatter of `*.agent.md` and `SKILL.md`.
-- Declarative desired state: each project declares packs, extra skills, and exclusions in
+- Declarative desired state: each project declares optional packs, extra skills, and exclusions in
   `.github/ghcopilot-hub.json`.
 - No functional versioning: the project always syncs against the latest hub state.
 - Minimal traceability: each managed file records the source, revision, and hash of the synced content.
@@ -61,7 +61,7 @@ File: `.github/ghcopilot-hub.json`
 
 Contract:
 
-- `packs`: list of packs to expand
+- `packs`: optional list of packs to expand
 - `skills`: extra skills outside packs
 - `excludeSkills`: skills to remove even if they come from a pack
 - `settings.onConflict`: `fail` or `overwrite`
@@ -70,6 +70,7 @@ Contract:
 Default skill:
 
 - `ghcopilot-hub-consumer` is always installed unless the project explicitly excludes it in `excludeSkills`
+- an empty `packs` array is valid and represents an agents-first project baseline
 
 ## Resolution
 
