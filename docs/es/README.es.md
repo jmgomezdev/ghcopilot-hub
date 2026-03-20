@@ -23,7 +23,8 @@ Resultados típicos en el consumidor:
 - mantener archivos propios del proyecto fuera de las rutas gestionadas
 
 El proyecto consumidor declara su estado deseado en `.github/ghcopilot-hub.json` y el CLI sincroniza ese estado bajo
-`.github/agents/` y `.github/skills/`.
+`.github/agents/` y `.github/skills/`. Cuando `init` arranca un proyecto basado en packs, también genera un
+`AGENTS.md` de base en la raíz del repositorio.
 
 ## Uso Rápido Desde un Proyecto Consumidor
 
@@ -52,6 +53,10 @@ Inicializar un proyecto consumidor con un pack cuando sí encaja uno:
 ```bash
 npx ghcopilot-hub@latest init --pack spa-tanstack
 ```
+
+Ese `init` basado en packs también genera un `AGENTS.md` en raíz. Si el repositorio ya tiene uno, el CLI pregunta si
+debe sobrescribirlo. Si la respuesta es no, crea `AGENTS-base.md` en su lugar. En modo no interactivo, el CLI falla en
+vez de decidir por su cuenta.
 
 Ajustar la selección más adelante:
 
@@ -120,7 +125,8 @@ Manifiesto mínimo para un proyecto orientado a agentes:
   "skills": [],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail"
+    "onConflict": "fail",
+    "bootstrapAgentsTarget": null
   }
 }
 ```
@@ -133,7 +139,8 @@ Ejemplo de manifiesto con pack:
   "skills": ["ghcopilot-hub-mermaid-expert"],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail"
+    "onConflict": "fail",
+    "bootstrapAgentsTarget": "AGENTS.md"
   }
 }
 ```
@@ -144,6 +151,7 @@ Reglas de resolución:
 - los ids de skills compartidas del hub usan el prefijo `ghcopilot-hub-` para evitar colisiones con skills del repositorio
 - todos los agentes del hub se copian siempre
 - `packs` es opcional, así que `init` puede usarse como comando de arranque orientado a agentes
+- el `init` con packs genera `AGENTS.md` en la raíz y guarda la ruta elegida en `settings.bootstrapAgentsTarget`
 - las skills finales salen de `packs + skills - excludeSkills`
 - `excludeSkills` gana incluso si una skill llega desde un pack
 - los archivos locales viven fuera de los paths gestionados

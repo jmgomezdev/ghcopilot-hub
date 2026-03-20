@@ -16,6 +16,10 @@ import { hashContent, parseManagedFile, renderManagedFile } from "./managed-head
 export async function createDesiredFiles({ resolvedState, revision }) {
   const desiredFiles = [];
 
+  for (const file of resolvedState.bootstrapFiles ?? []) {
+    desiredFiles.push(await materializeDesiredFile(file, revision));
+  }
+
   for (const agent of resolvedState.agents) {
     desiredFiles.push(await materializeDesiredFile(agent, revision));
   }

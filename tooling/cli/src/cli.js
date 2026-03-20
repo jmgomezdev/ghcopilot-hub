@@ -1,9 +1,14 @@
 import path from "node:path";
 
 import { loadHubCatalog } from "./lib/catalog-loader.js";
-import { getDefaultHubDir } from "./lib/constants.js";
+import {
+  ALTERNATE_BOOTSTRAP_AGENTS_TARGET,
+  DEFAULT_BOOTSTRAP_AGENTS_TARGET,
+  getDefaultHubDir,
+} from "./lib/constants.js";
 import { CliError } from "./lib/errors.js";
 import { ensureManifest, readManifest, writeManifest } from "./lib/manifest.js";
+import { fromRoot, pathExists } from "./lib/fs-utils.js";
 import { resolveProjectState } from "./lib/resolver.js";
 import { buildSkillIdLookup, canonicalizeSkillId, canonicalizeSkillIds } from "./lib/skill-ids.js";
 import {
@@ -51,19 +56,25 @@ export async function runCli(argv, context) {
 
     switch (parsed.command) {
       case "init":
-        return runInit({ parsed, context, projectDir, catalog });
+        return await runInit({ parsed, context, projectDir, catalog });
       case "update":
-        return runUpdate({ parsed, context, projectDir, catalog });
+        return await runUpdate({ parsed, context, projectDir, catalog });
       case "list":
-        return runList({ parsed, context, catalog });
+        return await runList({ parsed, context, catalog });
       case "diff":
-        return runDiff({ parsed, context, projectDir, catalog });
+        return await runDiff({ parsed, context, projectDir, catalog });
       case "doctor":
-        return runDoctor({ parsed, context, projectDir, catalog });
+        return await runDoctor({ parsed, context, projectDir, catalog });
       case "add":
-        return runMutatingManifestCommand({ action: "add", parsed, context, projectDir, catalog });
+        return await runMutatingManifestCommand({
+          action: "add",
+          parsed,
+          context,
+          projectDir,
+          catalog,
+        });
       case "remove":
-        return runMutatingManifestCommand({
+        return await runMutatingManifestCommand({
           action: "remove",
           parsed,
           context,
@@ -83,6 +94,8 @@ export async function runCli(argv, context) {
 async function runInit({ parsed, context, projectDir, catalog }) {
   const manifest = await ensureManifest(projectDir);
   const skillIdLookup = buildSkillIdLookup(catalog.skills);
+  let resolvedBootstrapAgentsTargetThisRun = false;
+  let bootstrapOverwriteConfirmedThisRun = false;
 
   canonicalizeManifestSkillSelections(manifest, skillIdLookup);
 
@@ -95,6 +108,21 @@ async function runInit({ parsed, context, projectDir, catalog }) {
     (skillId) => !manifest.skills.includes(skillId)
   );
 
+  if (manifest.packs.length > 0 && !manifest.settings.bootstrapAgentsTarget) {
+    const hadExistingBootstrapAgentsFile = await pathExists(
+      fromRoot(projectDir, DEFAULT_BOOTSTRAP_AGENTS_TARGET)
+    );
+    manifest.settings.bootstrapAgentsTarget = await resolveBootstrapAgentsTarget({
+      context,
+      projectDir,
+      json: parsed.options.json,
+    });
+    resolvedBootstrapAgentsTargetThisRun = true;
+    bootstrapOverwriteConfirmedThisRun =
+      hadExistingBootstrapAgentsFile &&
+      manifest.settings.bootstrapAgentsTarget === DEFAULT_BOOTSTRAP_AGENTS_TARGET;
+  }
+
   await writeManifest(projectDir, manifest);
   return syncFromManifest({
     context,
@@ -103,6 +131,9 @@ async function runInit({ parsed, context, projectDir, catalog }) {
     manifest,
     force: parsed.options.force,
     json: parsed.options.json,
+    operation: "init",
+    skipBootstrapOverwritePrompt: resolvedBootstrapAgentsTargetThisRun,
+    bootstrapOverwriteConfirmed: bootstrapOverwriteConfirmedThisRun,
   });
 }
 
@@ -115,6 +146,7 @@ async function runUpdate({ parsed, context, projectDir, catalog }) {
     manifest,
     force: parsed.options.force,
     json: parsed.options.json,
+    operation: "update",
   });
 }
 
@@ -228,11 +260,55 @@ async function runMutatingManifestCommand({ action, parsed, context, projectDir,
     manifest,
     force: parsed.options.force,
     json: parsed.options.json,
+    operation: action,
   });
 }
 
-async function syncFromManifest({ context, projectDir, catalog, manifest, force, json }) {
-  const report = await buildProjectReport({ projectDir, catalog, manifest, force });
+async function syncFromManifest({
+  context,
+  projectDir,
+  catalog,
+  manifest,
+  force,
+  json,
+  operation,
+  skipBootstrapOverwritePrompt = false,
+  bootstrapOverwriteConfirmed = false,
+}) {
+  const effectiveManifest = structuredClone(manifest);
+  let report = await buildProjectReport({
+    projectDir,
+    catalog,
+    manifest: effectiveManifest,
+    force,
+  });
+
+  if (!skipBootstrapOverwritePrompt) {
+    const bootstrapDecision = await maybeResolveBootstrapAgentsOverwrite({
+      context,
+      projectDir,
+      report,
+      manifest: effectiveManifest,
+      force,
+      json,
+      operation,
+    });
+
+    if (bootstrapDecision.targetChanged) {
+      await writeManifest(projectDir, effectiveManifest);
+      report = await buildProjectReport({
+        projectDir,
+        catalog,
+        manifest: effectiveManifest,
+        force,
+      });
+    } else if (bootstrapDecision.overwriteConfirmed) {
+      report = applyBootstrapOverwriteConfirmation(report);
+    }
+  } else if (bootstrapOverwriteConfirmed) {
+    report = applyBootstrapOverwriteConfirmation(report);
+  }
+
   const applicablePlan = getApplicablePlan(report.plan);
 
   if (report.plan.conflicts.length > 0 && !hasPendingOperations(applicablePlan)) {
@@ -266,7 +342,11 @@ async function buildProjectReport({ projectDir, catalog, manifest, force }) {
     effectiveManifest.settings.onConflict = "overwrite";
   }
 
-  const resolvedState = resolveProjectState({ catalog, manifest: effectiveManifest });
+  const resolvedState = resolveProjectState({
+    catalog,
+    manifest: effectiveManifest,
+    includeBootstrapAgents: Boolean(effectiveManifest.settings.bootstrapAgentsTarget),
+  });
   const desiredFiles = await createDesiredFiles({
     resolvedState,
     revision: catalog.revision,
@@ -282,6 +362,7 @@ async function buildProjectReport({ projectDir, catalog, manifest, force }) {
     revision: catalog.revision,
     manifest: effectiveManifest,
     resolved: {
+      bootstrapFiles: resolvedState.bootstrapFiles.map((file) => file.targetRelativePath),
       agents: resolvedState.agents.map((agent) => agent.id),
       skills: resolvedState.skills.map((skill) => skill.id),
     },
@@ -372,6 +453,142 @@ function writeJsonOrText(stream, asJson, payload, text) {
   }
 
   stream.write(`${text}\n`);
+}
+
+async function resolveBootstrapAgentsTarget({ context, projectDir, json }) {
+  if (!(await pathExists(fromRoot(projectDir, DEFAULT_BOOTSTRAP_AGENTS_TARGET)))) {
+    return DEFAULT_BOOTSTRAP_AGENTS_TARGET;
+  }
+
+  return promptForBootstrapAgentsTarget({
+    context,
+    json,
+    operation: "init",
+  });
+}
+
+async function maybeResolveBootstrapAgentsOverwrite({
+  context,
+  projectDir,
+  report,
+  manifest,
+  force,
+  json,
+  operation,
+}) {
+  const currentTarget = manifest.settings.bootstrapAgentsTarget;
+  if (currentTarget !== DEFAULT_BOOTSTRAP_AGENTS_TARGET || force) {
+    return { overwriteConfirmed: false, targetChanged: false };
+  }
+
+  const targetPath = fromRoot(projectDir, DEFAULT_BOOTSTRAP_AGENTS_TARGET);
+  if (!(await pathExists(targetPath))) {
+    return { overwriteConfirmed: false, targetChanged: false };
+  }
+
+  const bootstrapOperation = getBootstrapPlanOperation(report.plan);
+  if (!bootstrapOperation) {
+    return { overwriteConfirmed: false, targetChanged: false };
+  }
+
+  const chosenTarget = await promptForBootstrapAgentsTarget({ context, json, operation });
+  if (chosenTarget === DEFAULT_BOOTSTRAP_AGENTS_TARGET) {
+    return { overwriteConfirmed: true, targetChanged: false };
+  }
+
+  manifest.settings.bootstrapAgentsTarget = chosenTarget;
+  return { overwriteConfirmed: false, targetChanged: true };
+}
+
+async function promptForBootstrapAgentsTarget({ context, json, operation }) {
+  if (json || !context.stdin?.isTTY || typeof context.stdin.once !== "function") {
+    throw new CliError(
+      `Cannot decide how to handle ${DEFAULT_BOOTSTRAP_AGENTS_TARGET} during ${operation} in non-interactive mode. Run the command in a terminal to choose whether to overwrite it or create ${ALTERNATE_BOOTSTRAP_AGENTS_TARGET}.`
+    );
+  }
+
+  context.stdout.write(`${DEFAULT_BOOTSTRAP_AGENTS_TARGET} already exists. Overwrite it? [y/N] `);
+
+  const answer = await readSingleLine(context.stdin);
+  const normalizedAnswer = answer.trim().toLowerCase();
+
+  return normalizedAnswer === "y" || normalizedAnswer === "yes"
+    ? DEFAULT_BOOTSTRAP_AGENTS_TARGET
+    : ALTERNATE_BOOTSTRAP_AGENTS_TARGET;
+}
+
+function readSingleLine(stdin) {
+  return new Promise((resolve, reject) => {
+    const onData = (chunk) => {
+      cleanup();
+      resolve(String(chunk));
+    };
+    const onError = (error) => {
+      cleanup();
+      reject(error);
+    };
+    const cleanup = () => {
+      stdin.removeListener?.("data", onData);
+      stdin.removeListener?.("error", onError);
+      stdin.pause?.();
+    };
+
+    stdin.once("data", onData);
+    stdin.once?.("error", onError);
+    stdin.resume?.();
+  });
+}
+
+function getBootstrapPlanOperation(plan) {
+  for (const groupName of ["update", "conflicts"]) {
+    const operation = plan[groupName].find(
+      (entry) => entry.targetRelativePath === DEFAULT_BOOTSTRAP_AGENTS_TARGET
+    );
+    if (operation) {
+      return { groupName, operation };
+    }
+  }
+
+  return null;
+}
+
+function applyBootstrapOverwriteConfirmation(report) {
+  const bootstrapConflictIndex = report.plan.conflicts.findIndex(
+    (entry) => entry.targetRelativePath === DEFAULT_BOOTSTRAP_AGENTS_TARGET
+  );
+
+  if (bootstrapConflictIndex === -1) {
+    return report;
+  }
+
+  const conflicts = [...report.plan.conflicts];
+  conflicts.splice(bootstrapConflictIndex, 1);
+
+  return {
+    ...report,
+    plan: {
+      ...report.plan,
+      conflicts,
+      update: [
+        ...report.plan.update,
+        {
+          targetRelativePath: DEFAULT_BOOTSTRAP_AGENTS_TARGET,
+          reason: "overwrite confirmed by user",
+        },
+      ].sort((left, right) => left.targetRelativePath.localeCompare(right.targetRelativePath)),
+    },
+    summary: summarizePlan({
+      ...report.plan,
+      conflicts,
+      update: [
+        ...report.plan.update,
+        {
+          targetRelativePath: DEFAULT_BOOTSTRAP_AGENTS_TARGET,
+          reason: "overwrite confirmed by user",
+        },
+      ],
+    }),
+  };
 }
 
 function replacer(key, value) {

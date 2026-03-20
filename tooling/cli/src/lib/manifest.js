@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 
+import { ALTERNATE_BOOTSTRAP_AGENTS_TARGET, DEFAULT_BOOTSTRAP_AGENTS_TARGET } from "./constants.js";
 import { CliError } from "./errors.js";
 import { MANIFEST_PATH } from "./constants.js";
 import { ensureDir, fromRoot, pathExists, readTextIfExists } from "./fs-utils.js";
@@ -11,6 +12,7 @@ export const DEFAULT_MANIFEST = {
   excludeSkills: [],
   settings: {
     onConflict: "fail",
+    bootstrapAgentsTarget: null,
   },
 };
 
@@ -29,11 +31,28 @@ export function normalizeManifest(rawManifest) {
     throw new CliError('Manifest setting "settings.onConflict" must be "fail" or "overwrite".');
   }
 
+  const bootstrapAgentsTarget = normalizeBootstrapAgentsTarget(rawSettings.bootstrapAgentsTarget);
+
   manifest.settings = {
     onConflict,
+    bootstrapAgentsTarget,
   };
 
   return manifest;
+}
+
+function normalizeBootstrapAgentsTarget(value) {
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (value !== DEFAULT_BOOTSTRAP_AGENTS_TARGET && value !== ALTERNATE_BOOTSTRAP_AGENTS_TARGET) {
+    throw new CliError(
+      `Manifest setting "settings.bootstrapAgentsTarget" must be "${DEFAULT_BOOTSTRAP_AGENTS_TARGET}" or "${ALTERNATE_BOOTSTRAP_AGENTS_TARGET}".`
+    );
+  }
+
+  return value;
 }
 
 export async function readManifest(projectDir, options = {}) {

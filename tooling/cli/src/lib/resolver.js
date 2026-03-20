@@ -1,9 +1,10 @@
+import { ALTERNATE_BOOTSTRAP_AGENTS_TARGET, DEFAULT_BOOTSTRAP_AGENTS_TARGET } from "./constants.js";
 import { CliError } from "./errors.js";
 import { buildSkillIdLookup, canonicalizeSkillId, DEFAULT_SKILL_ID } from "./skill-ids.js";
 
 const DEFAULT_SKILL_IDS = [DEFAULT_SKILL_ID];
 
-export function resolveProjectState({ catalog, manifest }) {
+export function resolveProjectState({ catalog, manifest, includeBootstrapAgents = false }) {
   const packMap = new Map(catalog.packs.map((pack) => [pack.name, pack]));
   const skillMap = new Map(catalog.skills.map((skill) => [skill.id, skill]));
   const skillIdLookup = buildSkillIdLookup(catalog.skills);
@@ -50,8 +51,33 @@ export function resolveProjectState({ catalog, manifest }) {
 
   const skills = [...resolvedSkillIds].sort().map((skillId) => skillMap.get(skillId));
 
+  const bootstrapFiles = [];
+  const bootstrapAgentsTarget = manifest.settings.bootstrapAgentsTarget;
+  if (
+    includeBootstrapAgents &&
+    bootstrapAgentsTarget &&
+    bootstrapAgentsTarget !== DEFAULT_BOOTSTRAP_AGENTS_TARGET &&
+    bootstrapAgentsTarget !== ALTERNATE_BOOTSTRAP_AGENTS_TARGET
+  ) {
+    throw new CliError(
+      `Manifest references unknown bootstrap agents target "${bootstrapAgentsTarget}".`
+    );
+  }
+
+  if (bootstrapAgentsTarget) {
+    if (!catalog.bootstrapFiles?.agentsBase) {
+      throw new CliError("Hub is missing the bootstrap AGENTS definition.");
+    }
+
+    bootstrapFiles.push({
+      ...catalog.bootstrapFiles.agentsBase,
+      targetRelativePath: bootstrapAgentsTarget,
+    });
+  }
+
   return {
     agents: catalog.agents,
     skills,
+    bootstrapFiles,
   };
 }

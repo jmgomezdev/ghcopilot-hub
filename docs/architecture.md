@@ -54,7 +54,8 @@ File: `.github/ghcopilot-hub.json`
   "skills": [],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail"
+    "onConflict": "fail",
+    "bootstrapAgentsTarget": null
   }
 }
 ```
@@ -65,6 +66,7 @@ Contract:
 - `skills`: extra skills outside packs
 - `excludeSkills`: skills to remove even if they come from a pack
 - `settings.onConflict`: `fail` or `overwrite`
+- `settings.bootstrapAgentsTarget`: `null`, `AGENTS.md`, or `AGENTS-base.md`
 - hub-managed skill ids must use the `ghcopilot-hub-` prefix
 
 Default skill:
@@ -79,6 +81,7 @@ Formula:
 ```text
 agents = all hub agents
 skills = defaultSkills + packs + skills - excludeSkills
+bootstrapAgents = settings.bootstrapAgentsTarget ? hub/bootstrap/AGENTS.md : none
 ```
 
 The internal hub layout groups these resources under `hub/`.
@@ -94,6 +97,7 @@ Resolution errors:
 
 Source-to-target mapping:
 
+- `hub/bootstrap/AGENTS.md` -> `AGENTS.md` or `AGENTS-base.md` depending on `settings.bootstrapAgentsTarget`
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 
@@ -120,9 +124,15 @@ Possible file states:
 
 Managed paths vs local paths:
 
+- managed when selected by manifest: `AGENTS-base.md`
 - managed: `.github/agents/**`
 - managed: `.github/skills/**`
 - local: `.github/ghcopilot-hub.json`
+
+The root `AGENTS.md` bootstrap file is a special case. It is only introduced by pack-based `init`, and the chosen
+target path is persisted in the manifest so later syncs can keep using the same destination. If a repository already
+has `AGENTS.md`, the CLI asks before overwriting it and can redirect the managed bootstrap output to `AGENTS-base.md`
+instead.
 
 The CLI only scans managed paths for diff, doctor, update, and removal decisions.
 

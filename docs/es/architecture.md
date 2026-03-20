@@ -54,7 +54,8 @@ Archivo: `.github/ghcopilot-hub.json`
   "skills": [],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail"
+    "onConflict": "fail",
+    "bootstrapAgentsTarget": null
   }
 }
 ```
@@ -65,6 +66,7 @@ Contrato:
 - `skills`: skills extra fuera de packs
 - `excludeSkills`: skills a retirar incluso si vienen por pack
 - `settings.onConflict`: `fail` o `overwrite`
+- `settings.bootstrapAgentsTarget`: `null`, `AGENTS.md` o `AGENTS-base.md`
 - los ids de skills gestionadas por el hub deben usar el prefijo `ghcopilot-hub-`
 
 Skill por defecto:
@@ -79,6 +81,7 @@ Fórmula:
 ```text
 agents = todos los agentes del hub
 skills = defaultSkills + packs + skills - excludeSkills
+bootstrapAgents = settings.bootstrapAgentsTarget ? hub/bootstrap/AGENTS.md : none
 ```
 
 El layout interno del hub agrupa estos recursos bajo `hub/`.
@@ -94,6 +97,7 @@ Errores de resolución:
 
 Mapa origen a destino:
 
+- `hub/bootstrap/AGENTS.md` -> `AGENTS.md` o `AGENTS-base.md` según `settings.bootstrapAgentsTarget`
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 
@@ -120,9 +124,14 @@ Estados posibles por archivo:
 
 Rutas gestionadas frente a rutas locales:
 
+- gestionada cuando la selecciona el manifiesto: `AGENTS-base.md`
 - gestionada: `.github/agents/**`
 - gestionada: `.github/skills/**`
 - local: `.github/ghcopilot-hub.json`
+
+El bootstrap `AGENTS.md` en raíz es un caso especial. Solo aparece con `init` basado en packs, y la ruta elegida se
+guarda en el manifiesto para que sincronizaciones posteriores sigan usando el mismo destino. Si el repositorio ya tiene
+`AGENTS.md`, el CLI pregunta antes de sobrescribirlo y puede redirigir el archivo gestionado a `AGENTS-base.md`.
 
 El CLI sólo inspecciona las rutas gestionadas para diff, doctor, update y decisiones de borrado.
 

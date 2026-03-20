@@ -69,6 +69,17 @@ Cuando `init` se ejecuta sin `--pack`, arranca un proyecto orientado a agentes: 
 única skill sincronizada es la `ghcopilot-hub-consumer` por defecto, salvo que también pases una o más opciones
 `--skill`.
 
+Cuando `init` se ejecuta con al menos un pack, también genera un `AGENTS.md` de base a partir de
+`hub/bootstrap/AGENTS.md`. Esa ruta de destino se persiste en `settings.bootstrapAgentsTarget` dentro del manifiesto.
+
+Si el repositorio consumidor ya tiene `AGENTS.md`, el CLI pregunta si debe sobrescribirlo:
+
+- `yes`: mantiene `AGENTS.md` como destino gestionado
+- `no`: crea `AGENTS-base.md` y persiste ese destino en su lugar
+
+Si el comando se ejecuta sin terminal interactiva, o con `--json`, el CLI falla en vez de elegir un destino por su
+cuenta.
+
 ### `update`
 
 Recalcula el estado deseado desde el manifiesto y sincroniza el proyecto contra el estado actual del hub.
@@ -77,6 +88,10 @@ Recalcula el estado deseado desde el manifiesto y sincroniza el proyecto contra 
 ghcopilot-hub update
 ghcopilot-hub update --force
 ```
+
+Si el manifiesto ya gestiona el bootstrap de agentes mediante `settings.bootstrapAgentsTarget`, `update` mantiene ese
+archivo sincronizado también. Cuando el destino es `AGENTS.md` y la ejecución va a sobrescribir un `AGENTS.md`
+existente en raíz, el CLI vuelve a preguntar antes de reemplazarlo, salvo que se use `--force`.
 
 ### `list`
 
@@ -149,6 +164,9 @@ ghcopilot-hub doctor --hub-only
 - `--force`: cambia `onConflict` a `overwrite` para esa ejecución
 - `--json`: emite salida estructurada
 - `--help`: imprime la ayuda del CLI en terminal
+
+`--json` desactiva el prompt interactivo del bootstrap de AGENTS. Si un `init` con pack o un `update` del bootstrap
+necesita esa decisión, el comando termina con exit code `1` y un error explícito.
 
 Si hay conflictos sólo en algunas rutas managed, `init`, `update`, `add` y `remove` aplican igualmente los cambios no
 conflictivos y terminan con exit code `2` para señalar que quedan conflictos por resolver.

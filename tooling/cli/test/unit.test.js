@@ -50,6 +50,14 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
     agents: [{ id: "planner" }],
     skills: [{ id: "ghcopilot-hub-consumer" }, { id: "ghcopilot-hub-typescript" }],
     packs: [{ name: "base-web", skills: ["ghcopilot-hub-typescript"] }],
+    bootstrapFiles: {
+      agentsBase: {
+        id: "agents-base",
+        sourcePath: "hub/bootstrap/AGENTS.md",
+        sourceRelativePath: "hub/bootstrap/AGENTS.md",
+        targetRelativePath: "AGENTS.md",
+      },
+    },
   };
 
   const state = resolveProjectState({
@@ -66,6 +74,46 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
     state.skills.map((skill) => skill.id),
     ["ghcopilot-hub-typescript"]
   );
+  assert.deepEqual(state.bootstrapFiles, []);
+});
+
+test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija", () => {
+  const catalog = {
+    agents: [{ id: "planner" }],
+    skills: [{ id: "ghcopilot-hub-consumer" }],
+    packs: [],
+    bootstrapFiles: {
+      agentsBase: {
+        id: "agents-base",
+        sourcePath: "hub/bootstrap/AGENTS.md",
+        sourceRelativePath: "hub/bootstrap/AGENTS.md",
+        targetRelativePath: "AGENTS.md",
+      },
+    },
+  };
+
+  const state = resolveProjectState({
+    catalog,
+    manifest: {
+      packs: [],
+      skills: [],
+      excludeSkills: [],
+      settings: {
+        onConflict: "fail",
+        bootstrapAgentsTarget: "AGENTS-base.md",
+      },
+    },
+    includeBootstrapAgents: true,
+  });
+
+  assert.deepEqual(state.bootstrapFiles, [
+    {
+      id: "agents-base",
+      sourcePath: "hub/bootstrap/AGENTS.md",
+      sourceRelativePath: "hub/bootstrap/AGENTS.md",
+      targetRelativePath: "AGENTS-base.md",
+    },
+  ]);
 });
 
 test("managed header preserva el cuerpo y expone el hash de contenido", () => {

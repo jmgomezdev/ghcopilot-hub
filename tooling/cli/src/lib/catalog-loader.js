@@ -3,7 +3,7 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
-import { getHubContentPath, HUB_SKILL_PREFIX } from "./constants.js";
+import { BOOTSTRAP_AGENTS_SOURCE, getHubContentPath, HUB_SKILL_PREFIX } from "./constants.js";
 import { CliError } from "./errors.js";
 import { parseFrontmatter, requireMetadataField } from "./frontmatter.js";
 import { pathExists, relativeFrom, walkFiles } from "./fs-utils.js";
@@ -12,10 +12,11 @@ const execFileAsync = promisify(execFile);
 
 export async function loadHubCatalog(hubDir) {
   const hubContentDir = getHubContentPath(hubDir);
-  const [agents, skills, packs, revision] = await Promise.all([
+  const [agents, skills, packs, bootstrapFiles, revision] = await Promise.all([
     loadAgents(hubDir, hubContentDir),
     loadSkills(hubDir, hubContentDir),
     loadPacks(hubDir, hubContentDir),
+    loadBootstrapFiles(hubDir),
     resolveRevision(hubDir),
   ]);
 
@@ -33,7 +34,25 @@ export async function loadHubCatalog(hubDir) {
     agents,
     skills,
     packs,
+    bootstrapFiles,
     revision,
+  };
+}
+
+async function loadBootstrapFiles(hubDir) {
+  const sourcePath = path.join(hubDir, ...BOOTSTRAP_AGENTS_SOURCE.split("/"));
+
+  if (!(await pathExists(sourcePath))) {
+    throw new CliError(`Hub is missing bootstrap file "${BOOTSTRAP_AGENTS_SOURCE}".`);
+  }
+
+  return {
+    agentsBase: {
+      id: "agents-base",
+      sourcePath,
+      sourceRelativePath: BOOTSTRAP_AGENTS_SOURCE,
+      targetRelativePath: "AGENTS.md",
+    },
   };
 }
 

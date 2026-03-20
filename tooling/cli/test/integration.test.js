@@ -6,6 +6,7 @@ import test from "node:test";
 import { renderManagedFile } from "../src/lib/managed-header.js";
 
 import {
+  createMockStdin,
   createTempProject,
   fileExists,
   HUB_DIR,
@@ -27,6 +28,7 @@ test("init materializa agentes y skills del pack", async () => {
   ]);
 
   assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, "AGENTS.md"), true);
   assert.equal(await fileExists(projectDir, ".github/ghcopilot-hub.json"), true);
   assert.equal(await fileExists(projectDir, ".github/agents/planner.agent.md"), true);
   assert.equal(
@@ -47,7 +49,10 @@ test("init materializa agentes y skills del pack", async () => {
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
   assert.deepEqual(manifest.packs, ["spa-tanstack"]);
-  assert.deepEqual(manifest.settings, { onConflict: "fail" });
+  assert.deepEqual(manifest.settings, {
+    onConflict: "fail",
+    bootstrapAgentsTarget: "AGENTS.md",
+  });
 });
 
 test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync", async () => {
@@ -173,6 +178,7 @@ test("init sin pack sincroniza agentes y solo la skill por defecto", async () =>
   const result = await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR]);
 
   assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, "AGENTS.md"), false);
   assert.equal(await fileExists(projectDir, ".github/agents/planner.agent.md"), true);
   assert.equal(
     await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
@@ -183,6 +189,107 @@ test("init sin pack sincroniza agentes y solo la skill por defecto", async () =>
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
   assert.deepEqual(manifest.packs, []);
   assert.deepEqual(manifest.skills, []);
+  assert.deepEqual(manifest.settings, {
+    onConflict: "fail",
+    bootstrapAgentsTarget: null,
+  });
+});
+
+test("init con AGENTS existente y rechazo crea AGENTS-base", async () => {
+  const projectDir = await createTempProject();
+  await fs.writeFile(path.join(projectDir, "AGENTS.md"), "# Local\n", "utf8");
+
+  const result = await runCliCapture(
+    ["init", "--pack", "base-web", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
+    {
+      stdin: createMockStdin(["n"]),
+    }
+  );
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await readProjectFile(projectDir, "AGENTS.md"), "# Local\n");
+  assert.equal(await fileExists(projectDir, "AGENTS-base.md"), true);
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.settings, {
+    onConflict: "fail",
+    bootstrapAgentsTarget: "AGENTS-base.md",
+  });
+});
+
+test("init con AGENTS existente y confirmacion sobrescribe AGENTS", async () => {
+  const projectDir = await createTempProject();
+  await fs.writeFile(path.join(projectDir, "AGENTS.md"), "# Local\n", "utf8");
+
+  const result = await runCliCapture(
+    ["init", "--pack", "base-web", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
+    {
+      stdin: createMockStdin(["y"]),
+    }
+  );
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  const content = await readProjectFile(projectDir, "AGENTS.md");
+  assert.match(content, /managed-by: ghcopilot-hub/);
+  assert.equal(await fileExists(projectDir, "AGENTS-base.md"), false);
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.settings, {
+    onConflict: "fail",
+    bootstrapAgentsTarget: "AGENTS.md",
+  });
+});
+
+test("init falla en modo no interactivo si AGENTS ya existe", async () => {
+  const projectDir = await createTempProject();
+  await fs.writeFile(path.join(projectDir, "AGENTS.md"), "# Local\n", "utf8");
+
+  const result = await runCliCapture([
+    "init",
+    "--pack",
+    "base-web",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  assert.equal(result.exitCode, 1);
+  assert.match(
+    result.stderr,
+    /Cannot decide how to handle AGENTS\.md during init in non-interactive mode/
+  );
+  assert.equal(await fileExists(projectDir, "AGENTS-base.md"), false);
+});
+
+test("update con AGENTS desviado crea AGENTS-base cuando el usuario rechaza sobrescribir", async () => {
+  const projectDir = await createTempProject();
+
+  await runCliCapture([
+    "init",
+    "--pack",
+    "base-web",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  await fs.writeFile(path.join(projectDir, "AGENTS.md"), "# Local drift\n", "utf8");
+
+  const result = await runCliCapture(
+    ["update", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
+    {
+      stdin: createMockStdin(["n"]),
+    }
+  );
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await readProjectFile(projectDir, "AGENTS.md"), "# Local drift\n");
+  assert.equal(await fileExists(projectDir, "AGENTS-base.md"), true);
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.equal(manifest.settings.bootstrapAgentsTarget, "AGENTS-base.md");
 });
 
 test("update elimina archivos legacy previamente gestionados", async () => {

@@ -31,6 +31,7 @@ export async function runCliCapture(args, options = {}) {
 
   const exitCode = await runCli(args, {
     cwd: options.cwd ?? HUB_DIR,
+    stdin: options.stdin ?? createMockStdin([], { isTTY: false }),
     stdout: {
       write(chunk) {
         stdout += chunk;
@@ -44,4 +45,31 @@ export async function runCliCapture(args, options = {}) {
   });
 
   return { exitCode, stdout, stderr };
+}
+
+export function createMockStdin(lines = [], options = {}) {
+  const queue = [...lines].map((line) => (line.endsWith("\n") ? line : `${line}\n`));
+  const listeners = new Map();
+
+  return {
+    isTTY: options.isTTY ?? true,
+    once(event, callback) {
+      listeners.set(event, callback);
+    },
+    removeListener(event, callback) {
+      if (listeners.get(event) === callback) {
+        listeners.delete(event);
+      }
+    },
+    resume() {
+      const callback = listeners.get("data");
+      if (!callback || queue.length === 0) {
+        return;
+      }
+
+      listeners.delete("data");
+      setImmediate(() => callback(queue.shift()));
+    },
+    pause() {},
+  };
 }

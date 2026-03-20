@@ -67,6 +67,17 @@ ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
 When `init` runs without `--pack`, it bootstraps an agents-first project: every hub agent is copied, and the only
 synced skill is the default `ghcopilot-hub-consumer` skill unless you also pass one or more `--skill` options.
 
+When `init` runs with at least one pack, it also bootstraps a root `AGENTS.md` from `hub/bootstrap/AGENTS.md`.
+That target path is persisted in `settings.bootstrapAgentsTarget` inside the manifest.
+
+If the consumer repository already has `AGENTS.md`, the CLI asks whether it should overwrite that file:
+
+- `yes`: keep `AGENTS.md` as the managed bootstrap target
+- `no`: create `AGENTS-base.md` and persist that target instead
+
+If the command is running without an interactive terminal, or with `--json`, the CLI fails instead of choosing a
+target automatically.
+
 ### `update`
 
 Recomputes the desired state from the manifest and syncs the project against the current hub state.
@@ -75,6 +86,10 @@ Recomputes the desired state from the manifest and syncs the project against the
 ghcopilot-hub update
 ghcopilot-hub update --force
 ```
+
+If the manifest already manages bootstrap agents through `settings.bootstrapAgentsTarget`, `update` keeps that file in
+sync too. When the target is `AGENTS.md` and the run would overwrite an existing root `AGENTS.md`, the CLI asks again
+before replacing it unless `--force` is used.
 
 ### `list`
 
@@ -147,6 +162,9 @@ ghcopilot-hub doctor --hub-only
 - `--force`: overrides `onConflict` to `overwrite` for that run
 - `--json`: emits structured output
 - `--help`: prints the CLI help to the terminal
+
+`--json` disables the interactive AGENTS bootstrap prompt. If a pack-based `init` or bootstrap `update` would need
+that decision, the command exits with code `1` and an explicit error.
 
 If there are conflicts only on some managed paths, `init`, `update`, `add`, and `remove` still apply the non-conflicting
 changes and exit with code `2` to indicate there are conflicts left to resolve.

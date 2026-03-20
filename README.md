@@ -22,7 +22,8 @@ Typical consumer outcomes:
 - Keep project-specific files outside managed paths
 
 The consumer project declares its desired state in `.github/ghcopilot-hub.json`, and the CLI syncs that state into
-`.github/agents/` and `.github/skills/`.
+`.github/agents/` and `.github/skills/`. When `init` starts a pack-based project, it also bootstraps a root `AGENTS.md`
+file from the hub.
 
 ## Quick Start From a Consumer Project
 
@@ -51,6 +52,10 @@ Initialize a consumer project with a pack when one fits:
 ```bash
 npx ghcopilot-hub@latest init --pack spa-tanstack
 ```
+
+Pack-based `init` also bootstraps a root `AGENTS.md`. If the repository already has one, the CLI asks whether it
+should overwrite that file. If the answer is no, it writes `AGENTS-base.md` instead. In non-interactive mode, that
+decision must be resolved manually because the CLI will fail instead of guessing.
 
 Adjust the selection later:
 
@@ -119,7 +124,8 @@ Minimal manifest for an agents-first project:
   "skills": [],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail"
+    "onConflict": "fail",
+    "bootstrapAgentsTarget": null
   }
 }
 ```
@@ -132,7 +138,8 @@ Example manifest with a pack:
   "skills": ["ghcopilot-hub-mermaid-expert"],
   "excludeSkills": [],
   "settings": {
-    "onConflict": "fail"
+    "onConflict": "fail",
+    "bootstrapAgentsTarget": "AGENTS.md"
   }
 }
 ```
@@ -143,6 +150,7 @@ Resolution rules:
 - shared hub skill ids use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills
 - all hub agents are always copied
 - `packs` is optional, so `init` can be used as an agents-first bootstrap command
+- pack-based `init` bootstraps `AGENTS.md` in the repository root and persists the chosen target path in `settings.bootstrapAgentsTarget`
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack
 - local files live outside managed paths
