@@ -42,7 +42,8 @@
 }
 ```
 
-`name` must be unique, and every referenced skill must exist under `hub/skills/`.
+`name` must be unique, every referenced skill must exist under `hub/skills/`, and every pack must ship a companion
+bootstrap file at `hub/packs/<pack-name>.agents.md`.
 
 ## Project Manifest
 
@@ -62,7 +63,7 @@ File: `.github/ghcopilot-hub.json`
 
 Contract:
 
-- `packs`: optional list of packs to expand
+- `packs`: optional list with at most one pack to expand
 - `skills`: extra skills outside packs
 - `excludeSkills`: skills to remove even if they come from a pack
 - `settings.onConflict`: `fail` or `overwrite`
@@ -81,7 +82,7 @@ Formula:
 ```text
 agents = all hub agents
 skills = defaultSkills + packs + skills - excludeSkills
-bootstrapAgents = settings.bootstrapAgentsTarget ? hub/bootstrap/AGENTS.md : none
+bootstrapAgents = settings.bootstrapAgentsTarget ? selectedPack.agents.md : none
 ```
 
 The internal hub layout groups these resources under `hub/`.
@@ -97,7 +98,7 @@ Resolution errors:
 
 Source-to-target mapping:
 
-- `hub/bootstrap/AGENTS.md` -> `AGENTS.md` or `AGENTS-base.md` depending on `settings.bootstrapAgentsTarget`
+- `hub/packs/<pack-name>.agents.md` -> `AGENTS.md` or `AGENTS-base.md` depending on `settings.bootstrapAgentsTarget`
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 
@@ -129,10 +130,10 @@ Managed paths vs local paths:
 - managed: `.github/skills/**`
 - local: `.github/ghcopilot-hub.json`
 
-The root `AGENTS.md` bootstrap file is a special case. It is only introduced by pack-based `init`, and the chosen
-target path is persisted in the manifest so later syncs can keep using the same destination. If a repository already
-has `AGENTS.md`, the CLI asks before overwriting it and can redirect the managed bootstrap output to `AGENTS-base.md`
-instead.
+The root `AGENTS.md` bootstrap file is a special case. It is only introduced by pack-based `init`, comes from the
+selected pack's companion AGENTS file, and the chosen target path is persisted in the manifest so later syncs can keep
+using the same destination. If a repository already has `AGENTS.md`, the CLI asks before overwriting it and can
+redirect the managed bootstrap output to `AGENTS-base.md` instead.
 
 The CLI only scans managed paths for diff, doctor, update, and removal decisions.
 

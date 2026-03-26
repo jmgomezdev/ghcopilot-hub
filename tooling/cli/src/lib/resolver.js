@@ -8,6 +8,7 @@ export function resolveProjectState({ catalog, manifest, includeBootstrapAgents 
   const packMap = new Map(catalog.packs.map((pack) => [pack.name, pack]));
   const skillMap = new Map(catalog.skills.map((skill) => [skill.id, skill]));
   const skillIdLookup = buildSkillIdLookup(catalog.skills);
+  const selectedPackName = manifest.packs[0] ?? null;
 
   const resolvedSkillIds = new Set();
 
@@ -20,10 +21,10 @@ export function resolveProjectState({ catalog, manifest, includeBootstrapAgents 
     resolvedSkillIds.add(canonicalSkillId);
   }
 
-  for (const packName of manifest.packs) {
-    const pack = packMap.get(packName);
+  if (selectedPackName) {
+    const pack = packMap.get(selectedPackName);
     if (!pack) {
-      throw new CliError(`Manifest references unknown pack "${packName}".`);
+      throw new CliError(`Manifest references unknown pack "${selectedPackName}".`);
     }
 
     for (const skillId of pack.skills) {
@@ -65,12 +66,19 @@ export function resolveProjectState({ catalog, manifest, includeBootstrapAgents 
   }
 
   if (bootstrapAgentsTarget) {
-    if (!catalog.bootstrapFiles?.agentsBase) {
-      throw new CliError("Hub is missing the bootstrap AGENTS definition.");
+    if (!selectedPackName) {
+      throw new CliError(
+        'Manifest setting "settings.bootstrapAgentsTarget" requires exactly one selected pack.'
+      );
+    }
+
+    const selectedPack = packMap.get(selectedPackName);
+    if (!selectedPack?.bootstrapFile) {
+      throw new CliError(`Pack "${selectedPackName}" is missing its bootstrap AGENTS definition.`);
     }
 
     bootstrapFiles.push({
-      ...catalog.bootstrapFiles.agentsBase,
+      ...selectedPack.bootstrapFile,
       targetRelativePath: bootstrapAgentsTarget,
     });
   }

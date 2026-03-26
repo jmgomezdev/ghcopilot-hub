@@ -21,6 +21,9 @@ export function normalizeManifest(rawManifest) {
   const raw = rawManifest ?? {};
 
   manifest.packs = normalizeStringArray(raw.packs, "packs");
+  if (manifest.packs.length > 1) {
+    throw new CliError('Manifest field "packs" supports only one pack per project.');
+  }
   manifest.skills = normalizeStringArray(raw.skills, "skills");
   manifest.excludeSkills = normalizeStringArray(raw.excludeSkills, "excludeSkills");
 

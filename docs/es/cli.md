@@ -55,7 +55,7 @@ ghcopilot-hub list --help
 
 ### `init`
 
-Inicializa `.github/ghcopilot-hub.json`, sincroniza todos los agentes del hub, añade packs y skills opcionales, y
+Inicializa `.github/ghcopilot-hub.json`, sincroniza todos los agentes del hub, añade como máximo un pack y skills opcionales, y
 aplica un sync completo.
 
 ```bash
@@ -69,8 +69,9 @@ Cuando `init` se ejecuta sin `--pack`, arranca un proyecto orientado a agentes: 
 única skill sincronizada es la `ghcopilot-hub-consumer` por defecto, salvo que también pases una o más opciones
 `--skill`.
 
-Cuando `init` se ejecuta con al menos un pack, también genera un `AGENTS.md` de base a partir de
-`hub/bootstrap/AGENTS.md`. Esa ruta de destino se persiste en `settings.bootstrapAgentsTarget` dentro del manifiesto.
+Cuando `init` se ejecuta con un pack, también genera un `AGENTS.md` de base a partir del archivo compañero del pack en
+`hub/packs/<pack-name>.agents.md`. Un proyecto puede seleccionar como máximo un pack, y esa ruta de destino se
+persiste en `settings.bootstrapAgentsTarget` dentro del manifiesto.
 
 Si el repositorio consumidor ya tiene `AGENTS.md`, el CLI pregunta si debe sobrescribirlo:
 
@@ -90,7 +91,7 @@ ghcopilot-hub update --force
 ```
 
 Si el manifiesto ya gestiona el bootstrap de agentes mediante `settings.bootstrapAgentsTarget`, `update` mantiene ese
-archivo sincronizado también. Cuando el destino es `AGENTS.md` y la ejecución va a sobrescribir un `AGENTS.md`
+archivo base específico del pack sincronizado también. Cuando el destino es `AGENTS.md` y la ejecución va a sobrescribir un `AGENTS.md`
 existente en raíz, el CLI vuelve a preguntar antes de reemplazarlo, salvo que se use `--force`.
 
 ### `list`
@@ -115,6 +116,8 @@ Añade un pack o una skill al manifiesto y sincroniza.
 ghcopilot-hub add pack nextjs-ssr
 ghcopilot-hub add skill ghcopilot-hub-mermaid-expert
 ```
+
+Los proyectos sólo admiten un pack. Si el proyecto ya tiene otro distinto, `add pack` falla hasta que se elimine.
 
 ### `remove`
 

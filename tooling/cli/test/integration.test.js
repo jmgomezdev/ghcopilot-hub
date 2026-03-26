@@ -103,6 +103,25 @@ test("list packs --json devuelve el catálogo filtrado", async () => {
   assert.equal("skills" in payload, false);
 });
 
+test("init falla si se intentan seleccionar varios packs", async () => {
+  const projectDir = await createTempProject();
+
+  const result = await runCliCapture([
+    "init",
+    "--pack",
+    "base-web",
+    "--pack",
+    "spa-tanstack",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  assert.equal(result.exitCode, 1);
+  assert.match(result.stderr, /supports only one pack per project/);
+});
+
 test("--help muestra la ayuda por stdout y termina con exit code 0", async () => {
   const result = await runCliCapture(["--help"]);
 
@@ -231,6 +250,7 @@ test("init con AGENTS existente y confirmacion sobrescribe AGENTS", async () => 
   assert.equal(result.exitCode, 0, result.stderr);
   const content = await readProjectFile(projectDir, "AGENTS.md");
   assert.match(content, /managed-by: ghcopilot-hub/);
+  assert.match(content, /Base workflow for repositories initialized with the base-web pack/);
   assert.equal(await fileExists(projectDir, "AGENTS-base.md"), false);
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
@@ -290,6 +310,33 @@ test("update con AGENTS desviado crea AGENTS-base cuando el usuario rechaza sobr
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
   assert.equal(manifest.settings.bootstrapAgentsTarget, "AGENTS-base.md");
+});
+
+test("add pack falla si el proyecto ya tiene otro pack", async () => {
+  const projectDir = await createTempProject();
+
+  await runCliCapture([
+    "init",
+    "--pack",
+    "base-web",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  const result = await runCliCapture([
+    "add",
+    "pack",
+    "node-api",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  assert.equal(result.exitCode, 1);
+  assert.match(result.stderr, /Project already uses pack "base-web"/);
 });
 
 test("update elimina archivos legacy previamente gestionados", async () => {

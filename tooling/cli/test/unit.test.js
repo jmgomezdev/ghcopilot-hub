@@ -15,18 +15,26 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
       { id: "ghcopilot-hub-mermaid-expert" },
     ],
     packs: [
-      { name: "base-web", skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-testing"] },
-      { name: "spa", skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-react"] },
+      {
+        name: "base-web",
+        skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-testing"],
+        bootstrapFile: {
+          id: "base-web-agents-base",
+          sourcePath: "hub/packs/base-web.agents.md",
+          sourceRelativePath: "hub/packs/base-web.agents.md",
+          targetRelativePath: "AGENTS.md",
+        },
+      },
     ],
   };
 
   const state = resolveProjectState({
     catalog,
     manifest: {
-      packs: ["base-web", "spa"],
+      packs: ["base-web"],
       skills: ["mermaid-expert"],
       excludeSkills: ["testing"],
-      settings: { onConflict: "fail" },
+      settings: { onConflict: "fail", bootstrapAgentsTarget: null },
     },
   });
 
@@ -36,12 +44,7 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
   );
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
-    [
-      "ghcopilot-hub-consumer",
-      "ghcopilot-hub-mermaid-expert",
-      "ghcopilot-hub-react",
-      "ghcopilot-hub-typescript",
-    ]
+    ["ghcopilot-hub-consumer", "ghcopilot-hub-mermaid-expert", "ghcopilot-hub-typescript"]
   );
 });
 
@@ -49,15 +52,18 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
   const catalog = {
     agents: [{ id: "planner" }],
     skills: [{ id: "ghcopilot-hub-consumer" }, { id: "ghcopilot-hub-typescript" }],
-    packs: [{ name: "base-web", skills: ["ghcopilot-hub-typescript"] }],
-    bootstrapFiles: {
-      agentsBase: {
-        id: "agents-base",
-        sourcePath: "hub/bootstrap/AGENTS.md",
-        sourceRelativePath: "hub/bootstrap/AGENTS.md",
-        targetRelativePath: "AGENTS.md",
+    packs: [
+      {
+        name: "base-web",
+        skills: ["ghcopilot-hub-typescript"],
+        bootstrapFile: {
+          id: "base-web-agents-base",
+          sourcePath: "hub/packs/base-web.agents.md",
+          sourceRelativePath: "hub/packs/base-web.agents.md",
+          targetRelativePath: "AGENTS.md",
+        },
       },
-    },
+    ],
   };
 
   const state = resolveProjectState({
@@ -66,7 +72,7 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
       packs: ["base-web"],
       skills: [],
       excludeSkills: ["ghcopilot-hub-consumer"],
-      settings: { onConflict: "fail" },
+      settings: { onConflict: "fail", bootstrapAgentsTarget: null },
     },
   });
 
@@ -81,21 +87,24 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
   const catalog = {
     agents: [{ id: "planner" }],
     skills: [{ id: "ghcopilot-hub-consumer" }],
-    packs: [],
-    bootstrapFiles: {
-      agentsBase: {
-        id: "agents-base",
-        sourcePath: "hub/bootstrap/AGENTS.md",
-        sourceRelativePath: "hub/bootstrap/AGENTS.md",
-        targetRelativePath: "AGENTS.md",
+    packs: [
+      {
+        name: "base-web",
+        skills: [],
+        bootstrapFile: {
+          id: "base-web-agents-base",
+          sourcePath: "hub/packs/base-web.agents.md",
+          sourceRelativePath: "hub/packs/base-web.agents.md",
+          targetRelativePath: "AGENTS.md",
+        },
       },
-    },
+    ],
   };
 
   const state = resolveProjectState({
     catalog,
     manifest: {
-      packs: [],
+      packs: ["base-web"],
       skills: [],
       excludeSkills: [],
       settings: {
@@ -108,9 +117,9 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
 
   assert.deepEqual(state.bootstrapFiles, [
     {
-      id: "agents-base",
-      sourcePath: "hub/bootstrap/AGENTS.md",
-      sourceRelativePath: "hub/bootstrap/AGENTS.md",
+      id: "base-web-agents-base",
+      sourcePath: "hub/packs/base-web.agents.md",
+      sourceRelativePath: "hub/packs/base-web.agents.md",
       targetRelativePath: "AGENTS-base.md",
     },
   ]);

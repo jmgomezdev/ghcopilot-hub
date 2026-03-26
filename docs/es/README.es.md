@@ -16,15 +16,15 @@ un hub central y mantener esa configuración consistente con el tiempo.
 Resultados típicos en el consumidor:
 
 - arrancar un repositorio solo con el catálogo compartido de agentes cuando todavía no encaja ningún pack predefinido
-- arrancar un repositorio nuevo con un pack ya preparado como `spa-tanstack` o `node-api`
+- arrancar un repositorio nuevo con un único pack ya preparado como `spa-tanstack` o `node-api`
 - añadir o quitar skills según evoluciona el proyecto sin copiar archivos entre repositorios
 - ver qué packs y skills existen antes de decidir la configuración
 - revisar el drift antes de actualizar archivos gestionados
 - mantener archivos propios del proyecto fuera de las rutas gestionadas
 
 El proyecto consumidor declara su estado deseado en `.github/ghcopilot-hub.json` y el CLI sincroniza ese estado bajo
-`.github/agents/` y `.github/skills/`. Cuando `init` arranca un proyecto basado en packs, también genera un
-`AGENTS.md` de base en la raíz del repositorio.
+`.github/agents/` y `.github/skills/`. Cuando `init` arranca un proyecto basado en pack, también genera un
+`AGENTS.md` de base en la raíz a partir del archivo propio de ese pack.
 
 ## Uso Rápido Desde un Proyecto Consumidor
 
@@ -54,9 +54,10 @@ Inicializar un proyecto consumidor con un pack cuando sí encaja uno:
 npx ghcopilot-hub@latest init --pack spa-tanstack
 ```
 
-Ese `init` basado en packs también genera un `AGENTS.md` en raíz. Si el repositorio ya tiene uno, el CLI pregunta si
-debe sobrescribirlo. Si la respuesta es no, crea `AGENTS-base.md` en su lugar. En modo no interactivo, el CLI falla en
-vez de decidir por su cuenta.
+Ese `init` basado en pack también genera un `AGENTS.md` en raíz usando el archivo propio del pack seleccionado. Un
+proyecto sólo puede tener un pack. Si el repositorio ya tiene uno, el CLI pregunta si debe sobrescribirlo. Si la
+respuesta es no, crea `AGENTS-base.md` en su lugar. En modo no interactivo, el CLI falla en vez de decidir por su
+cuenta.
 
 Ajustar la selección más adelante:
 
@@ -151,7 +152,8 @@ Reglas de resolución:
 - los ids de skills compartidas del hub usan el prefijo `ghcopilot-hub-` para evitar colisiones con skills del repositorio
 - todos los agentes del hub se copian siempre
 - `packs` es opcional, así que `init` puede usarse como comando de arranque orientado a agentes
-- el `init` con packs genera `AGENTS.md` en la raíz y guarda la ruta elegida en `settings.bootstrapAgentsTarget`
+- un proyecto puede seleccionar como máximo un pack
+- el `init` con pack genera `AGENTS.md` en la raíz a partir del archivo propio del pack y guarda la ruta elegida en `settings.bootstrapAgentsTarget`
 - las skills finales salen de `packs + skills - excludeSkills`
 - `excludeSkills` gana incluso si una skill llega desde un pack
 - los archivos locales viven fuera de los paths gestionados

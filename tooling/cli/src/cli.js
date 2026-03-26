@@ -99,7 +99,11 @@ async function runInit({ parsed, context, projectDir, catalog }) {
 
   canonicalizeManifestSkillSelections(manifest, skillIdLookup);
 
-  manifest.packs = mergeUnique(manifest.packs, parsed.options.packs ?? []);
+  manifest.packs = resolveNextPackSelection({
+    currentPacks: manifest.packs,
+    requestedPacks: parsed.options.packs ?? [],
+    action: "init",
+  });
   manifest.skills = mergeUnique(
     manifest.skills,
     canonicalizeSkillIds(parsed.options.skills ?? [], skillIdLookup)
@@ -107,6 +111,10 @@ async function runInit({ parsed, context, projectDir, catalog }) {
   manifest.excludeSkills = manifest.excludeSkills.filter(
     (skillId) => !manifest.skills.includes(skillId)
   );
+
+  if (manifest.packs.length === 0) {
+    manifest.settings.bootstrapAgentsTarget = null;
+  }
 
   if (manifest.packs.length > 0 && !manifest.settings.bootstrapAgentsTarget) {
     const hadExistingBootstrapAgentsFile = await pathExists(
@@ -234,8 +242,16 @@ async function runMutatingManifestCommand({ action, parsed, context, projectDir,
   if (parsed.subject === "pack") {
     manifest.packs =
       action === "add"
-        ? mergeUnique(manifest.packs, [parsed.name])
+        ? resolveNextPackSelection({
+            currentPacks: manifest.packs,
+            requestedPacks: [parsed.name],
+            action: "add",
+          })
         : manifest.packs.filter((value) => value !== parsed.name);
+
+    if (manifest.packs.length === 0) {
+      manifest.settings.bootstrapAgentsTarget = null;
+    }
   } else if (parsed.subject === "skill") {
     const canonicalSkillName = canonicalizeSkillId(parsed.name, skillIdLookup) ?? parsed.name;
 
@@ -453,6 +469,30 @@ function writeJsonOrText(stream, asJson, payload, text) {
   }
 
   stream.write(`${text}\n`);
+}
+
+function resolveNextPackSelection({ currentPacks, requestedPacks, action }) {
+  const normalizedRequestedPacks = [...new Set(requestedPacks.filter(Boolean))];
+
+  if (normalizedRequestedPacks.length === 0) {
+    return [...currentPacks];
+  }
+
+  if (normalizedRequestedPacks.length > 1) {
+    throw new CliError(`Command "${action}" supports only one pack per project.`);
+  }
+
+  if (currentPacks.length === 0) {
+    return normalizedRequestedPacks;
+  }
+
+  if (currentPacks[0] === normalizedRequestedPacks[0]) {
+    return [...currentPacks];
+  }
+
+  throw new CliError(
+    `Project already uses pack "${currentPacks[0]}". Remove it before selecting "${normalizedRequestedPacks[0]}".`
+  );
 }
 
 async function resolveBootstrapAgentsTarget({ context, projectDir, json }) {

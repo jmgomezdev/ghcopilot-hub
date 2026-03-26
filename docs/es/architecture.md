@@ -42,7 +42,8 @@
 }
 ```
 
-`name` debe ser único y toda skill referenciada debe existir en `hub/skills/`.
+`name` debe ser único, toda skill referenciada debe existir en `hub/skills/` y cada pack debe incluir un archivo base
+compañero en `hub/packs/<pack-name>.agents.md`.
 
 ## Manifiesto del proyecto
 
@@ -62,7 +63,7 @@ Archivo: `.github/ghcopilot-hub.json`
 
 Contrato:
 
-- `packs`: lista opcional de packs a expandir
+- `packs`: lista opcional con como máximo un pack a expandir
 - `skills`: skills extra fuera de packs
 - `excludeSkills`: skills a retirar incluso si vienen por pack
 - `settings.onConflict`: `fail` o `overwrite`
@@ -81,7 +82,7 @@ Fórmula:
 ```text
 agents = todos los agentes del hub
 skills = defaultSkills + packs + skills - excludeSkills
-bootstrapAgents = settings.bootstrapAgentsTarget ? hub/bootstrap/AGENTS.md : none
+bootstrapAgents = settings.bootstrapAgentsTarget ? packSeleccionado.agents.md : none
 ```
 
 El layout interno del hub agrupa estos recursos bajo `hub/`.
@@ -97,7 +98,7 @@ Errores de resolución:
 
 Mapa origen a destino:
 
-- `hub/bootstrap/AGENTS.md` -> `AGENTS.md` o `AGENTS-base.md` según `settings.bootstrapAgentsTarget`
+- `hub/packs/<pack-name>.agents.md` -> `AGENTS.md` o `AGENTS-base.md` según `settings.bootstrapAgentsTarget`
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 
@@ -129,9 +130,10 @@ Rutas gestionadas frente a rutas locales:
 - gestionada: `.github/skills/**`
 - local: `.github/ghcopilot-hub.json`
 
-El bootstrap `AGENTS.md` en raíz es un caso especial. Solo aparece con `init` basado en packs, y la ruta elegida se
-guarda en el manifiesto para que sincronizaciones posteriores sigan usando el mismo destino. Si el repositorio ya tiene
-`AGENTS.md`, el CLI pregunta antes de sobrescribirlo y puede redirigir el archivo gestionado a `AGENTS-base.md`.
+El bootstrap `AGENTS.md` en raíz es un caso especial. Solo aparece con `init` basado en pack, sale del archivo AGENTS
+propio del pack seleccionado y la ruta elegida se guarda en el manifiesto para que sincronizaciones posteriores sigan
+usando el mismo destino. Si el repositorio ya tiene `AGENTS.md`, el CLI pregunta antes de sobrescribirlo y puede
+redirigir el archivo gestionado a `AGENTS-base.md`.
 
 El CLI sólo inspecciona las rutas gestionadas para diff, doctor, update y decisiones de borrado.
 

@@ -54,7 +54,7 @@ ghcopilot-hub list --help
 
 ### `init`
 
-Initializes `.github/ghcopilot-hub.json`, syncs all hub agents, optionally adds packs and skills, and applies a full
+Initializes `.github/ghcopilot-hub.json`, syncs all hub agents, optionally adds one pack and extra skills, and applies a full
 sync.
 
 ```bash
@@ -67,8 +67,9 @@ ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
 When `init` runs without `--pack`, it bootstraps an agents-first project: every hub agent is copied, and the only
 synced skill is the default `ghcopilot-hub-consumer` skill unless you also pass one or more `--skill` options.
 
-When `init` runs with at least one pack, it also bootstraps a root `AGENTS.md` from `hub/bootstrap/AGENTS.md`.
-That target path is persisted in `settings.bootstrapAgentsTarget` inside the manifest.
+When `init` runs with a pack, it also bootstraps a root `AGENTS.md` from that pack's companion file in
+`hub/packs/<pack-name>.agents.md`. A project can select at most one pack, and that target path is persisted in
+`settings.bootstrapAgentsTarget` inside the manifest.
 
 If the consumer repository already has `AGENTS.md`, the CLI asks whether it should overwrite that file:
 
@@ -87,9 +88,9 @@ ghcopilot-hub update
 ghcopilot-hub update --force
 ```
 
-If the manifest already manages bootstrap agents through `settings.bootstrapAgentsTarget`, `update` keeps that file in
-sync too. When the target is `AGENTS.md` and the run would overwrite an existing root `AGENTS.md`, the CLI asks again
-before replacing it unless `--force` is used.
+If the manifest already manages bootstrap agents through `settings.bootstrapAgentsTarget`, `update` keeps that
+pack-specific bootstrap file in sync too. When the target is `AGENTS.md` and the run would overwrite an existing root
+`AGENTS.md`, the CLI asks again before replacing it unless `--force` is used.
 
 ### `list`
 
@@ -113,6 +114,9 @@ Adds a pack or skill to the manifest and syncs.
 ghcopilot-hub add pack nextjs-ssr
 ghcopilot-hub add skill ghcopilot-hub-mermaid-expert
 ```
+
+Projects support only one pack. If a project already has a different pack, `add pack` fails until that pack is
+removed.
 
 ### `remove`
 

@@ -3,7 +3,7 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
-import { BOOTSTRAP_AGENTS_SOURCE, getHubContentPath, HUB_SKILL_PREFIX } from "./constants.js";
+import { getHubContentPath, HUB_SKILL_PREFIX, PACK_AGENTS_FILE_SUFFIX } from "./constants.js";
 import { CliError } from "./errors.js";
 import { parseFrontmatter, requireMetadataField } from "./frontmatter.js";
 import { pathExists, relativeFrom, walkFiles } from "./fs-utils.js";
@@ -12,11 +12,10 @@ const execFileAsync = promisify(execFile);
 
 export async function loadHubCatalog(hubDir) {
   const hubContentDir = getHubContentPath(hubDir);
-  const [agents, skills, packs, bootstrapFiles, revision] = await Promise.all([
+  const [agents, skills, packs, revision] = await Promise.all([
     loadAgents(hubDir, hubContentDir),
     loadSkills(hubDir, hubContentDir),
     loadPacks(hubDir, hubContentDir),
-    loadBootstrapFiles(hubDir),
     resolveRevision(hubDir),
   ]);
 
@@ -34,25 +33,7 @@ export async function loadHubCatalog(hubDir) {
     agents,
     skills,
     packs,
-    bootstrapFiles,
     revision,
-  };
-}
-
-async function loadBootstrapFiles(hubDir) {
-  const sourcePath = path.join(hubDir, ...BOOTSTRAP_AGENTS_SOURCE.split("/"));
-
-  if (!(await pathExists(sourcePath))) {
-    throw new CliError(`Hub is missing bootstrap file "${BOOTSTRAP_AGENTS_SOURCE}".`);
-  }
-
-  return {
-    agentsBase: {
-      id: "agents-base",
-      sourcePath,
-      sourceRelativePath: BOOTSTRAP_AGENTS_SOURCE,
-      targetRelativePath: "AGENTS.md",
-    },
   };
 }
 
@@ -153,6 +134,9 @@ async function loadPacks(hubDir, hubContentDir) {
 
     const packPath = path.join(packsDir, entry.name);
     const relativePackPath = relativeFrom(hubDir, packPath);
+    const packBaseName = entry.name.replace(/\.json$/, "");
+    const packAgentsPath = path.join(packsDir, `${packBaseName}${PACK_AGENTS_FILE_SUFFIX}`);
+    const relativePackAgentsPath = relativeFrom(hubDir, packAgentsPath);
     let rawPack;
     try {
       rawPack = JSON.parse(await fs.readFile(packPath, "utf8"));
@@ -177,11 +161,23 @@ async function loadPacks(hubDir, hubContentDir) {
       );
     }
 
+    if (!(await pathExists(packAgentsPath))) {
+      throw new CliError(
+        `Pack file ${relativePackPath} is missing its companion AGENTS file ${relativePackAgentsPath}.`
+      );
+    }
+
     packs.push({
       name: rawPack.name.trim(),
       skills: [...new Set(rawPack.skills.map((skill) => skill.trim()))].sort(),
       sourcePath: packPath,
       sourceRelativePath: relativePackPath,
+      bootstrapFile: {
+        id: `${rawPack.name.trim()}-agents-base`,
+        sourcePath: packAgentsPath,
+        sourceRelativePath: relativePackAgentsPath,
+        targetRelativePath: "AGENTS.md",
+      },
     });
   }
 

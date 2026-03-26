@@ -15,7 +15,7 @@ central hub, and keep that setup consistent over time.
 Typical consumer outcomes:
 
 - Bootstrap a repository with only the shared agent catalog when no predefined pack fits yet
-- Start a new repository with a predefined pack such as `spa-tanstack` or `node-api`
+- Start a new repository with one predefined pack such as `spa-tanstack` or `node-api`
 - Add or remove skills over time without manually copying files across repositories
 - Inspect the available packs and skills before choosing the setup
 - Review drift before updating managed files
@@ -23,7 +23,7 @@ Typical consumer outcomes:
 
 The consumer project declares its desired state in `.github/ghcopilot-hub.json`, and the CLI syncs that state into
 `.github/agents/` and `.github/skills/`. When `init` starts a pack-based project, it also bootstraps a root `AGENTS.md`
-file from the hub.
+from the selected pack's own companion file in the hub.
 
 ## Quick Start From a Consumer Project
 
@@ -53,9 +53,10 @@ Initialize a consumer project with a pack when one fits:
 npx ghcopilot-hub@latest init --pack spa-tanstack
 ```
 
-Pack-based `init` also bootstraps a root `AGENTS.md`. If the repository already has one, the CLI asks whether it
-should overwrite that file. If the answer is no, it writes `AGENTS-base.md` instead. In non-interactive mode, that
-decision must be resolved manually because the CLI will fail instead of guessing.
+Pack-based `init` also bootstraps a root `AGENTS.md` using the selected pack's own base file. A project can use at
+most one pack. If the repository already has one, the CLI asks whether it should overwrite that file. If the answer is
+no, it writes `AGENTS-base.md` instead. In non-interactive mode, that decision must be resolved manually because the
+CLI will fail instead of guessing.
 
 Adjust the selection later:
 
@@ -150,7 +151,8 @@ Resolution rules:
 - shared hub skill ids use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills
 - all hub agents are always copied
 - `packs` is optional, so `init` can be used as an agents-first bootstrap command
-- pack-based `init` bootstraps `AGENTS.md` in the repository root and persists the chosen target path in `settings.bootstrapAgentsTarget`
+- a project can select at most one pack
+- pack-based `init` bootstraps `AGENTS.md` in the repository root from the selected pack companion file and persists the chosen target path in `settings.bootstrapAgentsTarget`
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack
 - local files live outside managed paths
