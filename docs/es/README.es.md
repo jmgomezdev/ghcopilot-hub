@@ -24,7 +24,7 @@ Resultados típicos en el consumidor:
 
 El proyecto consumidor declara su estado deseado en `.github/ghcopilot-hub.json` y el CLI sincroniza ese estado bajo
 `.github/agents/` y `.github/skills/`. Cuando `init` arranca un proyecto basado en pack, también genera un
-`AGENTS.md` de base en la raíz a partir del archivo propio de ese pack.
+`AGENTS.md` de base en la raíz a partir del archivo bootstrap que ese pack declara dentro de `hub/bootstrap/`.
 
 ## Uso Rápido Desde un Proyecto Consumidor
 
@@ -153,7 +153,7 @@ Reglas de resolución:
 - todos los agentes del hub se copian siempre
 - `packs` es opcional, así que `init` puede usarse como comando de arranque orientado a agentes
 - un proyecto puede seleccionar como máximo un pack
-- el `init` con pack genera `AGENTS.md` en la raíz a partir del archivo propio del pack y guarda la ruta elegida en `settings.bootstrapAgentsTarget`
+- el `init` con pack genera `AGENTS.md` en la raíz a partir del bootstrap declarado por el pack dentro de `hub/bootstrap/` y guarda la ruta elegida en `settings.bootstrapAgentsTarget`
 - las skills finales salen de `packs + skills - excludeSkills`
 - `excludeSkills` gana incluso si una skill llega desde un pack
 - los archivos locales viven fuera de los paths gestionados

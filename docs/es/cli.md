@@ -69,8 +69,8 @@ Cuando `init` se ejecuta sin `--pack`, arranca un proyecto orientado a agentes: 
 única skill sincronizada es la `ghcopilot-hub-consumer` por defecto, salvo que también pases una o más opciones
 `--skill`.
 
-Cuando `init` se ejecuta con un pack, también genera un `AGENTS.md` de base a partir del archivo compañero del pack en
-`hub/packs/<pack-name>.agents.md`. Un proyecto puede seleccionar como máximo un pack, y esa ruta de destino se
+Cuando `init` se ejecuta con un pack, también genera un `AGENTS.md` de base a partir del archivo indicado en la clave
+`bootstrap` de ese pack y resuelto dentro de `hub/bootstrap/`. Un proyecto puede seleccionar como máximo un pack, y esa ruta de destino se
 persiste en `settings.bootstrapAgentsTarget` dentro del manifiesto.
 
 Si el repositorio consumidor ya tiene `AGENTS.md`, el CLI pregunta si debe sobrescribirlo:

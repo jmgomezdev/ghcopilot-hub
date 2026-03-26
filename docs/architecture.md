@@ -32,6 +32,7 @@
 ```json
 {
   "name": "spa-tanstack",
+  "bootstrap": "spa-tanstack.agents.md",
   "skills": [
     "ghcopilot-hub-typescript",
     "ghcopilot-hub-react",
@@ -42,8 +43,8 @@
 }
 ```
 
-`name` must be unique, every referenced skill must exist under `hub/skills/`, and every pack must ship a companion
-bootstrap file at `hub/packs/<pack-name>.agents.md`.
+`name` must be unique, `bootstrap` must point to a file under `hub/bootstrap/`, and every referenced skill must exist
+under `hub/skills/`.
 
 ## Project Manifest
 
@@ -98,7 +99,7 @@ Resolution errors:
 
 Source-to-target mapping:
 
-- `hub/packs/<pack-name>.agents.md` -> `AGENTS.md` or `AGENTS-base.md` depending on `settings.bootstrapAgentsTarget`
+- `hub/bootstrap/<pack.bootstrap>` -> `AGENTS.md` or `AGENTS-base.md` depending on `settings.bootstrapAgentsTarget`
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 

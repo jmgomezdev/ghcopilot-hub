@@ -23,7 +23,7 @@ Typical consumer outcomes:
 
 The consumer project declares its desired state in `.github/ghcopilot-hub.json`, and the CLI syncs that state into
 `.github/agents/` and `.github/skills/`. When `init` starts a pack-based project, it also bootstraps a root `AGENTS.md`
-from the selected pack's own companion file in the hub.
+from the bootstrap file declared by that pack under `hub/bootstrap/`.
 
 ## Quick Start From a Consumer Project
 
@@ -152,7 +152,7 @@ Resolution rules:
 - all hub agents are always copied
 - `packs` is optional, so `init` can be used as an agents-first bootstrap command
 - a project can select at most one pack
-- pack-based `init` bootstraps `AGENTS.md` in the repository root from the selected pack companion file and persists the chosen target path in `settings.bootstrapAgentsTarget`
+- pack-based `init` bootstraps `AGENTS.md` in the repository root from the selected pack bootstrap declared under `hub/bootstrap/` and persists the chosen target path in `settings.bootstrapAgentsTarget`
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack
 - local files live outside managed paths

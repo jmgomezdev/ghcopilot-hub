@@ -20,8 +20,8 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
         skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-testing"],
         bootstrapFile: {
           id: "base-web-agents-base",
-          sourcePath: "hub/packs/base-web.agents.md",
-          sourceRelativePath: "hub/packs/base-web.agents.md",
+          sourcePath: "hub/bootstrap/base-web.agents.md",
+          sourceRelativePath: "hub/bootstrap/base-web.agents.md",
           targetRelativePath: "AGENTS.md",
         },
       },
@@ -58,8 +58,8 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
         skills: ["ghcopilot-hub-typescript"],
         bootstrapFile: {
           id: "base-web-agents-base",
-          sourcePath: "hub/packs/base-web.agents.md",
-          sourceRelativePath: "hub/packs/base-web.agents.md",
+          sourcePath: "hub/bootstrap/base-web.agents.md",
+          sourceRelativePath: "hub/bootstrap/base-web.agents.md",
           targetRelativePath: "AGENTS.md",
         },
       },
@@ -93,8 +93,8 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
         skills: [],
         bootstrapFile: {
           id: "base-web-agents-base",
-          sourcePath: "hub/packs/base-web.agents.md",
-          sourceRelativePath: "hub/packs/base-web.agents.md",
+          sourcePath: "hub/bootstrap/base-web.agents.md",
+          sourceRelativePath: "hub/bootstrap/base-web.agents.md",
           targetRelativePath: "AGENTS.md",
         },
       },
@@ -118,8 +118,8 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
   assert.deepEqual(state.bootstrapFiles, [
     {
       id: "base-web-agents-base",
-      sourcePath: "hub/packs/base-web.agents.md",
-      sourceRelativePath: "hub/packs/base-web.agents.md",
+      sourcePath: "hub/bootstrap/base-web.agents.md",
+      sourceRelativePath: "hub/bootstrap/base-web.agents.md",
       targetRelativePath: "AGENTS-base.md",
     },
   ]);

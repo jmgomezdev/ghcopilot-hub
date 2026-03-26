@@ -1,5 +1,6 @@
 {
   "name": "base-web",
+  "bootstrap": "base-web.agents.md",
   "skills": [
     "ghcopilot-hub-tailwind",
     "ghcopilot-hub-typescript"

@@ -1,5 +1,6 @@
 {
   "name": "spa-tanstack",
+  "bootstrap": "spa-tanstack.agents.md",
   "skills": [
     "ghcopilot-hub-architecture-testing",
     "ghcopilot-hub-mermaid-expert",

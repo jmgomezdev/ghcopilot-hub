@@ -6,9 +6,9 @@ export const MANIFEST_PATH = ".github/ghcopilot-hub.json";
 export const DEFAULT_REVISION = "unknown";
 export const HUB_CONTENT_DIR = "hub";
 export const HUB_SKILL_PREFIX = "ghcopilot-hub-";
+export const HUB_BOOTSTRAP_DIR = "bootstrap";
 export const DEFAULT_BOOTSTRAP_AGENTS_TARGET = "AGENTS.md";
 export const ALTERNATE_BOOTSTRAP_AGENTS_TARGET = "AGENTS-base.md";
-export const PACK_AGENTS_FILE_SUFFIX = ".agents.md";
 
 export const MANAGED_ROOTS = [
   "AGENTS-base.md",

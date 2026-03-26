@@ -67,8 +67,8 @@ ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
 When `init` runs without `--pack`, it bootstraps an agents-first project: every hub agent is copied, and the only
 synced skill is the default `ghcopilot-hub-consumer` skill unless you also pass one or more `--skill` options.
 
-When `init` runs with a pack, it also bootstraps a root `AGENTS.md` from that pack's companion file in
-`hub/packs/<pack-name>.agents.md`. A project can select at most one pack, and that target path is persisted in
+When `init` runs with a pack, it also bootstraps a root `AGENTS.md` from the bootstrap file declared in that pack's
+`bootstrap` field and resolved under `hub/bootstrap/`. A project can select at most one pack, and that target path is persisted in
 `settings.bootstrapAgentsTarget` inside the manifest.
 
 If the consumer repository already has `AGENTS.md`, the CLI asks whether it should overwrite that file:

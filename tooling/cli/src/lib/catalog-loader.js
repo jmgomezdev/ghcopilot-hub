@@ -3,7 +3,7 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
-import { getHubContentPath, HUB_SKILL_PREFIX, PACK_AGENTS_FILE_SUFFIX } from "./constants.js";
+import { getHubContentPath, HUB_BOOTSTRAP_DIR, HUB_SKILL_PREFIX } from "./constants.js";
 import { CliError } from "./errors.js";
 import { parseFrontmatter, requireMetadataField } from "./frontmatter.js";
 import { pathExists, relativeFrom, walkFiles } from "./fs-utils.js";
@@ -120,8 +120,13 @@ async function loadSkills(hubDir, hubContentDir) {
 
 async function loadPacks(hubDir, hubContentDir) {
   const packsDir = path.join(hubContentDir, "packs");
+  const bootstrapDir = path.join(hubContentDir, HUB_BOOTSTRAP_DIR);
   if (!(await pathExists(packsDir))) {
     return [];
+  }
+
+  if (!(await pathExists(bootstrapDir))) {
+    throw new CliError(`Hub is missing the ${HUB_BOOTSTRAP_DIR} directory.`);
   }
 
   const entries = await fs.readdir(packsDir, { withFileTypes: true });
@@ -134,9 +139,6 @@ async function loadPacks(hubDir, hubContentDir) {
 
     const packPath = path.join(packsDir, entry.name);
     const relativePackPath = relativeFrom(hubDir, packPath);
-    const packBaseName = entry.name.replace(/\.json$/, "");
-    const packAgentsPath = path.join(packsDir, `${packBaseName}${PACK_AGENTS_FILE_SUFFIX}`);
-    const relativePackAgentsPath = relativeFrom(hubDir, packAgentsPath);
     let rawPack;
     try {
       rawPack = JSON.parse(await fs.readFile(packPath, "utf8"));
@@ -161,14 +163,25 @@ async function loadPacks(hubDir, hubContentDir) {
       );
     }
 
+    if (typeof rawPack.bootstrap !== "string" || rawPack.bootstrap.trim() === "") {
+      throw new CliError(
+        `Pack file ${relativePackPath} must contain a non-empty "bootstrap" string.`
+      );
+    }
+
+    const bootstrapFileName = rawPack.bootstrap.trim();
+    const packAgentsPath = path.join(bootstrapDir, bootstrapFileName);
+    const relativePackAgentsPath = relativeFrom(hubDir, packAgentsPath);
+
     if (!(await pathExists(packAgentsPath))) {
       throw new CliError(
-        `Pack file ${relativePackPath} is missing its companion AGENTS file ${relativePackAgentsPath}.`
+        `Pack file ${relativePackPath} references missing bootstrap file ${relativePackAgentsPath}.`
       );
     }
 
     packs.push({
       name: rawPack.name.trim(),
+      bootstrap: bootstrapFileName,
       skills: [...new Set(rawPack.skills.map((skill) => skill.trim()))].sort(),
       sourcePath: packPath,
       sourceRelativePath: relativePackPath,

@@ -32,6 +32,7 @@
 ```json
 {
   "name": "spa-tanstack",
+  "bootstrap": "spa-tanstack.agents.md",
   "skills": [
     "ghcopilot-hub-typescript",
     "ghcopilot-hub-react",
@@ -42,8 +43,8 @@
 }
 ```
 
-`name` debe ser único, toda skill referenciada debe existir en `hub/skills/` y cada pack debe incluir un archivo base
-compañero en `hub/packs/<pack-name>.agents.md`.
+`name` debe ser único, `bootstrap` debe apuntar a un archivo dentro de `hub/bootstrap/` y toda skill referenciada debe
+existir en `hub/skills/`.
 
 ## Manifiesto del proyecto
 
@@ -98,7 +99,7 @@ Errores de resolución:
 
 Mapa origen a destino:
 
-- `hub/packs/<pack-name>.agents.md` -> `AGENTS.md` o `AGENTS-base.md` según `settings.bootstrapAgentsTarget`
+- `hub/bootstrap/<pack.bootstrap>` -> `AGENTS.md` o `AGENTS-base.md` según `settings.bootstrapAgentsTarget`
 - `hub/agents/*.agent.md` -> `.github/agents/*.agent.md`
 - `hub/skills/<id>/**` -> `.github/skills/<id>/**`
 
