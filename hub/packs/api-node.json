@@ -1,6 +1,6 @@
 {
-  "name": "node-api",
-  "bootstrap": "node-api.agents.md",
+  "bootstrap": "api-node.agents.md",
+  "name": "api-node",
   "skills": [
     "ghcopilot-hub-testing",
     "ghcopilot-hub-typescript",

@@ -62,7 +62,7 @@ aplica un sync completo.
 ghcopilot-hub init
 ghcopilot-hub init --skill ghcopilot-hub-mermaid-expert
 ghcopilot-hub init --pack spa-tanstack
-ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
+ghcopilot-hub init --pack mpa-base --skill ghcopilot-hub-mermaid-expert
 ```
 
 Cuando `init` se ejecuta sin `--pack`, arranca un proyecto orientado a agentes: copia todos los agentes del hub y la
@@ -113,7 +113,7 @@ añade el nombre visible cuando difiere del identificador.
 Añade un pack o una skill al manifiesto y sincroniza.
 
 ```bash
-ghcopilot-hub add pack nextjs-ssr
+ghcopilot-hub add pack ssr-nextjs
 ghcopilot-hub add skill ghcopilot-hub-mermaid-expert
 ```
 

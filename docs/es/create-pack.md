@@ -8,8 +8,8 @@ Archivo en `hub/packs/<pack-id>.json`:
 
 ```json
 {
-  "name": "node-api",
-  "bootstrap": "node-api.agents.md",
+  "name": "api-node",
+  "bootstrap": "api-node.agents.md",
   "skills": ["ghcopilot-hub-typescript", "ghcopilot-hub-testing", "ghcopilot-hub-zod"]
 }
 ```

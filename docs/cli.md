@@ -61,7 +61,7 @@ sync.
 ghcopilot-hub init
 ghcopilot-hub init --skill ghcopilot-hub-mermaid-expert
 ghcopilot-hub init --pack spa-tanstack
-ghcopilot-hub init --pack base-web --skill ghcopilot-hub-mermaid-expert
+ghcopilot-hub init --pack mpa-base --skill ghcopilot-hub-mermaid-expert
 ```
 
 When `init` runs without `--pack`, it bootstraps an agents-first project: every hub agent is copied, and the only
@@ -111,7 +111,7 @@ display name when it differs from the id.
 Adds a pack or skill to the manifest and syncs.
 
 ```bash
-ghcopilot-hub add pack nextjs-ssr
+ghcopilot-hub add pack ssr-nextjs
 ghcopilot-hub add skill ghcopilot-hub-mermaid-expert
 ```
 

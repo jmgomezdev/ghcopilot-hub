@@ -1,6 +1,6 @@
 {
-  "name": "nextjs-ssr",
-  "bootstrap": "nextjs-ssr.agents.md",
+  "name": "ssr-nextjs",
+  "bootstrap": "ssr-nextjs.agents.md",
   "skills": [
     "ghcopilot-hub-next-15",
     "ghcopilot-hub-react",

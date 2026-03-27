@@ -1,6 +1,6 @@
 # AGENTS
 
-Base workflow for repositories initialized with the base-web pack.
+Base workflow for repositories initialized with the mpa-base pack.
 
 ## Stack Focus
 

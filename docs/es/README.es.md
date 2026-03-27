@@ -16,7 +16,7 @@ un hub central y mantener esa configuración consistente con el tiempo.
 Resultados típicos en el consumidor:
 
 - arrancar un repositorio solo con el catálogo compartido de agentes cuando todavía no encaja ningún pack predefinido
-- arrancar un repositorio nuevo con un único pack ya preparado como `spa-tanstack` o `node-api`
+- arrancar un repositorio nuevo con un único pack ya preparado como `spa-tanstack` o `api-node`
 - añadir o quitar skills según evoluciona el proyecto sin copiar archivos entre repositorios
 - ver qué packs y skills existen antes de decidir la configuración
 - revisar el drift antes de actualizar archivos gestionados

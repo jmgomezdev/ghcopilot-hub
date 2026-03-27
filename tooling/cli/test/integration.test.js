@@ -61,7 +61,7 @@ test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync
   await runCliCapture([
     "init",
     "--pack",
-    "base-web",
+    "mpa-base",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -102,20 +102,20 @@ test("list packs --json devuelve el catálogo filtrado", async () => {
   );
   assert.equal(
     payload.packs.some(
-      (pack) => pack.name === "nextjs-ssr" && pack.skills.includes("react-best-practices")
+      (pack) => pack.name === "ssr-nextjs" && pack.skills.includes("react-best-practices")
     ),
     true
   );
   assert.equal("skills" in payload, false);
 });
 
-test("init con nextjs-ssr sincroniza la skill third-party del pack", async () => {
+test("init con ssr-nextjs sincroniza la skill third-party del pack", async () => {
   const projectDir = await createTempProject();
 
   const result = await runCliCapture([
     "init",
     "--pack",
-    "nextjs-ssr",
+    "ssr-nextjs",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -132,7 +132,7 @@ test("init falla si se intentan seleccionar varios packs", async () => {
   const result = await runCliCapture([
     "init",
     "--pack",
-    "base-web",
+    "mpa-base",
     "--pack",
     "spa-tanstack",
     "--project-dir",
@@ -192,7 +192,7 @@ test("doctor detecta drift en un archivo gestionado", async () => {
   await runCliCapture([
     "init",
     "--pack",
-    "base-web",
+    "mpa-base",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -242,7 +242,7 @@ test("init con AGENTS existente y rechazo crea AGENTS-base", async () => {
   await fs.writeFile(path.join(projectDir, "AGENTS.md"), "# Local\n", "utf8");
 
   const result = await runCliCapture(
-    ["init", "--pack", "base-web", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
+    ["init", "--pack", "mpa-base", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
     {
       stdin: createMockStdin(["n"]),
     }
@@ -264,7 +264,7 @@ test("init con AGENTS existente y confirmacion sobrescribe AGENTS", async () => 
   await fs.writeFile(path.join(projectDir, "AGENTS.md"), "# Local\n", "utf8");
 
   const result = await runCliCapture(
-    ["init", "--pack", "base-web", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
+    ["init", "--pack", "mpa-base", "--project-dir", projectDir, "--hub-dir", HUB_DIR],
     {
       stdin: createMockStdin(["y"]),
     }
@@ -273,7 +273,7 @@ test("init con AGENTS existente y confirmacion sobrescribe AGENTS", async () => 
   assert.equal(result.exitCode, 0, result.stderr);
   const content = await readProjectFile(projectDir, "AGENTS.md");
   assert.match(content, /managed-by: ghcopilot-hub/);
-  assert.match(content, /Base workflow for repositories initialized with the base-web pack/);
+  assert.match(content, /Base workflow for repositories initialized with the mpa-base pack/);
   assert.equal(await fileExists(projectDir, "AGENTS-base.md"), false);
 
   const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
@@ -290,7 +290,7 @@ test("init falla en modo no interactivo si AGENTS ya existe", async () => {
   const result = await runCliCapture([
     "init",
     "--pack",
-    "base-web",
+    "mpa-base",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -311,7 +311,7 @@ test("update con AGENTS desviado crea AGENTS-base cuando el usuario rechaza sobr
   await runCliCapture([
     "init",
     "--pack",
-    "base-web",
+    "mpa-base",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -341,7 +341,7 @@ test("add pack falla si el proyecto ya tiene otro pack", async () => {
   await runCliCapture([
     "init",
     "--pack",
-    "base-web",
+    "mpa-base",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -351,7 +351,7 @@ test("add pack falla si el proyecto ya tiene otro pack", async () => {
   const result = await runCliCapture([
     "add",
     "pack",
-    "node-api",
+    "api-node",
     "--project-dir",
     projectDir,
     "--hub-dir",
@@ -359,7 +359,7 @@ test("add pack falla si el proyecto ya tiene otro pack", async () => {
   ]);
 
   assert.equal(result.exitCode, 1);
-  assert.match(result.stderr, /Project already uses pack "base-web"/);
+  assert.match(result.stderr, /Project already uses pack "mpa-base"/);
 });
 
 test("update elimina archivos legacy previamente gestionados", async () => {

@@ -15,7 +15,7 @@ central hub, and keep that setup consistent over time.
 Typical consumer outcomes:
 
 - Bootstrap a repository with only the shared agent catalog when no predefined pack fits yet
-- Start a new repository with one predefined pack such as `spa-tanstack` or `node-api`
+- Start a new repository with one predefined pack such as `spa-tanstack` or `api-node`
 - Add or remove skills over time without manually copying files across repositories
 - Inspect the available packs and skills before choosing the setup
 - Review drift before updating managed files

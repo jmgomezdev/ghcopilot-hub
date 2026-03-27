@@ -1,6 +1,6 @@
 # AGENTS
 
-Base workflow for repositories initialized with the node-api pack.
+Base workflow for repositories initialized with the api-node pack.
 
 ## Stack Focus
 

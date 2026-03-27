@@ -16,12 +16,12 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
     ],
     packs: [
       {
-        name: "base-web",
+        name: "mpa-base",
         skills: ["ghcopilot-hub-typescript", "ghcopilot-hub-testing"],
         bootstrapFile: {
-          id: "base-web-agents-base",
-          sourcePath: "hub/bootstrap/base-web.agents.md",
-          sourceRelativePath: "hub/bootstrap/base-web.agents.md",
+          id: "mpa-base-agents-base",
+          sourcePath: "hub/bootstrap/mpa-base.agents.md",
+          sourceRelativePath: "hub/bootstrap/mpa-base.agents.md",
           targetRelativePath: "AGENTS.md",
         },
       },
@@ -31,7 +31,7 @@ test("resolveProjectState expande packs, extras y exclusiones sin duplicados", (
   const state = resolveProjectState({
     catalog,
     manifest: {
-      packs: ["base-web"],
+      packs: ["mpa-base"],
       skills: ["mermaid-expert"],
       excludeSkills: ["testing"],
       settings: { onConflict: "fail", bootstrapAgentsTarget: null },
@@ -54,12 +54,12 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
     skills: [{ id: "ghcopilot-hub-consumer" }, { id: "ghcopilot-hub-typescript" }],
     packs: [
       {
-        name: "base-web",
+        name: "mpa-base",
         skills: ["ghcopilot-hub-typescript"],
         bootstrapFile: {
-          id: "base-web-agents-base",
-          sourcePath: "hub/bootstrap/base-web.agents.md",
-          sourceRelativePath: "hub/bootstrap/base-web.agents.md",
+          id: "mpa-base-agents-base",
+          sourcePath: "hub/bootstrap/mpa-base.agents.md",
+          sourceRelativePath: "hub/bootstrap/mpa-base.agents.md",
           targetRelativePath: "AGENTS.md",
         },
       },
@@ -69,7 +69,7 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
   const state = resolveProjectState({
     catalog,
     manifest: {
-      packs: ["base-web"],
+      packs: ["mpa-base"],
       skills: [],
       excludeSkills: ["ghcopilot-hub-consumer"],
       settings: { onConflict: "fail", bootstrapAgentsTarget: null },
@@ -112,12 +112,12 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
     skills: [{ id: "ghcopilot-hub-consumer" }],
     packs: [
       {
-        name: "base-web",
+        name: "mpa-base",
         skills: [],
         bootstrapFile: {
-          id: "base-web-agents-base",
-          sourcePath: "hub/bootstrap/base-web.agents.md",
-          sourceRelativePath: "hub/bootstrap/base-web.agents.md",
+          id: "mpa-base-agents-base",
+          sourcePath: "hub/bootstrap/mpa-base.agents.md",
+          sourceRelativePath: "hub/bootstrap/mpa-base.agents.md",
           targetRelativePath: "AGENTS.md",
         },
       },
@@ -127,7 +127,7 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
   const state = resolveProjectState({
     catalog,
     manifest: {
-      packs: ["base-web"],
+      packs: ["mpa-base"],
       skills: [],
       excludeSkills: [],
       settings: {
@@ -140,9 +140,9 @@ test("resolveProjectState incluye bootstrap AGENTS cuando el manifiesto lo fija"
 
   assert.deepEqual(state.bootstrapFiles, [
     {
-      id: "base-web-agents-base",
-      sourcePath: "hub/bootstrap/base-web.agents.md",
-      sourceRelativePath: "hub/bootstrap/base-web.agents.md",
+      id: "mpa-base-agents-base",
+      sourcePath: "hub/bootstrap/mpa-base.agents.md",
+      sourceRelativePath: "hub/bootstrap/mpa-base.agents.md",
       targetRelativePath: "AGENTS-base.md",
     },
   ]);

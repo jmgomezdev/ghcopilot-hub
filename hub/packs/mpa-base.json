@@ -1,6 +1,6 @@
 {
-  "name": "base-web",
-  "bootstrap": "base-web.agents.md",
+  "name": "mpa-base",
+  "bootstrap": "mpa-base.agents.md",
   "skills": [
     "ghcopilot-hub-tailwind",
     "ghcopilot-hub-typescript"

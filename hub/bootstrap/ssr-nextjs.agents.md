@@ -1,6 +1,6 @@
 # AGENTS
 
-Base workflow for repositories initialized with the nextjs-ssr pack.
+Base workflow for repositories initialized with the ssr-nextjs pack.
 
 ## Stack Focus
 
