@@ -8,6 +8,7 @@
     "ghcopilot-hub-testing",
     "ghcopilot-hub-typescript",
     "ghcopilot-hub-zod",
-    "ghcopilot-hub-zustand"
+    "ghcopilot-hub-zustand",
+    "react-best-practices"
   ]
 }

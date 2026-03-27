@@ -22,6 +22,7 @@
 - Ubicación: `hub/skills/<skill-id>/SKILL.md`
 - Identificador: nombre de carpeta
 - Frontmatter mínimo: `name`, `description`
+- Las skills compartidas creadas en el hub usan el prefijo `ghcopilot-hub-`; las skills curadas de terceros pueden conservar su id de origen
 - Se sincroniza la carpeta completa de la skill, incluyendo `references/` y `assets/`
 
 ### Packs
@@ -69,7 +70,7 @@ Contrato:
 - `excludeSkills`: skills a retirar incluso si vienen por pack
 - `settings.onConflict`: `fail` o `overwrite`
 - `settings.bootstrapAgentsTarget`: `null`, `AGENTS.md` o `AGENTS-base.md`
-- los ids de skills gestionadas por el hub deben usar el prefijo `ghcopilot-hub-`
+- los ids de skills compartidas creadas en el hub usan el prefijo `ghcopilot-hub-`; las skills curadas de terceros conservan su id de carpeta
 
 Skill por defecto:
 

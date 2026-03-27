@@ -100,7 +100,30 @@ test("list packs --json devuelve el catálogo filtrado", async () => {
     payload.packs.some((pack) => pack.name === "spa-tanstack"),
     true
   );
+  assert.equal(
+    payload.packs.some(
+      (pack) => pack.name === "nextjs-ssr" && pack.skills.includes("react-best-practices")
+    ),
+    true
+  );
   assert.equal("skills" in payload, false);
+});
+
+test("init con nextjs-ssr sincroniza la skill third-party del pack", async () => {
+  const projectDir = await createTempProject();
+
+  const result = await runCliCapture([
+    "init",
+    "--pack",
+    "nextjs-ssr",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, ".github/skills/react-best-practices/SKILL.md"), true);
 });
 
 test("init falla si se intentan seleccionar varios packs", async () => {

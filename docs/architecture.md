@@ -22,6 +22,7 @@
 - Location: `hub/skills/<skill-id>/SKILL.md`
 - Identifier: folder name
 - Minimum frontmatter: `name`, `description`
+- Hub-authored shared skills use the `ghcopilot-hub-` prefix; curated third-party skills may keep their upstream id
 - The entire skill folder is synced, including `references/` and `assets/`
 
 ### Packs
@@ -69,7 +70,7 @@ Contract:
 - `excludeSkills`: skills to remove even if they come from a pack
 - `settings.onConflict`: `fail` or `overwrite`
 - `settings.bootstrapAgentsTarget`: `null`, `AGENTS.md`, or `AGENTS-base.md`
-- hub-managed skill ids must use the `ghcopilot-hub-` prefix
+- hub-authored shared skill ids use the `ghcopilot-hub-` prefix; curated third-party skills keep their folder id
 
 Default skill:
 

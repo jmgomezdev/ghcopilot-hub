@@ -15,7 +15,9 @@ description: Brief description of what the skill does.
 
 Reglas:
 
-- el id de la skill es el nombre de carpeta y debe empezar por `ghcopilot-hub-`
+- el id de la skill es el nombre de carpeta
+- las skills creadas en el hub deben empezar por `ghcopilot-hub-`
+- las skills curadas de terceros pueden conservar su id de origen para mantener la procedencia
 - `name` y `description` son obligatorios
 - cualquier asset adicional debe vivir dentro de la misma carpeta
 - evita metadata duplicada fuera del frontmatter

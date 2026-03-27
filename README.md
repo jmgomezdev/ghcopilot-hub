@@ -148,7 +148,8 @@ Example manifest with a pack:
 Resolution rules:
 
 - the `ghcopilot-hub-consumer` skill is installed by default in every project managed by the CLI
-- shared hub skill ids use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills
+- hub-authored shared skill ids use the `ghcopilot-hub-` prefix to avoid collisions with repository-owned skills
+- curated third-party skills may keep their upstream id when that is the source-of-truth folder under `hub/skills/`
 - all hub agents are always copied
 - `packs` is optional, so `init` can be used as an agents-first bootstrap command
 - a project can select at most one pack

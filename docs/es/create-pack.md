@@ -9,6 +9,7 @@ Archivo en `hub/packs/<pack-id>.json`:
 ```json
 {
   "name": "node-api",
+  "bootstrap": "node-api.agents.md",
   "skills": ["ghcopilot-hub-typescript", "ghcopilot-hub-testing", "ghcopilot-hub-zod"]
 }
 ```
@@ -16,7 +17,9 @@ Archivo en `hub/packs/<pack-id>.json`:
 Reglas:
 
 - `name` debe ser único
+- `bootstrap` debe apuntar a un archivo existente dentro de `hub/bootstrap/`
 - cada skill listada debe existir en `hub/skills/`
+- las skills creadas en el hub deberían usar el prefijo `ghcopilot-hub-`; las skills curadas de terceros pueden conservar su id de origen
 - el nombre del archivo puede coincidir con `name` para facilitar navegación
 - mantén packs pequeños y compositivos
 

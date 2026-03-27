@@ -3,7 +3,7 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import { promisify } from "node:util";
 
-import { getHubContentPath, HUB_BOOTSTRAP_DIR, HUB_SKILL_PREFIX } from "./constants.js";
+import { getHubContentPath, HUB_BOOTSTRAP_DIR } from "./constants.js";
 import { CliError } from "./errors.js";
 import { parseFrontmatter, requireMetadataField } from "./frontmatter.js";
 import { pathExists, relativeFrom, walkFiles } from "./fs-utils.js";
@@ -81,12 +81,6 @@ async function loadSkills(hubDir, hubContentDir) {
   for (const entry of entries) {
     if (!entry.isDirectory()) {
       continue;
-    }
-
-    if (!entry.name.startsWith(HUB_SKILL_PREFIX)) {
-      throw new CliError(
-        `Skill directory "hub/skills/${entry.name}" must use the "${HUB_SKILL_PREFIX}" prefix.`
-      );
     }
 
     const skillDir = path.join(skillsDir, entry.name);

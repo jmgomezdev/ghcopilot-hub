@@ -15,7 +15,9 @@ description: Brief description of what the skill does.
 
 Rules:
 
-- the skill id is the folder name and must start with `ghcopilot-hub-`
+- the skill id is the folder name
+- hub-authored skills must start with `ghcopilot-hub-`
+- curated third-party skills may keep their upstream id to preserve provenance
 - `name` and `description` are required
 - any additional asset must live inside the same folder
 - avoid duplicated metadata outside frontmatter
