@@ -4,6 +4,21 @@
 
 Increase test signal-to-noise ratio using assertions that prove behavior contracts instead of implementation trivia.
 
+## UI Query Heuristic
+
+For UI-facing tests, prefer role/name or label-based queries when they express the interaction clearly.
+Use `getByTestId` as a fallback for elements that do not expose stable semantics.
+
+```ts
+await user.click(screen.getByRole("button", { name: "Open widget" }));
+
+await user.click(
+  within(screen.getByRole("navigation", { name: "Primary" })).getByRole("link", {
+    name: "Dashboards",
+  })
+);
+```
+
 ## Assertion Depth Model
 
 | Depth       | What It Proves                  | Example                                 |

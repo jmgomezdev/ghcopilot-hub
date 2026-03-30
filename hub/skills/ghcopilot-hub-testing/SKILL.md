@@ -9,7 +9,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: jmgomezdev
-  version: "1.0"
+  version: "1.1"
 ---
 
 ## When to Use
@@ -56,7 +56,8 @@ Before implementing tests, ask in order:
 - Respect layer boundaries: test each layer in isolation and mock outward dependencies.
 - Avoid real network and real time in unit tests.
 - Prefer behavior assertions over implementation details.
-- Use deterministic data and stable selectors.
+- For UI tests, prefer roles and labels when practical; fall back to stable test hooks only when semantics are not a
+  good fit.
 - Keep tests fast and focused; do not add unnecessary async.
 
 ## NEVER Rules (with Why)
@@ -137,7 +138,7 @@ Before implementing tests, ask in order:
 
 - Tests should be deterministic and fast (milliseconds, not seconds).
 - No real network calls in unit tests.
-- Avoid brittle selectors; use roles and labels for UI.
+- Avoid brittle selectors; prefer roles and labels for UI when practical.
 - Ensure async tests await the correct UI signals.
 
 ## Coverage Prioritization by Risk
@@ -152,14 +153,24 @@ If coverage budget is limited, keep one high-signal test per critical branch bef
 ## Code Examples
 
 ```ts
-// Arrange
-const input = createInput({ id: "fixed-id" });
+const user = userEvent.setup();
 
-// Act
-const result = runUseCase(input);
+await user.click(
+  within(screen.getByRole("dialog", { name: "Save" })).getByRole("button", {
+    name: "Confirm",
+  })
+);
 
-// Assert
-expect(result).toEqual({ id: "fixed-id" });
+await expect(screen.findByRole("status", { name: "Saved" })).resolves.toBeVisible();
+```
+
+```ts
+await user.type(
+  within(screen.getByRole("form", { name: "Registration" })).getByRole("textbox", {
+    name: "Email",
+  }),
+  "user@example.com"
+);
 ```
 
 ## Commands

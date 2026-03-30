@@ -29,13 +29,22 @@ Do not use E2E for:
 
 ## Selector Policy
 
-Priority order:
-
-1. `cy.findByRole` / semantic accessible selectors.
-2. Stable `data-testid` hooks.
-3. Text selectors only if copy is stable.
+Prefer semantic selectors first in E2E (`cy.findByRole`, labels, scoped queries), then fall back to stable
+`data-testid` hooks when the UI surface does not expose a good semantic handle.
 
 Never use styling selectors (`.btn-primary`, nth-child paths).
+
+Prefer scoping before adding hooks:
+
+```ts
+cy.findByRole("navigation", { name: /primary/i }).within(() => {
+  cy.findByRole("link", { name: /dashboards/i }).click();
+});
+
+cy.findByRole("dialog", { name: /save/i }).within(() => {
+  cy.findByRole("button", { name: /confirm/i }).click();
+});
+```
 
 ## Network Strategy
 
