@@ -200,6 +200,15 @@ src/
 - Do not put CSS variable calls such as `var()` directly into `className`.
 - Skills: always use `ghcopilot-hub-tailwind`.
 
+### 8. Debugging and Verification Workflow
+
+- Prefer Next.js DevTools MCP over blind source inspection when diagnosing a running consumer app.
+- For Next.js 16+ projects, initialize MCP context first and use runtime diagnostics for build errors, runtime exceptions, route discovery, logs, and Server Action tracing.
+- If the consumer project does not have MCP configured, tell the user to add `.mcp.json` with `next-devtools-mcp@latest`, then restart `npm run dev` before continuing runtime diagnosis.
+- If the project is on Next.js 15 or lower, explain that live MCP runtime diagnostics require Next.js 16+, then fall back to docs, browser tooling, or source inspection as needed.
+- Use browser verification after code changes to confirm the rendered route works as expected.
+- Fall back to VS Code debugger, browser DevTools, or source-only reasoning only when MCP is unavailable or the task is not about a running app.
+
 ## Coding Workflow (Step-by-Step for AI)
 
 When asked to create a new feature, move in this order:
@@ -207,6 +216,8 @@ When asked to create a new feature, move in this order:
 **0. Planning Phase (Mandatory for complex features):**
 
 - Analyze route boundaries, shared-layer impact, and server/client responsibilities first.
+- For debugging, verification, or route inspection tasks, check whether Next.js DevTools MCP is configured in the consumer project and use it first.
+- If the consumer project does not have MCP configured, tell the user to install `next-devtools-mcp` via `.mcp.json` before continuing runtime diagnosis.
 - Decide which parts are reusable enough to belong in `domain/`, `infrastructure/`, `application/`, or `presentation/`.
 - Only after those decisions are clear should route-specific files be created in `src/app/`.
 
@@ -263,6 +274,7 @@ Examples:
 - Server Actions must validate input and permissions inside the action, not only in middleware or the client.
 - Shared presentation components must not import route-local files from `src/app/`.
 - Data crossing the Server-to-Client boundary must be serializable and as small as possible.
+- Runtime debugging of a running consumer app should prefer Next.js DevTools MCP when available.
 
 ### Anti-Patterns (Do NOT do this)
 
@@ -276,3 +288,4 @@ Examples:
 - Do not assume `fetch()` or `GET` Route Handlers are cached by default in Next.js 15.
 - Do not pass rich ORM objects, database clients, or oversized session payloads into Client Components.
 - Do not read dynamic runtime APIs high in layouts if the route should stream or show `loading.tsx` quickly.
+- Do not diagnose a running Next.js app only from static code when Next.js DevTools MCP is available.
