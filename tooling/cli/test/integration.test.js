@@ -102,14 +102,18 @@ test("list packs --json devuelve el catálogo filtrado", async () => {
   );
   assert.equal(
     payload.packs.some(
-      (pack) => pack.name === "ssr-nextjs" && pack.skills.includes("react-best-practices")
+      (pack) =>
+        pack.name === "ssr-nextjs" &&
+        pack.skills.includes("next-best-practices") &&
+        pack.skills.includes("next-cache-components") &&
+        !pack.skills.includes("react-best-practices")
     ),
     true
   );
   assert.equal("skills" in payload, false);
 });
 
-test("init con ssr-nextjs sincroniza la skill third-party del pack", async () => {
+test("init con ssr-nextjs sincroniza las skills de Next del pack", async () => {
   const projectDir = await createTempProject();
 
   const result = await runCliCapture([
@@ -123,7 +127,8 @@ test("init con ssr-nextjs sincroniza la skill third-party del pack", async () =>
   ]);
 
   assert.equal(result.exitCode, 0, result.stderr);
-  assert.equal(await fileExists(projectDir, ".github/skills/react-best-practices/SKILL.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/skills/next-best-practices/SKILL.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/skills/next-cache-components/SKILL.md"), true);
 });
 
 test("init falla si se intentan seleccionar varios packs", async () => {

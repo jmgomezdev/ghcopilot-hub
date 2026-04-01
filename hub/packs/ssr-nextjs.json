@@ -9,6 +9,7 @@
     "ghcopilot-hub-typescript",
     "ghcopilot-hub-zod",
     "ghcopilot-hub-zustand",
-    "react-best-practices"
+    "next-best-practices",
+    "next-cache-components"
   ]
 }

@@ -33,34 +33,36 @@ This project follows a server-first Clean Architecture.
 
 Use ALWAYS these skills for detailed patterns on-demand:
 
-| Skill                      | Description                                                                       | URL                                                          |
-| -------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `ghcopilot-hub-next-15`    | App Router, Server Components, Server Actions, route handlers, caching, streaming | [SKILL.md](.github/skills/ghcopilot-hub-next-15/SKILL.md)    |
-| `ghcopilot-hub-react`      | React 19 component, hook, effect, ref, and composition patterns                   | [SKILL.md](.github/skills/ghcopilot-hub-react/SKILL.md)      |
-| `ghcopilot-hub-tailwind`   | Tailwind styling patterns, `cn()` usage, semantic utility classes                 | [SKILL.md](.github/skills/ghcopilot-hub-tailwind/SKILL.md)   |
-| `ghcopilot-hub-testing`    | Unit, integration, component, and E2E testing decisions                           | [SKILL.md](.github/skills/ghcopilot-hub-testing/SKILL.md)    |
-| `ghcopilot-hub-typescript` | Strict TypeScript modeling, `satisfies`, unions, and type design                  | [SKILL.md](.github/skills/ghcopilot-hub-typescript/SKILL.md) |
-| `ghcopilot-hub-zod`        | Zod 4 schema design and validation patterns                                       | [SKILL.md](.github/skills/ghcopilot-hub-zod/SKILL.md)        |
-| `ghcopilot-hub-zustand`    | Zustand 5 client-state patterns with selectors and persistence                    | [SKILL.md](.github/skills/ghcopilot-hub-zustand/SKILL.md)    |
-| `react-best-practices`     | React and Next.js performance rules for waterfalls, bundles, and rendering        | [SKILL.md](.github/skills/react-best-practices/SKILL.md)     |
+| Skill                      | Description                                                                         | URL                                                          |
+| -------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------ |
+| `ghcopilot-hub-next-15`    | App Router, Server Components, Server Actions, route handlers, caching, streaming   | [SKILL.md](.github/skills/ghcopilot-hub-next-15/SKILL.md)    |
+| `ghcopilot-hub-react`      | React 19 component, hook, effect, ref, and composition patterns                     | [SKILL.md](.github/skills/ghcopilot-hub-react/SKILL.md)      |
+| `ghcopilot-hub-tailwind`   | Tailwind styling patterns, `cn()` usage, semantic utility classes                   | [SKILL.md](.github/skills/ghcopilot-hub-tailwind/SKILL.md)   |
+| `ghcopilot-hub-testing`    | Unit, integration, component, and E2E testing decisions                             | [SKILL.md](.github/skills/ghcopilot-hub-testing/SKILL.md)    |
+| `ghcopilot-hub-typescript` | Strict TypeScript modeling, `satisfies`, unions, and type design                    | [SKILL.md](.github/skills/ghcopilot-hub-typescript/SKILL.md) |
+| `ghcopilot-hub-zod`        | Zod 4 schema design and validation patterns                                         | [SKILL.md](.github/skills/ghcopilot-hub-zod/SKILL.md)        |
+| `ghcopilot-hub-zustand`    | Zustand 5 client-state patterns with selectors and persistence                      | [SKILL.md](.github/skills/ghcopilot-hub-zustand/SKILL.md)    |
+| `next-best-practices`      | Next.js best practices for App Router, metadata, RSC boundaries, bundling, and more | [SKILL.md](.github/skills/next-best-practices/SKILL.md)      |
+| `next-cache-components`    | Next.js 16 Cache Components, `use cache`, `cacheLife`, `cacheTag`, and PPR          | [SKILL.md](.github/skills/next-cache-components/SKILL.md)    |
 
 ## Auto-invoke Skills
 
 When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 
-| Action                                                                                                              | Skill                                                |
-| ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
-| Working in `app/`, `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, metadata, or route groups | `ghcopilot-hub-next-15` + `ghcopilot-hub-typescript` |
-| Deciding whether something should stay server-side or become a Client Component                                     | `ghcopilot-hub-next-15`                              |
-| Working inside Client Components, hooks, effects, refs, or component composition                                    | `ghcopilot-hub-react` + `ghcopilot-hub-typescript`   |
-| Creating or updating Server Actions for forms or UI mutations                                                       | `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`        |
-| Creating Route Handlers, webhooks, integrations, or public HTTP endpoints                                           | `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`        |
-| Writing shared TypeScript types, route typing, or strict config objects                                             | `ghcopilot-hub-typescript`                           |
-| Creating or refining Zod schemas                                                                                    | `ghcopilot-hub-zod`                                  |
-| Styling shared or route-local UI with Tailwind                                                                      | `ghcopilot-hub-tailwind`                             |
-| Using Zustand for cross-component client state                                                                      | `ghcopilot-hub-zustand`                              |
-| Writing or modifying unit, integration, component, or E2E tests                                                     | `ghcopilot-hub-testing`                              |
-| Reviewing waterfalls, bundle size, serialization, or render performance                                             | `react-best-practices` + `ghcopilot-hub-next-15`     |
+| Action                                                                                                              | Skill                                                                        |
+| ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| Working in `app/`, `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, metadata, or route groups | `ghcopilot-hub-next-15` + `next-best-practices` + `ghcopilot-hub-typescript` |
+| Deciding whether something should stay server-side or become a Client Component                                     | `ghcopilot-hub-next-15`                                                      |
+| Working inside Client Components, hooks, effects, refs, or component composition                                    | `ghcopilot-hub-react` + `ghcopilot-hub-typescript`                           |
+| Creating or updating Server Actions for forms or UI mutations                                                       | `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`                                |
+| Creating Route Handlers, webhooks, integrations, or public HTTP endpoints                                           | `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`                                |
+| Writing shared TypeScript types, route typing, or strict config objects                                             | `ghcopilot-hub-typescript`                                                   |
+| Creating or refining Zod schemas                                                                                    | `ghcopilot-hub-zod`                                                          |
+| Styling shared or route-local UI with Tailwind                                                                      | `ghcopilot-hub-tailwind`                                                     |
+| Using Zustand for cross-component client state                                                                      | `ghcopilot-hub-zustand`                                                      |
+| Writing or modifying unit, integration, component, or E2E tests                                                     | `ghcopilot-hub-testing`                                                      |
+| Reviewing waterfalls, bundle size, serialization, or render performance                                             | `next-best-practices` + `ghcopilot-hub-next-15`                              |
+| Working with `use cache`, cache profiles, cache tags, or Partial Prerendering                                       | `next-cache-components` + `next-best-practices`                              |
 
 > Always mention which skill you are invoking.
 
@@ -142,7 +144,7 @@ src/
 - Start independent async work early and await it with `Promise.all()` when dependencies allow.
 - Use `loading.tsx` for route-segment fallback UI and local `<Suspense>` boundaries for slower subtrees.
 - Keep request-time APIs such as `params`, `searchParams`, `cookies()`, and `headers()` as low in the tree as possible.
-- Skills: always use `ghcopilot-hub-next-15` first; add `react-best-practices` for waterfall or render optimization work.
+- Skills: always use `ghcopilot-hub-next-15` first; add `next-best-practices` for App Router, metadata, bundling, and render optimization work, and `next-cache-components` when using `use cache` or Partial Prerendering.
 
 ### 2. Forms and Mutations
 

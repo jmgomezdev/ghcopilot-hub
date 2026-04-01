@@ -86,7 +86,7 @@ test("resolveProjectState permite excluir la skill por defecto", () => {
 test("resolveProjectState conserva skills de terceros por su id exacto", () => {
   const catalog = {
     agents: [{ id: "planner" }],
-    skills: [{ id: "ghcopilot-hub-consumer" }, { id: "react-best-practices" }],
+    skills: [{ id: "ghcopilot-hub-consumer" }, { id: "next-best-practices" }],
     packs: [],
   };
 
@@ -94,7 +94,7 @@ test("resolveProjectState conserva skills de terceros por su id exacto", () => {
     catalog,
     manifest: {
       packs: [],
-      skills: ["react-best-practices"],
+      skills: ["next-best-practices"],
       excludeSkills: [],
       settings: { onConflict: "fail", bootstrapAgentsTarget: null },
     },
@@ -102,7 +102,7 @@ test("resolveProjectState conserva skills de terceros por su id exacto", () => {
 
   assert.deepEqual(
     state.skills.map((skill) => skill.id),
-    ["ghcopilot-hub-consumer", "react-best-practices"]
+    ["ghcopilot-hub-consumer", "next-best-practices"]
   );
 });
 
