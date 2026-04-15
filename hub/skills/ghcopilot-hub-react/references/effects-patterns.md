@@ -10,9 +10,42 @@ Do NOT load this file for pure memoization/compiler questions or composition-onl
 
 Quick navigation:
 
+- Before deciding on `useEffect` → [Before Writing useEffect](#before-writing-useeffect)
 - Dependency drift / linter suppression → [Effect Dependencies](#effect-dependencies)
 - Non-reactive effect logic / `useEffectEvent` → [useEffectEvent for Non-Reactive Logic](#useeffectevent-for-non-reactive-logic)
 - Subscription/timer cleanup → [Effect Cleanup](#effect-cleanup)
+
+## Before Writing useEffect
+
+Every time you are about to write `useEffect`, stop and ask:
+
+**Is this syncing with an external system?**
+
+External systems include WebSocket connections, browser APIs such as `IntersectionObserver` and `navigator.onLine`,
+third-party libraries, DOM measurements, timers, and other subscriptions that exist outside React.
+
+Not external systems: props, state, derived values, and user events.
+
+Check each case before writing the Effect:
+
+1. **Transforming data?** → Compute inline during render. Use `useMemo` only when the work is expensive.
+2. **Responding to a user event?** → Put the logic in the event handler.
+3. **Resetting state on prop change?** → Use the `key` prop.
+4. **Fetching data?** → In SPAs, prefer TanStack Query. In RSC frameworks such as Next.js App Router, fetch on the server first. If `useEffect` is unavoidable in a client boundary, add cleanup.
+5. **Notifying a parent?** → Call the callback in the event handler.
+6. **Chaining effects?** → Move the cascade into one event handler or one update path.
+7. **Subscribing to external store state?** → Use `useSyncExternalStore`.
+
+If none of those cases apply and the answer is still genuinely "yes, external system," then `useEffect` is correct.
+
+## Rules
+
+- NEVER write `useEffect(() => setSomething(derived), [dep])`
+- NEVER use `useEffect` for click, submit, change, or other user events
+- NEVER use `useEffect` to reset state without considering the `key` prop first
+- NEVER default to client-side `useEffect` fetching when the framework already provides a server fetch surface
+- ALWAYS add cleanup when subscribing to external systems
+- ALWAYS name effect functions for readability
 
 ## Effect Dependencies
 
@@ -80,6 +113,27 @@ function ChatRoom({ roomId }: { roomId: string }) {
     return () => connection.disconnect();
   }, [roomId, serverUrl]); // Only reconnects when values change
 }
+```
+
+### Name Effect Functions
+
+When the Effect body has setup and teardown work, prefer a named function expression so the intent is visible in
+stack traces and code review.
+
+```tsx
+useEffect(function syncOnlineStatus() {
+  function handleStatusChange() {
+    setIsOnline(navigator.onLine);
+  }
+
+  window.addEventListener("online", handleStatusChange);
+  window.addEventListener("offline", handleStatusChange);
+
+  return function cleanupOnlineStatus() {
+    window.removeEventListener("online", handleStatusChange);
+    window.removeEventListener("offline", handleStatusChange);
+  };
+}, []);
 ```
 
 ---
@@ -222,7 +276,41 @@ useEffect(() => {
 }, [userId]);
 ```
 
-**Note**: Prefer TanStack Query over manual fetching. This pattern is for rare cases where you can't use Query.
+**Note**: In SPAs, prefer TanStack Query over manual fetching. In Next.js App Router or other RSC setups, prefer server-side fetching before reaching for client Effects. This pattern is for rare client-only fallbacks.
+
+## useSyncExternalStore for External Store State
+
+If the problem is subscribing to state that lives outside React, reach for `useSyncExternalStore` instead of wiring a
+`useEffect` plus `setState` pair by hand.
+
+```tsx
+import { useSyncExternalStore } from "react";
+
+function subscribe(callback: () => void) {
+  window.addEventListener("online", callback);
+  window.addEventListener("offline", callback);
+
+  return function unsubscribe() {
+    window.removeEventListener("online", callback);
+    window.removeEventListener("offline", callback);
+  };
+}
+
+function getSnapshot() {
+  return navigator.onLine;
+}
+
+function getServerSnapshot() {
+  return true;
+}
+
+export function useOnlineStatus() {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+```
+
+Use this pattern for browser-backed store state, custom stores, and any subscribe/getSnapshot source that should stay
+consistent with concurrent rendering.
 
 ### Development Double-Fire Is Intentional
 

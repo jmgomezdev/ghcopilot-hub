@@ -415,7 +415,11 @@ function Profile({ userId }: { userId: string }) {
 
 ## useEffect for Data Fetching
 
-Don't use `useEffect` for data fetching in components. Use TanStack Query with loaders.
+Don't use `useEffect` as the default data-fetching tool in components.
+
+- SPA / client-only runtime: use TanStack Query with loaders.
+- Next.js App Router / RSC runtime: fetch on the server first, then pass data into client leaves.
+- Only use `useEffect` for fetching when you are already inside a client boundary and the fetch truly must happen after mount.
 
 ```tsx
 // ❌ ANTI-PATTERN: useEffect for data fetching

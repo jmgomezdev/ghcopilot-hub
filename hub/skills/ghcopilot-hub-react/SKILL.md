@@ -127,7 +127,25 @@ Keep baseline React guidance in references to preserve context budget.
 ### Core Principle: Effects Are Escape Hatches
 
 Effects let you "step outside" React to synchronize with external systems. **Most component logic should NOT use
-Effects.** Before writing an Effect, ask: "Is there a way to do this without an Effect?"
+Effects.** Before writing an Effect, ask: "Is this syncing with an external system?"
+
+External systems include WebSocket connections, browser APIs, third-party libraries, DOM measurements, and timers.
+
+Not external systems: props, state, derived values, and user events.
+
+### Before Writing `useEffect`
+
+Check each case before reaching for an Effect:
+
+1. **Transforming data?** → Compute during render. Use `useMemo` only if the computation is expensive.
+2. **Responding to a user event?** → Put the logic in the event handler.
+3. **Resetting state on prop change?** → Use the `key` prop.
+4. **Fetching data?** → In SPAs, prefer TanStack Query. In RSC frameworks such as Next.js App Router, fetch on the server first. If `useEffect` is unavoidable in a client boundary, include cleanup.
+5. **Notifying a parent?** → Call the callback in the event handler or make the component controlled.
+6. **Chaining updates from one cause?** → Collapse the cascade into one event handler or transition path.
+7. **Subscribing to external store state?** → Use `useSyncExternalStore`.
+
+If none of the cases above apply and the answer is still "yes, external system," then `useEffect` is the right tool.
 
 ### When to Use Effects
 
@@ -215,13 +233,16 @@ For custom hooks naming, lifecycle anti-patterns, and conditional rendering basi
 When deciding how to implement logic:
 
 1. **Need to respond to user interaction?** → Use event handler
-2. **Need computed value from props/state?** → Calculate during render
+2. **Need computed value from props/state?** → Calculate during render; use `useMemo` only if it is expensive
 3. **Need to reset state on prop change?** → Use `key` prop
-4. **Need to synchronize with external system?** → Use Effect with cleanup
-5. **Need mutable value that doesn't trigger render?** → Use ref
-6. **Need perf advice around memoization?** → Load `react-compiler.md` first, verify compiler, then decide
-7. **Need non-reactive logic inside Effect?** → Load `effects-patterns.md`, prefer fallback-safe approach if
-   `useEffectEvent` is unavailable
+4. **Need data fetching?** → In SPAs, prefer TanStack Query; in RSC frameworks such as Next.js App Router, fetch in Server Components or server utilities first; use Effect only as a client fallback with cleanup
+5. **Need to notify a parent about an interaction?** → Call the callback in the event handler
+6. **Need to subscribe to external store state?** → Use `useSyncExternalStore`
+7. **Need to synchronize with external system?** → Use Effect with cleanup
+8. **Need mutable value that doesn't trigger render?** → Use ref
+9. **Need perf advice around memoization?** → Load `react-compiler.md` first, verify compiler, then decide
+10. **Need non-reactive logic inside Effect?** → Load `effects-patterns.md`, prefer fallback-safe approach if
+    `useEffectEvent` is unavailable
 
 ---
 
