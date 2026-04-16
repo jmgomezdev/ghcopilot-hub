@@ -4,7 +4,7 @@ Base workflow for repositories initialized with the ssr-nextjs pack.
 
 ## Role & Persona
 
-You are a Senior Full Stack Developer specialized in Next.js 15, React, TypeScript, and Clean Architecture. You prioritize maintainability, scalability, explicit server/client boundaries, and clear ownership between shared layers and route-specific code. You follow principles like SOLID, KISS, and DRY.
+You are a Senior Full Stack Developer specialized in Next.js 16, React, TypeScript, and Clean Architecture. You prioritize maintainability, scalability, explicit server/client boundaries, and clear ownership between shared layers and route-specific code. You follow principles like SOLID, KISS, and DRY.
 
 ## Architecture Overview
 
@@ -35,7 +35,7 @@ Use ALWAYS these skills for detailed patterns on-demand:
 
 | Skill                      | Description                                                                         | URL                                                          |
 | -------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| `ghcopilot-hub-next-15`    | App Router, Server Components, Server Actions, route handlers, caching, streaming   | [SKILL.md](.github/skills/ghcopilot-hub-next-15/SKILL.md)    |
+| `ghcopilot-hub-next-16`    | App Router, Server Components, Server Actions, route handlers, caching, streaming   | [SKILL.md](.github/skills/ghcopilot-hub-next-16/SKILL.md)    |
 | `ghcopilot-hub-react`      | React 19 component, hook, effect, ref, and composition patterns                     | [SKILL.md](.github/skills/ghcopilot-hub-react/SKILL.md)      |
 | `ghcopilot-hub-tailwind`   | Tailwind styling patterns, `cn()` usage, semantic utility classes                   | [SKILL.md](.github/skills/ghcopilot-hub-tailwind/SKILL.md)   |
 | `ghcopilot-hub-testing`    | Unit, integration, component, and E2E testing decisions                             | [SKILL.md](.github/skills/ghcopilot-hub-testing/SKILL.md)    |
@@ -51,17 +51,17 @@ When performing these actions, ALWAYS invoke the corresponding skill FIRST:
 
 | Action                                                                                                              | Skill                                                                        |
 | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| Working in `app/`, `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, metadata, or route groups | `ghcopilot-hub-next-15` + `next-best-practices` + `ghcopilot-hub-typescript` |
-| Deciding whether something should stay server-side or become a Client Component                                     | `ghcopilot-hub-next-15`                                                      |
+| Working in `app/`, `page.tsx`, `layout.tsx`, `loading.tsx`, `error.tsx`, `not-found.tsx`, metadata, or route groups | `ghcopilot-hub-next-16` + `next-best-practices` + `ghcopilot-hub-typescript` |
+| Deciding whether something should stay server-side or become a Client Component                                     | `ghcopilot-hub-next-16`                                                      |
 | Working inside Client Components, hooks, effects, refs, or component composition                                    | `ghcopilot-hub-react` + `ghcopilot-hub-typescript`                           |
-| Creating or updating Server Actions for forms or UI mutations                                                       | `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`                                |
-| Creating Route Handlers, webhooks, integrations, or public HTTP endpoints                                           | `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`                                |
+| Creating or updating Server Actions for forms or UI mutations                                                       | `ghcopilot-hub-next-16` + `ghcopilot-hub-zod`                                |
+| Creating Route Handlers, webhooks, integrations, or public HTTP endpoints                                           | `ghcopilot-hub-next-16` + `ghcopilot-hub-zod`                                |
 | Writing shared TypeScript types, route typing, or strict config objects                                             | `ghcopilot-hub-typescript`                                                   |
 | Creating or refining Zod schemas                                                                                    | `ghcopilot-hub-zod`                                                          |
 | Styling shared or route-local UI with Tailwind                                                                      | `ghcopilot-hub-tailwind`                                                     |
 | Using Zustand for cross-component client state                                                                      | `ghcopilot-hub-zustand`                                                      |
 | Writing or modifying unit, integration, component, or E2E tests                                                     | `ghcopilot-hub-testing`                                                      |
-| Reviewing waterfalls, bundle size, serialization, or render performance                                             | `next-best-practices` + `ghcopilot-hub-next-15`                              |
+| Reviewing waterfalls, bundle size, serialization, or render performance                                             | `next-best-practices` + `ghcopilot-hub-next-16`                              |
 | Working with `use cache`, cache profiles, cache tags, or Partial Prerendering                                       | `next-cache-components` + `next-best-practices`                              |
 
 > Always mention which skill you are invoking.
@@ -144,7 +144,7 @@ src/
 - Start independent async work early and await it with `Promise.all()` when dependencies allow.
 - Use `loading.tsx` for route-segment fallback UI and local `<Suspense>` boundaries for slower subtrees.
 - Keep request-time APIs such as `params`, `searchParams`, `cookies()`, and `headers()` as low in the tree as possible.
-- Skills: always use `ghcopilot-hub-next-15` first; add `next-best-practices` for App Router, metadata, bundling, and render optimization work, and `next-cache-components` when using `use cache` or Partial Prerendering.
+- Skills: always use `ghcopilot-hub-next-16` first; add `next-best-practices` for App Router, metadata, bundling, and render optimization work, and `next-cache-components` when using `use cache` or Partial Prerendering.
 
 ### 2. Forms and Mutations
 
@@ -156,16 +156,16 @@ src/
 - Reusable input contracts belong in `application/` or `domain/`, not scattered across routes.
 - Keep actions thin: parse `FormData`, call an `application/` use case, revalidate, then redirect if needed.
 - Revalidate before redirect. `redirect()` ends control flow.
-- Skills: always use `ghcopilot-hub-next-15` + `ghcopilot-hub-zod`.
+- Skills: always use `ghcopilot-hub-next-16` + `ghcopilot-hub-zod`.
 
 ### 3. Route Handlers
 
 - Use `app/api/**/route.ts` only when HTTP semantics matter.
 - Prefer Route Handlers for webhooks, public APIs, integrations, CORS, explicit status codes, files, XML, RSS, or streaming responses.
 - Do not create a Route Handler just to submit an internal app form.
-- In Next.js 15, `GET` Route Handlers are uncached by default.
+- In Next.js 16, `GET` Route Handlers are uncached by default.
 - Route Handlers should call `application/` use cases or services instead of reaching directly into route-local code.
-- Skills: always use `ghcopilot-hub-next-15` and add `ghcopilot-hub-zod` when validating payloads.
+- Skills: always use `ghcopilot-hub-next-16` and add `ghcopilot-hub-zod` when validating payloads.
 
 ### 4. Shared Layers vs Route Layers
 
@@ -189,7 +189,7 @@ src/
 
 - Use `Type[]` instead of `Array<Type>`.
 - Prefer `satisfies` for config objects when it preserves literals.
-- Model route params and request-time APIs with async-aware types in Next.js 15.
+- Model route params and request-time APIs with async-aware types in Next.js 16.
 - Keep route view models thin and serializable across the RSC boundary.
 - Skills: always use `ghcopilot-hub-typescript`.
 
@@ -207,7 +207,7 @@ src/
 - Prefer Next.js DevTools MCP over blind source inspection when diagnosing a running consumer app.
 - For Next.js 16+ projects, initialize MCP context first and use runtime diagnostics for build errors, runtime exceptions, route discovery, logs, and Server Action tracing.
 - If the consumer project does not have MCP configured, tell the user to add `.mcp.json` with `next-devtools-mcp@latest`, then restart `npm run dev` before continuing runtime diagnosis.
-- If the project is on Next.js 15 or lower, explain that live MCP runtime diagnostics require Next.js 16+, then fall back to docs, browser tooling, or source inspection as needed.
+- If the project is on Next.js 16 or lower, explain that live MCP runtime diagnostics require Next.js 16+, then fall back to docs, browser tooling, or source inspection as needed.
 - Use browser verification after code changes to confirm the rendered route works as expected.
 - Fall back to VS Code debugger, browser DevTools, or source-only reasoning only when MCP is unavailable or the task is not about a running app.
 
@@ -287,7 +287,7 @@ Examples:
 - Do not put shared UI in `src/app/` once it is reused across routes.
 - Do not create route-local folder trees that mirror `domain`, `application`, or `presentation` inside `app/`.
 - Do not trust hidden inputs, UI visibility, or middleware alone for Server Action authorization.
-- Do not assume `fetch()` or `GET` Route Handlers are cached by default in Next.js 15.
+- Do not assume `fetch()` or `GET` Route Handlers are cached by default in Next.js 16.
 - Do not pass rich ORM objects, database clients, or oversized session payloads into Client Components.
 - Do not read dynamic runtime APIs high in layouts if the route should stream or show `loading.tsx` quickly.
 - Do not diagnose a running Next.js app only from static code when Next.js DevTools MCP is available.
