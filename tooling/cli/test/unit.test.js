@@ -3,6 +3,7 @@ import test from "node:test";
 
 import { renderManagedFile, parseManagedFile, hashContent } from "../src/lib/managed-header.js";
 import { resolveProjectState } from "../src/lib/resolver.js";
+import { formatInteractiveInitSummary } from "../src/lib/tui.js";
 
 test("resolveProjectState expande packs, extras y exclusiones sin duplicados", () => {
   const catalog = {
@@ -168,4 +169,21 @@ test("managed header preserva el cuerpo y expone el hash de contenido", () => {
   assert.equal(parsed.header.revision, "abc123");
   assert.equal(parsed.header["content-hash"], hashContent(body));
   assert.equal(parsed.body, body);
+});
+
+test("formatInteractiveInitSummary agrupa el resumen final del TUI", () => {
+  const summary = formatInteractiveInitSummary({
+    agentsOnly: false,
+    packs: ["spa-tanstack"],
+    skills: ["next-best-practices", "react-best-practices"],
+  });
+
+  assert.match(summary, /Selection summary/);
+  assert.match(summary, /Mode: Pack \+ optional individual skills/);
+  assert.match(summary, /Pack: spa-tanstack/);
+  assert.match(summary, /Default consumer skill: included/);
+  assert.match(summary, /Bootstrap root AGENTS\.md: yes/);
+  assert.match(summary, /Extra skills \(2\):/);
+  assert.match(summary, /  - next-best-practices/);
+  assert.match(summary, /  - react-best-practices/);
 });

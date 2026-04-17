@@ -10,6 +10,7 @@
         "url": "https://github.com/jmgomezdev/ghcopilot-hub/issues"
     },
     "dependencies": {
+        "@clack/prompts": "^1.2.0",
         "yaml": "^2.8.1"
     },
     "description": "Centralized GitHub Copilot hub with shared agents, skills, packs, and a sync CLI for VS Code repositories.",

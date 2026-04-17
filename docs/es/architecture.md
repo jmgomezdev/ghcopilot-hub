@@ -96,6 +96,11 @@ Errores de resolución:
 - frontmatter inválido o faltante
 - pack con JSON inválido o referencias rotas
 
+Las skills individuales obsoletas se tratan distinto a los errores de pack:
+
+- si un pack referencia una skill inexistente, la validación del hub falla porque el catálogo es inconsistente
+- si el manifiesto de un proyecto referencia una skill individual que ya no existe, `diff` y `update` la tratan como estado obsoleto del consumidor, planifican el borrado de sus archivos managed y `update` reescribe el manifiesto sin ese id
+
 ## Sync
 
 Mapa origen a destino:
@@ -138,6 +143,9 @@ usando el mismo destino. Si el repositorio ya tiene `AGENTS.md`, el CLI pregunta
 redirigir el archivo gestionado a `AGENTS-base.md`.
 
 El CLI sólo inspecciona las rutas gestionadas para diff, doctor, update y decisiones de borrado.
+
+Para skills individuales obsoletas, el CLI las saca del estado deseado antes de planificar el sync para que el
+proyecto consumidor pueda converger en lugar de quedarse bloqueado por un error de skill desconocida.
 
 Los archivos legacy de versiones anteriores se eliminan con `ghcopilot-hub update`.
 

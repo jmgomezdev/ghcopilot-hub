@@ -30,24 +30,23 @@ from the bootstrap file declared by that pack under `hub/bootstrap/`.
 You do not need to install the package globally. The normal flow is to run it with `npx`, and the same commands also
 work with `bunx` or another package runner.
 
-Inspect the catalog:
+The recommended way to start is now the interactive `init` flow. In a real terminal, it opens with the curated
+pack path selected by default, lets you add extra skills only when you actually want them, and gets most projects to
+a solid baseline in one pass.
 
-```bash
-npx ghcopilot-hub@latest list
-npx ghcopilot-hub@latest list packs
-npx ghcopilot-hub@latest list skills
-```
-
-Bootstrap a consumer project without a predefined pack:
+Start here:
 
 ```bash
 npx ghcopilot-hub@latest init
 ```
 
-That agents-first setup syncs the full hub agent catalog and only installs the default
-`ghcopilot-hub-consumer` skill unless you also pass explicit `--skill` options.
+In the default interactive path, you pick one pack, optionally add a few extra skills, review the summary, and sync.
+It is the quickest way to land on a clean, maintainable setup without having to assemble everything by hand.
 
-Initialize a consumer project with a pack when one fits:
+If you skip the pack on purpose, the agents-first setup still syncs the full hub agent catalog and only installs the
+default `ghcopilot-hub-consumer` skill unless you also pass explicit `--skill` options.
+
+If you already know the exact pack you want, you can go direct:
 
 ```bash
 npx ghcopilot-hub@latest init --pack spa-tanstack
@@ -57,6 +56,14 @@ Pack-based `init` also bootstraps a root `AGENTS.md` using the selected pack's o
 most one pack. If the repository already has one, the CLI asks whether it should overwrite that file. If the answer is
 no, it writes `AGENTS-base.md` instead. In non-interactive mode, that decision must be resolved manually because the
 CLI will fail instead of guessing.
+
+If you want to inspect the catalog first, that is still available:
+
+```bash
+npx ghcopilot-hub@latest list
+npx ghcopilot-hub@latest list packs
+npx ghcopilot-hub@latest list skills
+```
 
 Adjust the selection later:
 
@@ -76,6 +83,10 @@ npx ghcopilot-hub@latest diff
 npx ghcopilot-hub@latest doctor
 npx ghcopilot-hub@latest update
 ```
+
+If the manifest still contains individually selected skills that no longer exist in the current hub catalog,
+`diff` and `update` treat them as stale entries to remove instead of failing with an unknown-skill error.
+`update` also rewrites the manifest so those stale ids are dropped from `skills` and `excludeSkills`.
 
 Help is available directly from the terminal:
 
@@ -156,6 +167,7 @@ Resolution rules:
 - pack-based `init` bootstraps `AGENTS.md` in the repository root from the selected pack bootstrap declared under `hub/bootstrap/` and persists the chosen target path in `settings.bootstrapAgentsTarget`
 - the final skills set is resolved as `packs + skills - excludeSkills`
 - `excludeSkills` wins even if a skill comes from a pack
+- stale individually selected skills are ignored for resolution, planned for removal, and cleaned from the manifest on `update`
 - local files live outside managed paths
 
 ## Internal Project Layout

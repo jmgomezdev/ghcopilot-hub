@@ -7,6 +7,7 @@ import { renderManagedFile } from "../src/lib/managed-header.js";
 
 import {
   createMockStdin,
+  createTempHub,
   createTempProject,
   fileExists,
   HUB_DIR,
@@ -55,6 +56,92 @@ test("init materializa agentes y skills del pack", async () => {
   });
 });
 
+test("init interactivo permite seleccionar solo agentes", async () => {
+  const projectDir = await createTempProject();
+
+  const result = await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR], {
+    stdin: createMockStdin(["2", "y"]),
+  });
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, ".github/agents/planner.agent.md"), true);
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
+    false
+  );
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.excludeSkills, ["ghcopilot-hub-consumer"]);
+});
+
+test("init interactivo permite seleccionar skills individuales", async () => {
+  const projectDir = await createTempProject();
+
+  const result = await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR], {
+    stdin: createMockStdin(["3", "ghcopilot-hub-mermaid-expert,ghcopilot-hub-zod", "", "y"]),
+  });
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
+    true
+  );
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-mermaid-expert/SKILL.md"),
+    true
+  );
+  assert.equal(await fileExists(projectDir, ".github/skills/ghcopilot-hub-zod/SKILL.md"), true);
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.skills, ["ghcopilot-hub-mermaid-expert", "ghcopilot-hub-zod"]);
+});
+
+test("init interactivo permite seleccionar pack y skills extra", async () => {
+  const projectDir = await createTempProject();
+
+  const result = await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR], {
+    stdin: createMockStdin(["", "spa-tanstack", "next-best-practices", "", "y"]),
+  });
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.equal(await fileExists(projectDir, "AGENTS.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/skills/ghcopilot-hub-react/SKILL.md"), true);
+  assert.equal(await fileExists(projectDir, ".github/skills/next-best-practices/SKILL.md"), true);
+  assert.match(
+    result.stdout,
+    /Skills already included in spa-tanstack are omitted from this list\./
+  );
+  const availableSkillsMatch = result.stdout.match(/Available skills:\n([\s\S]*?)\n\nSelection: /);
+  assert.ok(availableSkillsMatch);
+  assert.match(availableSkillsMatch[1], /next-best-practices/);
+  assert.doesNotMatch(availableSkillsMatch[1], /ghcopilot-hub-zod/);
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.packs, ["spa-tanstack"]);
+  assert.deepEqual(manifest.skills, ["next-best-practices"]);
+});
+
+test("init interactivo permite cancelar en la confirmacion final", async () => {
+  const projectDir = await createTempProject();
+
+  const result = await runCliCapture(["init", "--project-dir", projectDir, "--hub-dir", HUB_DIR], {
+    stdin: createMockStdin(["2", "n"]),
+  });
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.match(result.stdout, /Init cancelled\./);
+  assert.equal(await fileExists(projectDir, ".github/agents/planner.agent.md"), false);
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-consumer/SKILL.md"),
+    false
+  );
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.packs, []);
+  assert.deepEqual(manifest.skills, []);
+  assert.deepEqual(manifest.excludeSkills, []);
+});
+
 test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync", async () => {
   const projectDir = await createTempProject();
 
@@ -77,6 +164,39 @@ test("diff anticipa archivos nuevos cuando cambia el manifiesto sin aplicar sync
 
   assert.equal(result.exitCode, 0, result.stderr);
   assert.match(result.stdout, /\.github\/skills\/ghcopilot-hub-mermaid-expert\/SKILL\.md/);
+});
+
+test("diff anticipa reemplazos cuando un pack cambia sus skills", async () => {
+  const projectDir = await createTempProject();
+  const tempHubDir = await createTempHub();
+
+  await runCliCapture([
+    "init",
+    "--pack",
+    "spa-tanstack",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  const packPath = path.join(tempHubDir, "hub", "packs", "spa-tanstack.json");
+  const pack = JSON.parse(await fs.readFile(packPath, "utf8"));
+  pack.skills = pack.skills.filter((skillId) => skillId !== "ghcopilot-hub-tanstack-router");
+  pack.skills.push("next-best-practices");
+  await fs.writeFile(packPath, `${JSON.stringify(pack, null, 2)}\n`, "utf8");
+
+  const result = await runCliCapture([
+    "diff",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    tempHubDir,
+  ]);
+
+  assert.equal(result.exitCode, 0, result.stderr);
+  assert.match(result.stdout, /\.github\/skills\/next-best-practices\/SKILL\.md/);
+  assert.match(result.stdout, /\.github\/skills\/ghcopilot-hub-tanstack-router\/SKILL\.md/);
 });
 
 test("list muestra packs y skills disponibles del hub", async () => {
@@ -189,6 +309,90 @@ test("remove skill añade exclusion y elimina archivos huérfanos", async () => 
     await fileExists(projectDir, ".github/skills/ghcopilot-hub-tanstack-router/SKILL.md"),
     false
   );
+});
+
+test("update sanea skills individuales obsoletas del manifiesto y elimina sus archivos", async () => {
+  const projectDir = await createTempProject();
+  const tempHubDir = await createTempHub();
+
+  await runCliCapture([
+    "init",
+    "--skill",
+    "ghcopilot-hub-skill-creator",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  await fs.rm(path.join(tempHubDir, "hub", "skills", "ghcopilot-hub-skill-creator"), {
+    recursive: true,
+    force: true,
+  });
+
+  const diffResult = await runCliCapture([
+    "diff",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    tempHubDir,
+  ]);
+
+  assert.equal(diffResult.exitCode, 0, diffResult.stderr);
+  assert.match(diffResult.stdout, /\.github\/skills\/ghcopilot-hub-skill-creator\/SKILL\.md/);
+  assert.doesNotMatch(diffResult.stderr, /unknown skill/i);
+
+  const updateResult = await runCliCapture([
+    "update",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    tempHubDir,
+  ]);
+
+  assert.equal(updateResult.exitCode, 0, updateResult.stderr);
+  assert.equal(
+    await fileExists(projectDir, ".github/skills/ghcopilot-hub-skill-creator/SKILL.md"),
+    false
+  );
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.skills, []);
+});
+
+test("doctor informa skills individuales obsoletas del manifiesto", async () => {
+  const projectDir = await createTempProject();
+  const tempHubDir = await createTempHub();
+
+  await runCliCapture([
+    "init",
+    "--skill",
+    "ghcopilot-hub-skill-creator",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    HUB_DIR,
+  ]);
+
+  await fs.rm(path.join(tempHubDir, "hub", "skills", "ghcopilot-hub-skill-creator"), {
+    recursive: true,
+    force: true,
+  });
+
+  const result = await runCliCapture([
+    "doctor",
+    "--project-dir",
+    projectDir,
+    "--hub-dir",
+    tempHubDir,
+  ]);
+
+  assert.equal(result.exitCode, 2, result.stderr);
+  assert.match(result.stdout, /Stale manifest skills:/);
+  assert.match(result.stdout, /ghcopilot-hub-skill-creator/);
+
+  const manifest = JSON.parse(await readProjectFile(projectDir, ".github/ghcopilot-hub.json"));
+  assert.deepEqual(manifest.skills, ["ghcopilot-hub-skill-creator"]);
 });
 
 test("doctor detecta drift en un archivo gestionado", async () => {

@@ -11,6 +11,12 @@ export async function createTempProject() {
   return fs.mkdtemp(path.join(os.tmpdir(), "ghcopilot-hub-test-"));
 }
 
+export async function createTempHub() {
+  const hubRoot = await fs.mkdtemp(path.join(os.tmpdir(), "ghcopilot-hub-catalog-"));
+  await fs.cp(path.join(HUB_DIR, "hub"), path.join(hubRoot, "hub"), { recursive: true });
+  return hubRoot;
+}
+
 export async function readProjectFile(projectDir, targetRelativePath) {
   const absolutePath = path.join(projectDir, ...targetRelativePath.split("/"));
   return fs.readFile(absolutePath, "utf8");

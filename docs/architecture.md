@@ -96,6 +96,11 @@ Resolution errors:
 - invalid or missing frontmatter
 - pack with invalid JSON or broken references
 
+Stale individually selected skills are handled differently from pack errors:
+
+- if a pack references a missing skill, hub validation fails because the catalog is inconsistent
+- if a project manifest references an individually selected skill that no longer exists, `diff` and `update` treat it as stale consumer state, plan removal of its managed files, and `update` rewrites the manifest without that id
+
 ## Sync
 
 Source-to-target mapping:
@@ -138,6 +143,9 @@ using the same destination. If a repository already has `AGENTS.md`, the CLI ask
 redirect the managed bootstrap output to `AGENTS-base.md` instead.
 
 The CLI only scans managed paths for diff, doctor, update, and removal decisions.
+
+For stale individually selected skills, the CLI resolves them out of the desired state before planning sync so the
+consumer project can converge instead of blocking on an unknown-skill error.
 
 Legacy files from earlier CLI versions are removed on `ghcopilot-hub update`.
 

@@ -69,6 +69,23 @@ Cuando `init` se ejecuta sin `--pack`, arranca un proyecto orientado a agentes: 
 única skill sincronizada es la `ghcopilot-hub-consumer` por defecto, salvo que también pases una o más opciones
 `--skill`.
 
+Cuando `init` se ejecuta en una terminal interactiva sin `--pack` ni `--skill`, el CLI arranca un asistente
+interactivo para que puedas elegir entre:
+
+- un pack con skills extra opcionales como ruta por defecto
+- solo agentes
+- skills individuales sin pack
+
+En una terminal real, ese asistente usa un TUI con selección en lista, multiselección y prompts de confirmación. La
+ruta por defecto sigue siendo el pack, y el selector de skills extra excluye las skills que ya vienen incluidas en el
+pack elegido. En esa multiselección TUI, `Espacio` marca o desmarca una skill y `Enter` confirma la selección actual,
+así que si pulsas `Enter` directamente no se añadirá ninguna. Cuando el CLI se ejecuta sobre streams envueltos o no
+compatibles, hace fallback al flujo textual que usa la suite de tests.
+
+Antes de aplicar el sync, el asistente muestra una confirmación final con el modo elegido, el pack, las skills extra,
+el comportamiento de la skill `ghcopilot-hub-consumer` y si se creará un `AGENTS.md` en raíz. En la ruta TUI, ese
+resumen se presenta como un bloque de revisión más legible antes de la confirmación final.
+
 Cuando `init` se ejecuta con un pack, también genera un `AGENTS.md` de base a partir del archivo indicado en la clave
 `bootstrap` de ese pack y resuelto dentro de `hub/bootstrap/`. Un proyecto puede seleccionar como máximo un pack, y esa ruta de destino se
 persiste en `settings.bootstrapAgentsTarget` dentro del manifiesto.
@@ -77,6 +94,8 @@ Si el repositorio consumidor ya tiene `AGENTS.md`, el CLI pregunta si debe sobre
 
 - `yes`: mantiene `AGENTS.md` como destino gestionado
 - `no`: crea `AGENTS-base.md` y persiste ese destino en su lugar
+
+En una terminal real, esta decisión de sobrescritura también usa el mismo prompt TUI de confirmación.
 
 Si el comando se ejecuta sin terminal interactiva, o con `--json`, el CLI falla en vez de elegir un destino por su
 cuenta.
@@ -89,6 +108,9 @@ Recalcula el estado deseado desde el manifiesto y sincroniza el proyecto contra 
 ghcopilot-hub update
 ghcopilot-hub update --force
 ```
+
+Si el manifiesto todavía referencia skills individuales que ya no existen en el catálogo actual del hub,
+`update` trata esos ids como obsoletos: reescribe el manifiesto sin ellos y elimina sus archivos managed durante el sync.
 
 Si el manifiesto ya gestiona el bootstrap de agentes mediante `settings.bootstrapAgentsTarget`, `update` mantiene ese
 archivo base específico del pack sincronizado también. Cuando el destino es `AGENTS.md` y la ejecución va a sobrescribir un `AGENTS.md`
@@ -139,6 +161,9 @@ ghcopilot-hub diff
 ghcopilot-hub diff --json
 ```
 
+`diff` aplica el mismo saneado de skills obsoletas para skills individuales, así que reporta borrados en vez de fallar
+con error de skill desconocida.
+
 ### `doctor`
 
 Audita el estado del proyecto consumidor.
@@ -147,6 +172,7 @@ Comprueba:
 
 - manifiesto válido
 - packs y skills existentes
+- skills individuales o exclusiones obsoletas que ya no existen en el catálogo actual del hub
 - archivos managed faltantes
 - drift en archivos managed
 - rutas managed con contenido no gestionado
@@ -159,6 +185,9 @@ ghcopilot-hub doctor --hub-only
 ```
 
 `--hub-only` valida el propio repositorio hub: frontmatter, packs, catálogo y base.
+
+Para skills individuales obsoletas, `doctor` las reporta como issues pero no reescribe el manifiesto. Usa `update`
+para aplicar la limpieza.
 
 ## Opciones comunes
 

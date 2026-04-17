@@ -10,7 +10,17 @@ import { CliError } from "./lib/errors.js";
 import { ensureManifest, readManifest, writeManifest } from "./lib/manifest.js";
 import { fromRoot, pathExists } from "./lib/fs-utils.js";
 import { resolveProjectState } from "./lib/resolver.js";
-import { buildSkillIdLookup, canonicalizeSkillId, canonicalizeSkillIds } from "./lib/skill-ids.js";
+import {
+  canUseInteractiveTui,
+  promptBootstrapAgentsTargetTui,
+  promptInteractiveInitTui,
+} from "./lib/tui.js";
+import {
+  buildSkillIdLookup,
+  canonicalizeSkillId,
+  canonicalizeSkillIds,
+  DEFAULT_SKILL_ID,
+} from "./lib/skill-ids.js";
 import {
   applyProjectSync,
   createDesiredFiles,
@@ -99,18 +109,40 @@ async function runInit({ parsed, context, projectDir, catalog }) {
 
   canonicalizeManifestSkillSelections(manifest, skillIdLookup);
 
+  const interactiveInitSelection = await maybePromptForInteractiveInit({
+    parsed,
+    context,
+    catalog,
+    manifest,
+  });
+  if (interactiveInitSelection?.cancelled) {
+    if (!interactiveInitSelection.reportedCancel) {
+      context.stdout.write("Init cancelled.\n");
+    }
+    return 0;
+  }
+
+  const requestedPacks = interactiveInitSelection?.packs ?? parsed.options.packs ?? [];
+  const requestedSkills = interactiveInitSelection?.skills ?? parsed.options.skills ?? [];
+
   manifest.packs = resolveNextPackSelection({
     currentPacks: manifest.packs,
-    requestedPacks: parsed.options.packs ?? [],
+    requestedPacks,
     action: "init",
   });
   manifest.skills = mergeUnique(
     manifest.skills,
-    canonicalizeSkillIds(parsed.options.skills ?? [], skillIdLookup)
+    canonicalizeSkillIds(requestedSkills, skillIdLookup)
   );
   manifest.excludeSkills = manifest.excludeSkills.filter(
     (skillId) => !manifest.skills.includes(skillId)
   );
+
+  if (interactiveInitSelection) {
+    manifest.excludeSkills = interactiveInitSelection.agentsOnly
+      ? mergeUnique(manifest.excludeSkills, [DEFAULT_SKILL_ID])
+      : manifest.excludeSkills.filter((skillId) => skillId !== DEFAULT_SKILL_ID);
+  }
 
   if (manifest.packs.length === 0) {
     manifest.settings.bootstrapAgentsTarget = null;
@@ -147,6 +179,13 @@ async function runInit({ parsed, context, projectDir, catalog }) {
 
 async function runUpdate({ parsed, context, projectDir, catalog }) {
   const manifest = await readManifest(projectDir);
+  const skillIdLookup = buildSkillIdLookup(catalog.skills);
+  const manifestCleanup = sanitizeManifestSkillSelections(manifest, skillIdLookup);
+
+  if (manifestCleanup.changed) {
+    await writeManifest(projectDir, manifest);
+  }
+
   return syncFromManifest({
     context,
     projectDir,
@@ -189,6 +228,7 @@ async function runList({ parsed, context, catalog }) {
 
 async function runDiff({ parsed, context, projectDir, catalog }) {
   const manifest = await readManifest(projectDir);
+  sanitizeManifestSkillSelections(manifest, buildSkillIdLookup(catalog.skills));
   const report = await buildProjectReport({
     projectDir,
     catalog,
@@ -203,18 +243,27 @@ async function runDiff({ parsed, context, projectDir, catalog }) {
 
 async function runDoctor({ parsed, context, projectDir, catalog }) {
   const manifest = await readManifest(projectDir);
-  const report = await buildProjectReport({
-    projectDir,
-    catalog,
+  const manifestCleanup = sanitizeManifestSkillSelections(
     manifest,
-    force: parsed.options.force,
-  });
+    buildSkillIdLookup(catalog.skills)
+  );
+  const report = withManifestCleanupDiagnostics(
+    await buildProjectReport({
+      projectDir,
+      catalog,
+      manifest,
+      force: parsed.options.force,
+    }),
+    manifestCleanup
+  );
   const hasIssues =
     report.plan.conflicts.length > 0 ||
     report.plan.diagnostics.missingManaged.length > 0 ||
     report.plan.diagnostics.drifted.length > 0 ||
     report.plan.diagnostics.unexpectedManaged.length > 0 ||
-    report.plan.diagnostics.unexpectedUnmanaged.length > 0;
+    report.plan.diagnostics.unexpectedUnmanaged.length > 0 ||
+    report.manifestDiagnostics.staleSkills.length > 0 ||
+    report.manifestDiagnostics.staleExcludeSkills.length > 0;
 
   writeJsonOrText(
     context.stdout,
@@ -495,6 +544,284 @@ function resolveNextPackSelection({ currentPacks, requestedPacks, action }) {
   );
 }
 
+async function maybePromptForInteractiveInit({ parsed, context, catalog, manifest }) {
+  if (!shouldPromptForInteractiveInit({ parsed, context, manifest })) {
+    return null;
+  }
+
+  if (canUseInteractiveTui(context)) {
+    return await promptInteractiveInitTui({
+      catalog,
+      defaultSkillId: DEFAULT_SKILL_ID,
+      buildSelectableSkills: (selectedPack) =>
+        getInteractiveSelectableSkills({ catalog, selectedPack }),
+    });
+  }
+
+  context.stdout.write(
+    [
+      "Interactive init",
+      "Choose how to initialize the project:",
+      "1. Pack + optional individual skills",
+      "2. Only agents",
+      `3. Individual skills without pack (keeps ${DEFAULT_SKILL_ID} by default)`,
+      "",
+      "Select an option [1]: ",
+    ].join("\n")
+  );
+
+  const rawMode = (await readSingleLine(context.stdin)).trim();
+  const selectedMode = rawMode === "" ? "1" : rawMode;
+
+  if (!["1", "2", "3"].includes(selectedMode)) {
+    throw new CliError(
+      'Invalid interactive init option. Choose "1" for pack + skills, "2" for only agents, or "3" for skills without pack.'
+    );
+  }
+
+  if (selectedMode === "2") {
+    const selection = { agentsOnly: true, packs: [], skills: [] };
+    const confirmed = await promptForInteractiveInitConfirmation({ context, selection });
+    if (!confirmed) {
+      return { cancelled: true };
+    }
+
+    return selection;
+  }
+
+  const selectedPack =
+    selectedMode === "1" ? await promptForInteractivePack({ context, catalog }) : null;
+  const selectableSkills = getInteractiveSelectableSkills({ catalog, selectedPack });
+  const selectedSkills = await promptForInteractiveSkills({
+    context,
+    selectableSkills,
+    allowEmpty: true,
+    selectedPack,
+  });
+
+  const selection = {
+    agentsOnly: false,
+    packs: selectedPack ? [selectedPack] : [],
+    skills: selectedSkills,
+  };
+
+  const confirmed = await promptForInteractiveInitConfirmation({ context, selection });
+  if (!confirmed) {
+    return { cancelled: true };
+  }
+
+  return selection;
+}
+
+function getInteractiveSelectableSkills({ catalog, selectedPack }) {
+  const selectedPackDefinition = selectedPack
+    ? (catalog.packs.find((pack) => pack.name === selectedPack) ?? null)
+    : null;
+  const blockedSkills = new Set([DEFAULT_SKILL_ID, ...(selectedPackDefinition?.skills ?? [])]);
+
+  return catalog.skills
+    .map((skill) => skill.id)
+    .filter((skillId) => !blockedSkills.has(skillId))
+    .sort();
+}
+
+function shouldPromptForInteractiveInit({ parsed, context, manifest }) {
+  return (
+    (parsed.options.packs?.length ?? 0) === 0 &&
+    (parsed.options.skills?.length ?? 0) === 0 &&
+    !parsed.options.json &&
+    Boolean(context.stdin?.isTTY) &&
+    typeof context.stdin?.once === "function" &&
+    manifest.packs.length === 0 &&
+    manifest.skills.length === 0 &&
+    manifest.excludeSkills.length === 0 &&
+    manifest.settings.bootstrapAgentsTarget === null
+  );
+}
+
+async function promptForInteractivePack({ context, catalog }) {
+  const packs = catalog.packs.map((pack) => pack.name).sort();
+
+  context.stdout.write(
+    [
+      "",
+      "Available packs:",
+      ...packs.map((packName, index) => `${index + 1}. ${packName}`),
+      "",
+      "Choose one pack by number or name: ",
+    ].join("\n")
+  );
+
+  const answer = (await readSingleLine(context.stdin)).trim();
+  const selectedPack = resolveIndexedOrNamedSelection({
+    answer,
+    values: packs,
+    kind: "pack",
+    allowEmpty: false,
+  });
+
+  return selectedPack;
+}
+
+async function promptForInteractiveSkills({ context, selectableSkills, allowEmpty, selectedPack }) {
+  const selectedSkills = new Set();
+
+  if (selectableSkills.length === 0) {
+    context.stdout.write(
+      [
+        "",
+        "Interactive skill selection",
+        selectedPack
+          ? `No extra skills are available because ${selectedPack} already covers all selectable hub skills.`
+          : "No selectable skills are available.",
+      ].join("\n")
+    );
+
+    return [];
+  }
+
+  context.stdout.write(
+    [
+      "",
+      "Interactive skill selection",
+      selectedPack
+        ? `Skills already included in ${selectedPack} are omitted from this list.`
+        : null,
+      "Toggle skills by comma-separated numbers or ids.",
+      allowEmpty
+        ? "Press Enter to finish without selecting more skills."
+        : 'Type "done" when finished.',
+    ]
+      .filter(Boolean)
+      .join("\n")
+  );
+
+  while (true) {
+    context.stdout.write(
+      [
+        "",
+        `Selected skills: ${[...selectedSkills].sort().join(", ") || "(none)"}`,
+        "Available skills:",
+        ...selectableSkills.map((skillId, index) => {
+          const marker = selectedSkills.has(skillId) ? "[x]" : "[ ]";
+          return `${index + 1}. ${marker} ${skillId}`;
+        }),
+        "",
+        "Selection: ",
+      ].join("\n")
+    );
+
+    const answer = (await readSingleLine(context.stdin)).trim();
+    const normalizedAnswer = answer.toLowerCase();
+
+    if (answer === "") {
+      if (selectedSkills.size > 0 || allowEmpty) {
+        return [...selectedSkills].sort();
+      }
+
+      continue;
+    }
+
+    if (normalizedAnswer === "done") {
+      if (selectedSkills.size === 0 && !allowEmpty) {
+        throw new CliError("At least one skill must be selected.");
+      }
+
+      return [...selectedSkills].sort();
+    }
+
+    const toggledSkills = resolveIndexedOrNamedSelections({
+      answer,
+      values: selectableSkills,
+      kind: "skill",
+    });
+
+    for (const skillId of toggledSkills) {
+      if (selectedSkills.has(skillId)) {
+        selectedSkills.delete(skillId);
+      } else {
+        selectedSkills.add(skillId);
+      }
+    }
+  }
+}
+
+function resolveIndexedOrNamedSelections({ answer, values, kind }) {
+  const tokens = answer
+    .split(",")
+    .map((token) => token.trim())
+    .filter(Boolean);
+
+  if (tokens.length === 0) {
+    return [];
+  }
+
+  return [
+    ...new Set(
+      tokens.map((token) =>
+        resolveIndexedOrNamedSelection({
+          answer: token,
+          values,
+          kind,
+          allowEmpty: false,
+        })
+      )
+    ),
+  ];
+}
+
+async function promptForInteractiveInitConfirmation({ context, selection }) {
+  const hasPack = selection.packs.length > 0;
+  const modeLabel = selection.agentsOnly
+    ? "Only agents"
+    : hasPack
+      ? "Pack + optional individual skills"
+      : "Individual skills without pack";
+
+  context.stdout.write(
+    [
+      "",
+      "Final confirmation",
+      `Mode: ${modeLabel}`,
+      `Pack: ${selection.packs[0] ?? "(none)"}`,
+      `Extra skills: ${selection.skills.join(", ") || "(none)"}`,
+      `Default consumer skill: ${selection.agentsOnly ? "excluded" : "included"}`,
+      `Bootstrap root AGENTS.md: ${hasPack ? "yes" : "no"}`,
+      "",
+      "Proceed with init? [Y/n] ",
+    ].join("\n")
+  );
+
+  const answer = (await readSingleLine(context.stdin)).trim().toLowerCase();
+  return answer === "" || answer === "y" || answer === "yes";
+}
+
+function resolveIndexedOrNamedSelection({ answer, values, kind, allowEmpty }) {
+  if (answer === "") {
+    if (allowEmpty) {
+      return null;
+    }
+
+    throw new CliError(`A ${kind} selection is required.`);
+  }
+
+  if (/^\d+$/.test(answer)) {
+    const selectedIndex = Number(answer) - 1;
+    const selectedValue = values[selectedIndex];
+    if (!selectedValue) {
+      throw new CliError(`Invalid ${kind} selection "${answer}".`);
+    }
+
+    return selectedValue;
+  }
+
+  if (!values.includes(answer)) {
+    throw new CliError(`Unknown ${kind} "${answer}".`);
+  }
+
+  return answer;
+}
+
 async function resolveBootstrapAgentsTarget({ context, projectDir, json }) {
   if (!(await pathExists(fromRoot(projectDir, DEFAULT_BOOTSTRAP_AGENTS_TARGET)))) {
     return DEFAULT_BOOTSTRAP_AGENTS_TARGET;
@@ -545,6 +872,14 @@ async function promptForBootstrapAgentsTarget({ context, json, operation }) {
     throw new CliError(
       `Cannot decide how to handle ${DEFAULT_BOOTSTRAP_AGENTS_TARGET} during ${operation} in non-interactive mode. Run the command in a terminal to choose whether to overwrite it or create ${ALTERNATE_BOOTSTRAP_AGENTS_TARGET}.`
     );
+  }
+
+  if (canUseInteractiveTui(context)) {
+    return await promptBootstrapAgentsTargetTui({
+      defaultTarget: DEFAULT_BOOTSTRAP_AGENTS_TARGET,
+      alternateTarget: ALTERNATE_BOOTSTRAP_AGENTS_TARGET,
+      operation,
+    });
   }
 
   context.stdout.write(`${DEFAULT_BOOTSTRAP_AGENTS_TARGET} already exists. Overwrite it? [y/N] `);
@@ -739,8 +1074,24 @@ function formatDoctorReport(report, hasIssues) {
   appendList(sections, "Missing managed files", report.plan.diagnostics.missingManaged);
   appendList(sections, "Unexpected managed files", report.plan.diagnostics.unexpectedManaged);
   appendList(sections, "Unexpected unmanaged files", report.plan.diagnostics.unexpectedUnmanaged);
+  appendList(sections, "Stale manifest skills", report.manifestDiagnostics.staleSkills);
+  appendList(
+    sections,
+    "Stale manifest excluded skills",
+    report.manifestDiagnostics.staleExcludeSkills
+  );
 
   return sections.join("\n");
+}
+
+function withManifestCleanupDiagnostics(report, manifestCleanup) {
+  return {
+    ...report,
+    manifestDiagnostics: {
+      staleSkills: [...manifestCleanup.removedSkills].sort(),
+      staleExcludeSkills: [...manifestCleanup.removedExcludeSkills].sort(),
+    },
+  };
 }
 
 function appendList(buffer, title, values) {
@@ -755,10 +1106,55 @@ function appendList(buffer, title, values) {
 }
 
 function canonicalizeManifestSkillSelections(manifest, skillIdLookup) {
-  manifest.skills = canonicalizeSkillIds(manifest.skills, skillIdLookup);
-  manifest.excludeSkills = canonicalizeSkillIds(manifest.excludeSkills, skillIdLookup).filter(
-    (skillId) => !manifest.skills.includes(skillId)
-  );
+  sanitizeManifestSkillSelections(manifest, skillIdLookup);
+}
+
+function sanitizeManifestSkillSelections(manifest, skillIdLookup) {
+  const originalSkills = [...manifest.skills];
+  const originalExcludeSkills = [...manifest.excludeSkills];
+  const removedSkills = [];
+  const removedExcludeSkills = [];
+
+  manifest.skills = normalizeResolvableSkillIds(manifest.skills, skillIdLookup, removedSkills);
+
+  const selectedSkillIds = new Set(manifest.skills);
+  manifest.excludeSkills = normalizeResolvableSkillIds(
+    manifest.excludeSkills,
+    skillIdLookup,
+    removedExcludeSkills
+  ).filter((skillId) => !selectedSkillIds.has(skillId));
+
+  return {
+    removedSkills,
+    removedExcludeSkills,
+    changed:
+      !arraysEqual(originalSkills, manifest.skills) ||
+      !arraysEqual(originalExcludeSkills, manifest.excludeSkills),
+  };
+}
+
+function normalizeResolvableSkillIds(skillIds, skillIdLookup, removedSkillIds) {
+  const normalizedSkillIds = [];
+
+  for (const skillId of skillIds) {
+    const canonicalSkillId = canonicalizeSkillId(skillId, skillIdLookup);
+    if (!canonicalSkillId) {
+      removedSkillIds.push(skillId);
+      continue;
+    }
+
+    normalizedSkillIds.push(canonicalSkillId);
+  }
+
+  return [...new Set(normalizedSkillIds)].sort();
+}
+
+function arraysEqual(left, right) {
+  if (left.length !== right.length) {
+    return false;
+  }
+
+  return left.every((value, index) => value === right[index]);
 }
 
 function mergeUnique(currentValues, nextValues) {
