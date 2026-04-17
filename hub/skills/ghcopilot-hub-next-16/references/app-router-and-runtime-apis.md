@@ -109,6 +109,8 @@ clear reason.
 
 When Cache Components is enabled, route segment config values such as `dynamic`, `revalidate`, and `fetchCache` should generally be treated as migration-era controls. Prefer `use cache` and `cacheLife()` instead of introducing new segment-level caching config.
 
+If those exports appear in a Cache Components codebase, treat them as migration targets rather than parallel options.
+
 ## Route Typing with `RouteContext`
 
 For typed route handlers, prefer `RouteContext` when the route literal is known.

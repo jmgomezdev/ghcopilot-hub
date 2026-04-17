@@ -86,13 +86,13 @@ Rules:
 
 Prefer `'use cache'` for new Next.js 16 App Router code when Cache Components is enabled. It defines a cached scope instead of attaching caching behavior to individual `fetch()` calls.
 
-When migrating existing code, replace old segment-level caching controls with `'use cache'` and `cacheLife()`.
-
-Do not recommend `fetch(..., { cache: 'force-cache' })`, `export const fetchCache = 'default-cache'`, or `export const dynamic = 'force-static'` as the preferred solution in Cache Components mode. Start by removing those older controls, then add `'use cache'` as close to the data access as possible and use `cacheLife()` when cached lifetime matters.
+If the codebase already uses older caching controls, recommend migrating them to `'use cache'` plus `cacheLife()` instead of keeping them as equal alternatives.
 
 ### Route handler caching
 
 For modern Next.js 16 guidance, do not introduce `export const dynamic = 'force-static'` as the route handler caching recommendation. Prefer the Cache Components model and keep route-level config out of new advice unless the task is specifically about older migration boundaries.
+
+If a route handler or page still uses older caching exports in a Cache Components project, point the user back to the Cache Components migration path rather than preserving that model in new guidance.
 
 ### Cache Components and Distributed Caching in Next.js 16
 

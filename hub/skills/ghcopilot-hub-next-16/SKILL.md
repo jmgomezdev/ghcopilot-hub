@@ -145,6 +145,8 @@ Do not assume old App Router caching defaults. For Next.js 16 guidance, recommen
 
 When Cache Components is enabled, treat older caching controls such as `dynamic`, `revalidate`, and `fetchCache` as migration targets to remove, not patterns to introduce.
 
+If the user shows code with `dynamic = 'force-static'`, `revalidate`, `fetchCache`, or fetch-level cache overrides as the main caching mechanism, explicitly recommend migrating that code to `use cache` plus `cacheLife()` instead of preserving the old model.
+
 Always pair caching advice with an invalidation plan.
 
 ### Remove Waterfalls Before Micro-Optimizing
@@ -277,6 +279,14 @@ Check whether the project is using:
 - legacy fetch-level cache controls only when Cache Components is not in use
 - route handler config
 - Cache Components and related cache APIs
+
+If Cache Components is enabled and the code still relies on old route segment cache controls, recommend migration explicitly instead of presenting those controls as equivalent options.
+
+### NEVER Preserve Old Cache Controls as the Recommended Model in Cache Components Mode
+
+Why: the official Next.js 16 migration path replaces `dynamic`, `revalidate`, and `fetchCache` with `use cache` and `cacheLife()`. Keeping the old model as first-class guidance leaves the skill inconsistent with current framework direction.
+
+Do not present those controls as equal alternatives in Cache Components mode.
 
 ### NEVER Read Runtime APIs High in the Tree If You Expect `loading.tsx` to Cover It
 
